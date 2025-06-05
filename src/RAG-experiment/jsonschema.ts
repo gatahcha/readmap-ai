@@ -13,3 +13,5 @@ interface bookNode {
     num_page : Number,
     prevNode : bookNode
 } //isbn13,isbn10,title,subtitle,authors,categories,thumbnail,description,published_year,average_rating,num_pages,ratings_count
+
+
