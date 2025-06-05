@@ -6,7 +6,7 @@ import { GoogleGenAI, Type } from "@google/genai";
 // Initialize Gemini client
 const geminiClient = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY || "YOUR_API_KEY" });
 
-export async function bookPipeline(userQuery: string): Promise<{ message: string, books: bookNode[] }> {
+export async function bookPipeline(userQuery: string): Promise<{ finalResponse: string, books: bookNode[] }> {
     // Define the user query
     const responseQuery = await geminiClient.models.generateContent({
         model: "gemini-2.0-flash",
@@ -70,7 +70,7 @@ Ensure the MongoDB query strictly performs searches and respects the provided da
     // Generate a response message
     if (!databaseBooks.length && !vectorBooks.length) {
         return {
-            message: "No books found matching your query.",
+            finalResponse: "No books found matching your query.",
             books: []
         };
     }
@@ -111,7 +111,7 @@ Provide a professional yet engaging reply, structured clearly as follows:
     });
 
     return {
-        message: responseMessage.text || "We have found some books based on your query.",
+        finalResponse: responseMessage.text || "We have found some books based on your query.",
         books: [...databaseBooks, ...vectorBooks]
     };
 }
