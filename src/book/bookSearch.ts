@@ -51,6 +51,8 @@ export async function bookDatabaseSearch(query: string): Promise<bookNode[]> {
     // This function would normally perform a database search.
     // For now, we return a static list
 
+    
+
     return [book1, book2]
 }
 

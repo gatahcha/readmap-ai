@@ -2,46 +2,17 @@
 import { bookNode } from "./bookNode";
 import { bookDatabaseSearch, bookVectorSearch } from "./bookSearch";
 import { GoogleGenAI, Type } from "@google/genai";
+import { userInputPrompt } from "./prompts";
 
 // Initialize Gemini client
 const geminiClient = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY || "YOUR_API_KEY" });
 
 export async function bookPipeline(userQuery: string): Promise<{ finalResponse: string, books: bookNode[] }> {
-    // Define the user query
+    // Define the user query 
+
     const responseQuery = await geminiClient.models.generateContent({
         model: "gemini-2.0-flash",
-        contents: `Generate an AI-based book recommendation query prompt that takes ${userQuery} as input and returns the following structured output:
-
-1. **Vector Search Query**:
-
-   * Generate a concise yet descriptive sentence suitable for vector-based search, focusing specifically on book descriptions. The vector search should retrieve books whose descriptions semantically match the essence of the user's query.
-
-2. **MongoDB Search Query**:
-
-   * Construct a MongoDB search query (similar to an SQL-like query) tailored to search through relevant fields (title, subtitle, authors, categories, description) without performing delete or update operations.
-   * The search query must specifically retrieve relevant matches based on keywords derived from {user query}, ensuring accurate and precise matches.
-
-**MongoDB Database Structure Reference:**
-
-{
-  "_id": {"$oid": "..."},
-  "isbn13": {"$numberLong": "..."},
-  "isbn10": "...",
-  "title": "...",
-  "subtitle": "...",
-  "authors": "...",
-  "categories": "...",
-  "thumbnail": "...",
-  "description": "...",
-  "published_year": {"$numberDouble": "..."},
-  "average_rating": {"$numberDouble": "..."},
-  "num_pages": {"$numberDouble": "..."},
-  "ratings_count": {"$numberDouble": "..."},
-  "embedding": []
-}
-  
-Ensure the MongoDB query strictly performs searches and respects the provided database schema.`,
-
+        contents: userInputPrompt(userQuery),
         config: {
             responseMimeType: "application/json",
             responseSchema: {
