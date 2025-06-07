@@ -13,6 +13,7 @@
     "@google/genai": "^1.4.0",
     "@types/dotenv": "^6.1.1",
     "dotenv": "^16.5.0",
+    "genai": "^0.0.18",
     "google-auth-library": "^10.0.0-rc.2",
     "mongodb": "^6.16.0",
     "next": "15.3.3",
