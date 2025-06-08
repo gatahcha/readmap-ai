@@ -10,7 +10,7 @@ const COLLECTION_NAME = process.env.COLLECTION_NAME || 'books';
 const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY || 'your_google_api_key';
 
 // Build the connection string manually
-const MONGODB_URI = `mongodb+srv://${MONGODB_USERNAME}:${MONGODB_PASSWORD}@readmapai.ufcrfmy.mongodb.net/?retryWrites=true&w=majority&appName=ReadmapAI`;
+const MONGODB_URI = `mongodb+srv://${MONGODB_USERNAME}:${MONGODB_PASSWORD}@readmapai.v0hldcw.mongodb.net/?retryWrites=true&w=majority&appName=ReadmapAI`;
 
 // Initialize Google AI client
 const genAI = new GoogleGenerativeAI(GOOGLE_API_KEY);

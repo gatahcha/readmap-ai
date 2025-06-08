@@ -3,6 +3,7 @@ import { bookNode } from "./bookNode";
 import { bookDatabaseSearch, bookVectorSearch } from "./bookSearch";
 import { GoogleGenAI, Type } from "@google/genai";
 import { userInputPrompt } from "./prompts";
+import { writeFileSync } from 'fs';
 
 // Initialize Gemini client
 const geminiClient = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY || "YOUR_API_KEY" });
@@ -31,6 +32,8 @@ export async function bookPipeline(userQuery: string): Promise<{ finalResponse: 
     });
 
     const instructionJson = JSON.parse(responseQuery.text || '{}');
+
+    // writeFileSync('src/book/trial_lookout.json', JSON.stringify(responseQuery, null, 2));
 
     // Perform database query
     const databaseBooks = await bookDatabaseSearch(instructionJson.mongoDBSearch);

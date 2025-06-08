@@ -36,7 +36,7 @@ export function userInputPrompt(userQuery : String) {
         Ensure the MongoDB query strictly performs searches and respects the provided database schema.
     `
 
-    return prompt
+    return prompt;
 
 }
 
