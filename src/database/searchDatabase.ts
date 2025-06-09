@@ -1,6 +1,7 @@
 import { MongoClient, Db, Collection } from 'mongodb';
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import BookNode from '../RAG-experiment/jsonschema';
+import { bookNode } from "@/RAG-experiment/jsonschema";
+
 
 // Environment variables for configuration
 const MONGODB_USERNAME = process.env.MONGODB_USERNAME || 'your_username';
@@ -21,6 +22,24 @@ let db: Db;
 let collection: Collection;
 
 // TODO: VectorSearchResult definition
+interface VectorSearchResult {
+  isbn13?: number
+  isbn10?: number
+  title?: string
+  subtitle?: string
+  authors?: string
+  categories?: string
+  thumbnail?: string
+  description?: string
+  published_year?: number
+  average_rating?: number
+  num_pages?: number
+  ratings_count?: number
+  embedding?: number[]
+  score?: number
+}
+
+
 // TODO: Fix the BookNode import
 
 // Initialize database connection
@@ -45,7 +64,7 @@ async function closeDatabaseConnection(): Promise<void> {
     }
 }
 
-async function searchDatabase(text: string): Promise<BookNode[]> {
+async function searchDatabase(text: string): Promise<bookNode[]> {
     try {
         // Ensure database connection is established
         if (!collection) {
@@ -94,8 +113,8 @@ async function searchDatabase(text: string): Promise<BookNode[]> {
         const results = await collection.aggregate<VectorSearchResult>(pipeline).toArray();
 
         // Transform results to match BookNode interface
-        const bookNodes: BookNode[] = results.map((doc, index) => {
-            const bookNode: BookNode = {
+        const bookNodes: bookNode[] = results.map((doc, index) => {
+            const bookNode: bookNode = {
                 isbn13: doc.isbn13 || 0,
                 isbn10: doc.isbn10 || 0,
                 title: doc.title || "",
@@ -111,7 +130,7 @@ async function searchDatabase(text: string): Promise<BookNode[]> {
 
             // Link to previous node if not the first item
             if (index > 0) {
-                bookNode.prevNode = bookNodes[index - 1];
+                bookNode.prevNode = [bookNodes[index - 1]];
             }
 
             return bookNode;

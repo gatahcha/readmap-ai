@@ -1,17 +1,17 @@
 
-interface bookNode {
-    isbn13 : Number,
-    isbn10 : Number,
-    title : String,
-    subtitle : String,
-    author : String,
-    categories : String,
-    thumbail : String, // link to the picture
-    description : String,
-    published_year : Number,
-    average_rating : Number,
-    num_page : Number,
-    prevNode : bookNode
+export interface bookNode {
+    isbn13 : number,
+    isbn10 : number,
+    title : string,
+    subtitle : string,
+    author : string,
+    categories : string,
+    thumbnail : string, // link to the picture
+    description : string,
+    published_year : number,
+    average_rating : number,
+    num_page : number,
+    prevNode? : bookNode[]
 } //isbn13,isbn10,title,subtitle,authors,categories,thumbnail,description,published_year,average_rating,num_pages,ratings_count
 
 

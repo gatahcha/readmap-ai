@@ -17,14 +17,31 @@ export default function Footer() {
             </div>
             <p className="text-gray-600">AI-powered reading journeys</p>
           </div>
+
           <div className="flex flex-col md:flex-row gap-8">
             <div className="flex gap-6">
-              <a href="#" className="text-gray-600 hover:text-transparent hover:bg-gradient-to-r hover:from-orange-500 hover:to-orange-600 hover:bg-clip-text transition-all duration-300">Privacy</a>
-              <a href="#" className="text-gray-600 hover:text-transparent hover:bg-gradient-to-r hover:from-orange-500 hover:to-orange-600 hover:bg-clip-text transition-all duration-300">Terms</a>
-              <a href="#" className="text-gray-600 hover:text-transparent hover:bg-gradient-to-r hover:from-orange-500 hover:to-orange-600 hover:bg-clip-text transition-all duration-300">Support</a>
+              <a
+                href="#"
+                className="text-gray-600 hover:text-transparent hover:bg-gradient-to-r hover:from-orange-500 hover:to-orange-600 hover:bg-clip-text transition-all duration-300"
+              >
+                Privacy
+              </a>
+              <a
+                href="#"
+                className="text-gray-600 hover:text-transparent hover:bg-gradient-to-r hover:from-orange-500 hover:to-orange-600 hover:bg-clip-text transition-all duration-300"
+              >
+                Terms
+              </a>
+              <a
+                href="#"
+                className="text-gray-600 hover:text-transparent hover:bg-gradient-to-r hover:from-orange-500 hover:to-orange-600 hover:bg-clip-text transition-all duration-300"
+              >
+                Support
+              </a>
             </div>
           </div>
         </div>
+
         <div className="border-t border-orange-200 mt-12 pt-8 text-center">
           <p className="text-gray-500">© 2024 readmap.ai. All rights reserved.</p>
         </div>

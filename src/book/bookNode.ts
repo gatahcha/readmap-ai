@@ -1,5 +1,6 @@
 // Book node for Readmap AI
 export interface bookNode {
+    id? : string,
     isbn13 : Number,
     isbn10 : Number,
     title : String,
@@ -11,5 +12,5 @@ export interface bookNode {
     published_year : Number,
     average_rating : Number,
     num_page : Number,
-    prevNodes : bookNode[] // array of previous nodes
+    prevNode?: bookNode[]; // array of previous nodes
 }

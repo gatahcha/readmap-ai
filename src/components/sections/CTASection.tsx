@@ -7,9 +7,7 @@ export default function CTASection() {
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-orange-600/20 to-transparent"></div>
       <div className="container mx-auto px-6 text-center relative z-10">
         <div className="max-w-3xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold text-orange-50 mb-6">
-            Ready to start your reading journey?
-          </h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-orange-50 mb-6">Ready to start your reading journey?</h2>
           <p className="text-xl text-orange-100 mb-8">
             Join thousands of readers who have discovered their perfect book path
           </p>

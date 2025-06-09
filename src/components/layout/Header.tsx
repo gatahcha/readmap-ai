@@ -1,5 +1,7 @@
-import { BookOpen, Menu } from "lucide-react"
+"use client"
+
 import { Button } from "@/components/ui/button"
+import { BookOpen, Menu } from "lucide-react"
 
 export default function Header() {
   return (
@@ -13,14 +15,25 @@ export default function Header() {
             readmap.ai
           </span>
         </div>
+
         <nav className="hidden md:flex items-center gap-8">
-          <a href="#" className="text-gray-600 hover:text-gray-900 transition-colors">Home</a>
-          <a href="#" className="text-gray-600 hover:text-gray-900 transition-colors">About</a>
-          <a href="#" className="text-gray-600 hover:text-gray-900 transition-colors">Help</a>
-          <Button size="sm" className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-orange-50 px-6 shadow-lg">
+          <a href="#" className="text-gray-600 hover:text-gray-900 transition-colors">
+            Home
+          </a>
+          <a href="#" className="text-gray-600 hover:text-gray-900 transition-colors">
+            About
+          </a>
+          <a href="#" className="text-gray-600 hover:text-gray-900 transition-colors">
+            Help
+          </a>
+          <Button
+            size="sm"
+            className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-orange-50 px-6 shadow-lg"
+          >
             Sign In
           </Button>
         </nav>
+
         <Button variant="ghost" size="icon" className="md:hidden">
           <Menu className="w-5 h-5" />
         </Button>

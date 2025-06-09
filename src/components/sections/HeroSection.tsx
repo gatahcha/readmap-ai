@@ -1,8 +1,13 @@
-import { Sparkles } from "lucide-react"
-import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Sparkles } from "lucide-react"
 
-export default function HeroSection() {
+interface HeroSectionProps {
+  initialQuery: string
+  finalResponse: string
+}
+
+export default function HeroSection({ initialQuery, finalResponse }: HeroSectionProps) {
   return (
     <section className="py-20 md:py-32 relative overflow-hidden">
       {/* Background decoration */}
@@ -36,17 +41,20 @@ export default function HeroSection() {
 
           {/* Search Bar */}
           <div className="relative max-w-2xl mx-auto mb-12">
-            <Input
-              type="text"
-              placeholder="What would you like to learn about?"
-              className="w-full h-14 pl-6 pr-32 text-lg border-2 border-orange-200/50 bg-orange-50/80 backdrop-blur-sm rounded-2xl focus:border-orange-500 focus:ring-0 shadow-xl"
-            />
-            <Button
-              size="lg"
-              className="absolute right-2 top-2 bottom-2 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 rounded-xl px-8 shadow-lg text-orange-50"
-            >
-              Generate
-            </Button>
+            <div className="relative">
+              <Input
+                type="text"
+                defaultValue={initialQuery}
+                placeholder="What would you like to learn about?"
+                className="w-full h-14 pl-6 pr-32 text-lg border-2 border-orange-200/50 bg-orange-50/80 backdrop-blur-sm rounded-2xl focus:border-orange-500 focus:ring-0 shadow-xl"
+              />
+              <Button
+                size="lg"
+                className="absolute right-2 top-2 bottom-2 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 rounded-xl px-8 shadow-lg text-orange-50"
+              >
+                Generate
+              </Button>
+            </div>
           </div>
 
           {/* Trending Topics */}

@@ -34,7 +34,7 @@ const book1: bookNode = {
     published_year: 1949,
     average_rating: 4.2,
     num_page: 328,
-    prevNodes: [],
+    prevNode: [],
 };
 
 const book2: bookNode = {
@@ -49,7 +49,7 @@ const book2: bookNode = {
     published_year: 1960,
     average_rating: 4.3,
     num_page: 281,
-    prevNodes: [book1],
+    prevNode: [book1],
 };
 
 const book3: bookNode = {
@@ -64,7 +64,7 @@ const book3: bookNode = {
     published_year: 1925,
     average_rating: 3.9,
     num_page: 180,
-    prevNodes: [book1, book2],
+    prevNode: [book1, book2],
 };
 
 export async function bookDatabaseSearch(query: string): Promise<bookNode[]> {
