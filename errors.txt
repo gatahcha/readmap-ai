@@ -1,2 +1,0 @@
-src/components/ui/button.tsx(4,16): error TS2307: Cannot find module '@/lib/utils' or its corresponding type declarations.
-src/components/ui/input.tsx(2,16): error TS2307: Cannot find module '@/lib/utils' or its corresponding type declarations.

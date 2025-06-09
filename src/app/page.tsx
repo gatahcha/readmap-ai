@@ -33,15 +33,17 @@ export default async function Home({ searchParams }: HomeProps) {
    return (
     <>
       <Header />
-
-      <main className="space-y-24">
+      <main>
         <HeroSection initialQuery={query} finalResponse={finalResponse} />
-        {books.length > 0 && <ReadingRoadmapSection books={books} />}
-        <FeaturesSection />
-        <HelpSection />
-        <CTASection />
+        
+        {books.length > 0 && (
+          //<div className="my-24">
+            <ReadingRoadmapSection books={books} />
+          //</div>
+        
+        )}
       </main>
-
+      
       <Footer />
     </>
   )

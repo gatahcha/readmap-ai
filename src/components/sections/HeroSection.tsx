@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Sparkles } from "lucide-react"
+import { Sparkles, Save } from "lucide-react"
+import Link from "next/link"
 
 interface HeroSectionProps {
   initialQuery: string
@@ -60,9 +61,9 @@ export default function HeroSection({ initialQuery, finalResponse }: HeroSection
           {/* Trending Topics */}
           <div className="flex flex-wrap justify-center gap-3 mb-16">
             {[
-              { topic: "Science Fiction", gradient: "from-orange-400 to-red-400" },
-              { topic: "Personal Growth", gradient: "from-amber-400 to-orange-400" },
-              { topic: "History", gradient: "from-yellow-400 to-amber-400" },
+              { topic: "Trending Topic 1", gradient: "from-orange-400 to-red-400" },
+              { topic: "Trending Topic 2", gradient: "from-amber-400 to-orange-400" },
+              { topic: "Trending Topic 3", gradient: "from-yellow-400 to-amber-400" },
             ].map(({ topic, gradient }) => (
               <button
                 key={topic}
@@ -74,17 +75,19 @@ export default function HeroSection({ initialQuery, finalResponse }: HeroSection
           </div>
 
           {/* Saved Maps Button */}
-          <Button
-            variant="outline"
-            className="border-2 border-orange-200/50 bg-orange-50/30 backdrop-blur-sm hover:bg-orange-50/50 hover:border-orange-500/50 hover:text-orange-600 px-6 py-3 rounded-xl shadow-lg transition-all duration-300"
-          >
-            <div className="flex items-center gap-2">
-              <div className="w-5 h-5 bg-gradient-to-r from-orange-400 to-amber-400 rounded flex items-center justify-center">
-                <div className="w-2 h-2 bg-orange-50 rounded"></div>
+          <Link href="/saved">
+            <Button
+              variant="ghost"
+              className="transform border-2 border-orange-200/50 bg-orange-50/30 backdrop-blur-sm 
+              hover:bg-orange-50/50 hover:border-orange-500/50 hover:text-orange-600 
+              hover:scale-105 hover:shadow-lg px-6 py-3 rounded-xl transition-all duration-300"
+            >
+              <div className="flex items-center gap-2">
+                <Save className="w-4 h-4 text-orange-500" />
+                View Saved Maps
               </div>
-              View Saved Maps
-            </div>
-          </Button>
+            </Button>
+          </Link>
         </div>
       </div>
     </section>

@@ -54,7 +54,7 @@ export default function HelpSection() {
       description: "Learn how to create your first reading roadmap and navigate the platform",
       gradient: "from-orange-400 to-red-400",
       bgGradient: "from-orange-50 to-red-50",
-      buttonText: "View Guides"
+      //buttonText: "View Guides"
     },
     {
       icon: Target,
@@ -62,7 +62,7 @@ export default function HelpSection() {
       description: "Discover advanced features and tips to optimize your reading experience",
       gradient: "from-amber-400 to-orange-400",
       bgGradient: "from-amber-50 to-orange-50",
-      buttonText: "Learn More"
+      //buttonText: "Learn More"
     },
     {
       icon: HelpCircle,
@@ -70,7 +70,7 @@ export default function HelpSection() {
       description: "Solve common issues and technical problems quickly",
       gradient: "from-yellow-400 to-amber-400",
       bgGradient: "from-yellow-50 to-amber-50",
-      buttonText: "Get Help"
+      //buttonText: "Get Help"
     }
   ]
 
@@ -105,11 +105,17 @@ export default function HelpSection() {
           </div>
 
           {/* Help Categories */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20">
-            {helpCategories.map((category, index) => (
-              <HelpCategoryCard key={index} {...category} />
-            ))}
+          <div className="mb-20">
+            <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-8 text-center">
+              How readmap.ai works?
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+              {helpCategories.map((category, index) => (
+                <HelpCategoryCard key={index} {...category} />
+              ))}
+            </div>
           </div>
+
 
           {/* FAQ Section */}
           <div className="mb-20">
@@ -127,6 +133,8 @@ export default function HelpSection() {
               ))}
             </div>
           </div>
+
+
 
           {/* Contact Support */}
           <div className="bg-gradient-to-br from-orange-50 to-amber-50 border border-orange-200 rounded-3xl p-8 text-center">
@@ -156,7 +164,7 @@ export default function HelpSection() {
                 </div>
                 <h4 className="font-semibold text-gray-900 mb-2">Email Support</h4>
                 <p className="text-sm text-gray-600 mb-3">Send us a detailed message</p>
-                <Button size="sm" variant="outline" className="border-orange-300 text-orange-600 hover:bg-orange-50">
+                <Button size="sm" variant="ghost" className="border-orange-300 text-orange-600 hover:bg-orange-50">
                   Send Email
                 </Button>
               </div>
@@ -167,7 +175,7 @@ export default function HelpSection() {
                 </div>
                 <h4 className="font-semibold text-gray-900 mb-2">Phone Support</h4>
                 <p className="text-sm text-gray-600 mb-3">Call us during business hours</p>
-                <Button size="sm" variant="outline" className="border-orange-300 text-orange-600 hover:bg-orange-50">
+                <Button size="sm" variant="ghost" className="border-orange-300 text-orange-600 hover:bg-orange-50">
                   Call Now
                 </Button>
               </div>

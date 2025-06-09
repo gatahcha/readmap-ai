@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button"
-import { ChevronDown, ChevronRight } from "lucide-react"
+//import { ChevronDown, ChevronRight } from "lucide-react"
 import type { LucideProps } from "lucide-react"
 import React from "react"
 
@@ -7,7 +7,7 @@ interface HelpCategoryCardProps {
   icon: React.ComponentType<LucideProps>
   title: string
   description: string
-  buttonText: string
+  buttonText?: string
   gradient: string
   bgGradient: string
 }
@@ -29,12 +29,6 @@ export default function HelpCategoryCard({
       <p className="text-gray-600 text-sm leading-relaxed text-center mb-4">
         {description}
       </p>
-      <div className="text-center">
-        <Button variant="ghost" size="sm" className="text-orange-600 hover:text-orange-700">
-          {buttonText}
-          <ChevronRight className="w-4 h-4 ml-1" />
-        </Button>
       </div>
-    </div>
   )
 }
