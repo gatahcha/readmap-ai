@@ -1,0 +1,37 @@
+{
+  "vectorSearch": "Find books that explore the history, values, and potential future of communism, focusing on its impact on humanity.",
+  "mongoDBSearch": {
+    "$or": [
+      {
+        "title": {
+          "$regex": ".*communism.*",
+          "$options": "i"
+        }
+      },
+      {
+        "subtitle": {
+          "$regex": ".*communism.*",
+          "$options": "i"
+        }
+      },
+      {
+        "authors": {
+          "$regex": ".*communism.*",
+          "$options": "i"
+        }
+      },
+      {
+        "categories": {
+          "$regex": ".*communism.*",
+          "$options": "i"
+        }
+      },
+      {
+        "description": {
+          "$regex": ".*(communism|history|humanity|values|future).*",
+          "$options": "i"
+        }
+      }
+    ]
+  }
+}
