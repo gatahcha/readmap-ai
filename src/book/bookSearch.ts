@@ -20,7 +20,6 @@ const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY || 'your_google_api_key';
 
 // Build the connection string manually
 const MONGODB_URI = `mongodb+srv://${MONGO_DB_USERNAME}:${MONGO_DB_PASSWORD}@readmapai.v0hldcw.mongodb.net/?retryWrites=true&w=majority&appName=ReadmapAI`;
-console.log('Using MongoDB URI:', MONGODB_URI);
 
 // Initialize Google AI client
 const genAI = new GoogleGenerativeAI(GOOGLE_API_KEY);
@@ -44,6 +43,7 @@ interface VectorSearchResult {
     average_rating?: number;
     num_pages?: number;
     ratings_count?: number;
+    embedding?: number[];
     score?: number;
 }
 // Initialize database connection
@@ -136,6 +136,7 @@ async function performVectorSearch(
                 "average_rating": 1,
                 "num_pages": 1,
                 "ratings_count": 1,
+                "embedding": 1,
                 "score": { "$meta": "vectorSearchScore" }
             }
         } as any);
@@ -156,6 +157,7 @@ async function performVectorSearch(
             published_year: doc.published_year || 0,
             average_rating: doc.average_rating || 0,
             num_page: doc.num_pages || 0, // mapping num_pages to num_page
+            embedding: doc.embedding || [], // ensure embedding is present
             prevNodes: [] // will be populated later
         }));
 
@@ -165,12 +167,6 @@ async function performVectorSearch(
     }
 }
 
-/**
- * Create searchable text from book node
- */
-function createBookSearchText(book: bookNode): string {
-    return `${book.title} ${book.subtitle || ''} ${book.author} ${book.categories} ${book.description}`.trim();
-}
 
 /**
  * Remove duplicate books based on ISBN13
@@ -193,9 +189,12 @@ async function buildRecommendationTree(
     initialBooks: bookNode[],
     depth: number = 2
 ): Promise<bookNode[]> {
-    const allBooks: bookNode[] = [...initialBooks];
-    const processedIds = new Set<number>(initialBooks.map(book => book.isbn13));
+    // track which ISBNs we've already returned
+    const processedIds = new Set<number>(
+        initialBooks.map((book) => book.isbn13)
+    );
 
+    // start from your initial “roots”
     let currentLevel = initialBooks;
 
     for (let level = 0; level < depth; level++) {
@@ -203,41 +202,40 @@ async function buildRecommendationTree(
 
         for (const book of currentLevel) {
             try {
-                // Get embedding for current book
-                const bookText = createBookSearchText(book);
-                const bookEmbedding = await getEmbedding(bookText);
-
-                // Find similar books (prerequisites)
+                const bookEmbedding = book.embedding;
                 const excludeIds = Array.from(processedIds);
-                const similarBooks = await performVectorSearch(bookEmbedding, 5, excludeIds);
 
-                // Add to next level and mark as processed
-                for (const similarBook of similarBooks) {
-                    if (!processedIds.has(similarBook.isbn13)) {
-                        nextLevelBooks.push(similarBook);
-                        processedIds.add(similarBook.isbn13);
-                    }
+                // this returns e.g. top 5—but might include ones you've already seen
+                const similarBooks = await performVectorSearch(
+                    bookEmbedding,
+                    3,
+                    excludeIds
+                );
+
+                // only keep brand-new ones
+                const newBooks = similarBooks.filter(
+                    (sb) => !processedIds.has(sb.isbn13)
+                );
+
+                // mark them processed and queue for the next “wave”
+                for (const nb of newBooks) {
+                    processedIds.add(nb.isbn13);
+                    nextLevelBooks.push(nb);
                 }
 
-                // Update prevNodes for current book
-                book.prevNodes = [...(book.prevNodes || []), ...similarBooks.slice(0, 3)];
-
+                // attach only the new ones as prerequisites
+                book.prevNodes = [...(book.prevNodes || []), ...newBooks];
             } catch (error) {
                 console.error(`Error processing book ${book.title}:`, error);
             }
         }
 
-        // Add next level books to all books
-        allBooks.push(...nextLevelBooks);
+        // move one level deeper
         currentLevel = nextLevelBooks;
-
-        // Break if no more books found
-        if (nextLevelBooks.length === 0) {
-            break;
-        }
     }
 
-    return removeDuplicates(allBooks);
+    // if you still want to dedupe your original array:
+    return removeDuplicates(initialBooks);
 }
 
 /**
@@ -278,6 +276,7 @@ export async function bookDatabaseSearch(query: string): Promise<bookNode[]> {
             published_year: doc.published_year || 0,
             average_rating: doc.average_rating || 0,
             num_page: doc.num_pages || 0, // mapping num_pages to num_page
+            embedding: doc.embedding || [], // ensure embedding is present
             prevNodes: []
         }));
 
@@ -298,11 +297,11 @@ export async function bookVectorSearch(query: string): Promise<bookNode[]> {
         }
 
         // Step 1: Get query embedding from Google AI
-        console.log('Getting query embedding...');
+        // console.log('Getting query embedding...');
         const queryEmbedding = await getEmbedding(query);
 
         // Step 2: Perform initial vector search (5 books)
-        console.log('Performing initial vector search...');
+        // console.log('Performing initial vector search...');
         const initialBooks = await performVectorSearch(queryEmbedding, 5);
 
         if (initialBooks.length === 0) {
@@ -311,73 +310,17 @@ export async function bookVectorSearch(query: string): Promise<bookNode[]> {
         }
 
         // Step 3-7: Build recommendation tree with prerequisites
-        console.log('Building recommendation tree...');
+        // console.log('Building recommendation tree...');
         const allRecommendedBooks = await buildRecommendationTree(initialBooks, 2);
 
-        console.log(`Found ${allRecommendedBooks.length} books in recommendation tree`);
+        // console.log(`Found ${allRecommendedBooks.length} books in recommendation tree`);
+        // console.log(`First book: "${allRecommendedBooks[0].title}" has ${allRecommendedBooks[0].prevNodes.length} prerequisite books`);
+        // console.log(`First prerequisite book: "${allRecommendedBooks[0].prevNodes[0]?.title || 'none'}" has ${allRecommendedBooks[0].prevNodes[0]?.prevNodes.length || 0} prerequisite books`);
         return allRecommendedBooks;
 
     } catch (error) {
         console.error('Vector search error:', error);
         return []; // Return empty array on error
-    }
-}
-
-/**
- * Utility function to update book embeddings in database
- */
-export async function updateBookEmbeddings(): Promise<void> {
-    try {
-        // Ensure database connection
-        if (!collection) {
-            await initializeDatabase();
-        }
-
-        // Get all books without embeddings
-        const booksWithoutEmbeddings = await collection
-            .find({ embedding: { $exists: false } })
-            .toArray();
-
-        console.log(`Updating embeddings for ${booksWithoutEmbeddings.length} books...`);
-
-        for (const book of booksWithoutEmbeddings) {
-            try {
-                const bookText = createBookSearchText({
-                    isbn13: book.isbn13 || 0,
-                    isbn10: book.isbn10 || 0,
-                    title: book.title || "",
-                    subtitle: book.subtitle || "",
-                    author: book.authors || "",
-                    categories: book.categories || "",
-                    thumbail: book.thumbnail || "",
-                    description: book.description || "",
-                    published_year: book.published_year || 0,
-                    average_rating: book.average_rating || 0,
-                    num_page: book.num_pages || 0,
-                    prevNodes: []
-                });
-
-                const embedding = await getEmbedding(bookText);
-
-                await collection.updateOne(
-                    { _id: book._id },
-                    { $set: { embedding } }
-                );
-
-                console.log(`Updated embedding for: ${book.title}`);
-
-                // Add delay to respect API rate limits
-                await new Promise(resolve => setTimeout(resolve, 100));
-
-            } catch (error) {
-                console.error(`Error updating embedding for ${book.title}:`, error);
-            }
-        }
-
-        console.log('Embedding update completed');
-
-    } catch (error) {
-        console.error('Error updating embeddings:', error);
     }
 }
 
