@@ -41,7 +41,6 @@ export default async function Home({ searchParams }: HomeProps) {
         {books.length > 0 && (
           <ReadingRoadmapSection books={books} />
         )}
-        <HelpSection />
       </main>
 
       <Footer />

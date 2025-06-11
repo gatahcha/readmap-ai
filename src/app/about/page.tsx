@@ -4,6 +4,7 @@
 import { BookOpen, ListChecks, RefreshCcw } from "lucide-react"
 import Header from "@/components/layout/Header"
 import Footer from "@/components/layout/Footer"
+import { NetworkBackground } from "@/components/NetworkBackground"
 
 export default function AboutPage() {
   return (
@@ -18,6 +19,10 @@ export default function AboutPage() {
       <div className="pointer-events-none absolute top-20 left-10 w-72 h-72 bg-gradient-to-r from-orange-200 to-amber-200 rounded-full mix-blend-multiply filter blur-xl opacity-60 animate-pulse" />
       <div className="pointer-events-none absolute top-40 right-10 w-72 h-72 bg-gradient-to-r from-amber-200 to-yellow-200 rounded-full mix-blend-multiply filter blur-xl opacity-60 animate-pulse delay-1000" />
       <div className="pointer-events-none absolute bottom-20 left-1/2 w-96 h-96 bg-gradient-to-r from-orange-300 to-red-300 rounded-full mix-blend-multiply filter blur-xl opacity-40 animate-pulse delay-2000" />
+      
+      {/* Network canvas background */}
+      <NetworkBackground className="absolute inset-0 z-0" />
+
 
       <main className="relative z-10 py-24">
         <div className="container mx-auto px-6">
