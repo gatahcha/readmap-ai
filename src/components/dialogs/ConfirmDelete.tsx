@@ -17,7 +17,11 @@ export default function ConfirmDelete({ open, onCancel, onConfirm }: ConfirmDele
         </DialogHeader>
         <p>Are you sure you want to delete this roadmap? This action cannot be undone.</p>
         <DialogFooter className="mt-6 flex justify-end gap-2">
-          <Button variant="outline" onClick={onCancel}>
+          <Button
+            variant="outline"
+            className="text-white border-white hover:bg-gray-700"
+            onClick={onCancel}
+          >
             Cancel
           </Button>
           <Button variant="destructive" onClick={onConfirm}>

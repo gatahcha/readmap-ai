@@ -56,21 +56,21 @@ export default function SavedMapsPage() {
   }
 
   return (
-    <>
-      <div className="relative z-30">
+    <div className="relative min-h-screen overflow-visible bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50">
+      {/* Background */}
+      <NetworkBackground className="absolute inset-0 z-0" />
+      <div className="absolute inset-0 bg-gradient-to-r from-orange-100/30 via-amber-100/30 to-yellow-100/30 pointer-events-none" />
+      <div className="absolute top-20 left-10 w-72 h-72 bg-gradient-to-r from-orange-200 to-amber-200 rounded-full mix-blend-multiply filter blur-xl opacity-60 pointer-events-none" />
+      <div className="absolute top-40 right-10 w-72 h-72 bg-gradient-to-r from-amber-200 to-yellow-200 rounded-full mix-blend-multiply filter blur-xl opacity-60 pointer-events-none" />
+      <div className="absolute bottom-20 left-1/2 w-96 h-96 bg-gradient-to-r from-orange-300 to-red-300 rounded-full mix-blend-multiply filter blur-xl opacity-40 pointer-events-none" />
+
+      {/* Header */}
+      <div className="relative z-20">
         <Header />
       </div>
 
-      {/* Background layers behind content but above canvas */}
-      <div className="absolute inset-0 z-0 pointer-events-none">
-        <NetworkBackground className="absolute inset-0" />
-        <div className="absolute inset-0 bg-gradient-to-r from-orange-100/30 via-amber-100/30 to-yellow-100/30" />
-        <div className="absolute top-20 left-10 w-72 h-72 bg-gradient-to-r from-orange-200 to-amber-200 rounded-full mix-blend-multiply filter blur-xl opacity-60" />
-        <div className="absolute top-40 right-10 w-72 h-72 bg-gradient-to-r from-amber-200 to-yellow-200 rounded-full mix-blend-multiply filter blur-xl opacity-60" />
-        <div className="absolute bottom-20 left-1/2 w-96 h-96 bg-gradient-to-r from-orange-300 to-red-300 rounded-full mix-blend-multiply filter blur-xl opacity-40" />
-      </div>
-
-      <main className="relative z-10 min-h-screen py-20 px-6">
+      {/* Main List */}
+      <main className="relative z-10 min-h-screen py-20 px-6 overflow-visible">
         <div className="max-w-5xl mx-auto">
           <div className="flex justify-between items-center mb-10">
             <h1 className="text-4xl font-bold text-gray-900">My Saved Maps</h1>
@@ -94,7 +94,7 @@ export default function SavedMapsPage() {
               <Droppable droppableId="saved-maps">
                 {(provided) => (
                   <div
-                    className="space-y-4"
+                    className="space-y-16 overflow-visible"
                     {...provided.droppableProps}
                     ref={provided.innerRef}
                   >
@@ -106,8 +106,8 @@ export default function SavedMapsPage() {
                             {...draggableProvided.draggableProps}
                             {...draggableProvided.dragHandleProps}
                             className={cn(
-                              "relative bg-white/60 border border-orange-200 rounded-xl p-6 shadow-md backdrop-blur-sm transition-all",
-                              "hover:scale-105 hover:shadow-lg duration-300"
+                              "relative overflow-visible bg-white/60 border border-orange-200 rounded-xl p-6 shadow-md backdrop-blur-sm transition-all duration-300",
+                              "hover:scale-105 hover:shadow-lg"
                             )}
                           >
                             {editingId === map.id ? (
@@ -121,13 +121,16 @@ export default function SavedMapsPage() {
                                 }}
                                 onKeyDown={(e) => {
                                   if (e.key === "Enter") {
-                                    handleRename(map.id, (e.target as HTMLInputElement).value)
+                                    handleRename(
+                                      map.id,
+                                      (e.target as HTMLInputElement).value
+                                    )
                                     setEditingId(null)
                                   }
                                 }}
                               />
                             ) : (
-                              <div className="flex justify-between items-start">
+                              <div className="flex justify-between items-center">
                                 <div className="text-orange-700 font-semibold">
                                   {map.title}
                                   {map.isNew && (
@@ -141,20 +144,22 @@ export default function SavedMapsPage() {
                                     size="icon"
                                     variant="ghost"
                                     onClick={() =>
-                                      setDropdownOpen(dropdownOpen === map.id ? null : map.id)
+                                      setDropdownOpen(
+                                        dropdownOpen === map.id ? null : map.id
+                                      )
                                     }
                                   >
                                     <MoreHorizontal className="w-5 h-5 text-orange-600" />
                                   </Button>
 
                                   {dropdownOpen === map.id && (
-                                    <div className="absolute right-0 mt-2 w-32 bg-white border border-orange-100 rounded-md shadow-lg text-sm text-left overflow-hidden z-50">
+                                    <div className="absolute right-0 mt-2 w-32 bg-white border border-orange-100 rounded-md shadow-lg text-sm text-left overflow-visible z-50">
                                       <button
                                         onClick={() => {
                                           setEditingId(map.id)
                                           setDropdownOpen(null)
                                         }}
-                                        className="w-full text-left px-4 py-2 hover:bg-orange-50"
+                                        className="w-full text-left px-4 py-2 text-black hover:bg-orange-50"
                                       >
                                         Rename
                                       </button>
@@ -163,7 +168,7 @@ export default function SavedMapsPage() {
                                           setDeleteId(map.id)
                                           setDropdownOpen(null)
                                         }}
-                                        className="w-full text-left px-4 py-2 hover:bg-red-50 text-red-600"
+                                        className="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50"
                                       >
                                         Delete
                                       </button>
@@ -185,6 +190,7 @@ export default function SavedMapsPage() {
         </div>
       </main>
 
+      {/* Confirm delete dialog */}
       <ConfirmDelete
         open={!!deleteId}
         onCancel={() => setDeleteId(null)}
@@ -194,11 +200,13 @@ export default function SavedMapsPage() {
         }}
       />
 
+      {/* Footer */}
       <div className="relative z-20">
         <Footer />
       </div>
 
       <Toaster position="top-right" />
-    </>
+    </div>
   )
 }
+
