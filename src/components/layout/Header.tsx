@@ -15,7 +15,7 @@ export default function Header() {
   ]
 
   return (
-    <header className="backdrop-blur-md bg-red-50/90 border-b border-orange-200/50">
+    <header className="backdrop-blur-md bg-[#FFFAF1]/90 border-b border-orange-200/50">
       <div className="container mx-auto px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 bg-gradient-to-r from-orange-500 to-orange-600 rounded-lg flex items-center justify-center shadow-lg">

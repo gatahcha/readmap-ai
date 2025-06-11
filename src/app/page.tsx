@@ -6,9 +6,7 @@ import Header          from "@/components/layout/Header"
 import Footer         from "@/components/layout/Footer"
 
 import HeroSection      from "@/components/sections/HeroSection"
-import FeaturesSection  from "@/components/sections/FeaturesSection"
 import HelpSection      from "@/components/sections/HelpSection"
-import CTASection       from "@/components/sections/CTASection"
 import ReadingRoadmapSection from "@/components/sections/ReadingRoadmapSection"
 
 interface HomeProps {
@@ -31,20 +29,22 @@ export default async function Home({ searchParams }: HomeProps) {
   }
 
    return (
-    <>
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50">
       <Header />
+
       <main>
-        <HeroSection initialQuery={query} finalResponse={finalResponse} />
-        
+        <HeroSection
+          initialQuery={query}
+          finalResponse={finalResponse}
+        />
+
         {books.length > 0 && (
-          //<div className="my-24">
-            <ReadingRoadmapSection books={books} />
-          //</div>
-        
+          <ReadingRoadmapSection books={books} />
         )}
+        <HelpSection />
       </main>
-      
+
       <Footer />
-    </>
+    </div>
   )
 }

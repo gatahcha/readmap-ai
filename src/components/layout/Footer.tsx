@@ -2,8 +2,9 @@ import { BookOpen, Facebook, Linkedin, Youtube, Instagram } from "lucide-react"
 
 export default function Footer() {
   return (
-    <footer className="py-16 relative bg-orange-50">
-      <div className="absolute inset-0 bg-gradient-to-r from-orange-50 via-amber-50 to-yellow-50"></div>
+    <footer className="py-16 relative bg-[#FFFAF1]">
+      {/* if you still want a subtle gradient, update all stops to your new color */}
+      <div className="absolute inset-0 bg-gradient-to-r from-[#FFFAF1] via-[#FFFAF1] to-[#FFFAF1]"></div>
       <div className="container mx-auto px-6 relative z-10">
         <div className="flex flex-col md:flex-row justify-between gap-12 md:items-start">
           {/* Left Section */}
