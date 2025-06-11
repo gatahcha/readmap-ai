@@ -11,5 +11,6 @@ export interface bookNode {
     published_year : number,
     average_rating : number,
     num_page : number,
+    embedding: number[], // array of numbers with length 3072
     prevNodes : bookNode[] // array of previous nodes
 }
