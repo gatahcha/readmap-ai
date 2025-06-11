@@ -1,15 +1,15 @@
 // Book node for Readmap AI
 export interface bookNode {
-    isbn13 : Number,
-    isbn10 : Number,
+    isbn13 : number,
+    isbn10 : number,
     title : String,
     subtitle : String,
     author : String,
     categories : String,
     thumbail : String, // link to the picture
     description : String,
-    published_year : Number,
-    average_rating : Number,
-    num_page : Number,
+    published_year : number,
+    average_rating : number,
+    num_page : number,
     prevNodes : bookNode[] // array of previous nodes
 }
