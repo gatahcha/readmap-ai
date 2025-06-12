@@ -1,5 +1,5 @@
 // TODO: @Charsima: Implement book search functionality
-import { bookNode } from "./bookNode";
+import { BookNode } from "./bookNode";
 import { MongoClient } from 'mongodb';
 import * as dotenv from 'dotenv';
 import { fileURLToPath } from 'url';

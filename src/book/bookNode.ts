@@ -11,5 +11,5 @@ export interface BookNode {
   published_year: number
   average_rating: number
   num_pages: number
-  prerequisites: string[] // IDs of prerequisite books
+  prerequisites: number[] //isbn as the prerequisites
 }

@@ -8,7 +8,7 @@ interface BookConnectionProps {
   targetId: string
   id: string
   isHighlighted: boolean
-  getNodeById: (id: string) => { x: number; y: number; book: BookNode } | undefined
+  getNodeById: (id: string) => { x: number; y: number; book: BookNode; width: number; height: number } | undefined
   onHover: (id: string | null) => void
 }
 
@@ -21,8 +21,8 @@ export function BookConnection({ sourceId, targetId, id, isHighlighted, getNodeB
     if (!sourceNode || !targetNode) return ""
 
     // Connect from middle-bottom of parent to middle-top of child
-    const sourcePos = { x: sourceNode.x, y: sourceNode.y + 40 } // Middle-bottom of parent
-    const targetPos = { x: targetNode.x, y: targetNode.y - 40 } // Middle-top of child
+    const sourcePos = { x: sourceNode.x, y: sourceNode.y + sourceNode.height / 2 } // Middle-bottom of parent
+    const targetPos = { x: targetNode.x, y: targetNode.y - targetNode.height / 2 } // Middle-top of child
 
     // Calculate control points for curved path
     const dx = targetPos.x - sourcePos.x

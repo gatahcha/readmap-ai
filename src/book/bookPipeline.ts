@@ -1,5 +1,5 @@
 // Main function to process user query and return book nodes
-import { bookNode } from "./bookNode";
+import { BookNode } from "./bookNode";
 import { bookDatabaseSearch, bookVectorSearch } from "./bookSearch";
 import { GoogleGenAI, Type } from "@google/genai";
 import { userInputPrompt } from "./prompts";

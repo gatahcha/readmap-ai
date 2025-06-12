@@ -104,11 +104,15 @@ export function BookDetailPanel({ book, isOpen, onClose }: BookDetailPanelProps)
           <div>
             <h3 className="font-semibold text-gray-900 mb-2">Prerequisites</h3>
             <div className="space-y-1">
-              {book.prerequisites.map((prereqId) => (
-                <div key={prereqId} className="text-sm text-gray-600 bg-gray-50 px-2 py-1 rounded">
-                  Book ID: {prereqId}
-                </div>
-              ))}
+              {book.prerequisites.map((prereqISBN13) => {
+                // Find the book title for this ISBN13
+                const prereqBook = window.bookRegistry?.find((b: BookNode) => b.isbn13 === prereqISBN13)
+                return (
+                  <div key={prereqISBN13} className="text-sm text-gray-600 bg-gray-50 px-2 py-1 rounded">
+                    {prereqBook ? prereqBook.title : `ISBN-13: ${prereqISBN13}`}
+                  </div>
+                )
+              })}
             </div>
           </div>
         )}

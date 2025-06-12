@@ -6,10 +6,11 @@ import { TreeNodePositioned } from "@/components/roadmap_components/TreeNodePosi
 import { BookConnection } from "@/components/roadmap_components/BookConnection"
 import { ArrowDefinitions } from "@/components/roadmap_components/ArrowDefinition"
 import { Download, Trash2 } from "lucide-react"
+import { generateRoadmapPDF } from "@/components/utils/pdf-generator"
 
 interface RoadmapTreeProps {
   books: BookNode[]
-  onBookSelect: (book: BookNode | null) => void // Allow null
+  onBookSelect: (book: BookNode | null) => void
   selectedBook: BookNode | null
 }
 
@@ -21,180 +22,199 @@ interface PositionedNode {
   level: number
   parent?: string
   children: string[]
+  width: number
+  height: number
 }
 
 export function RoadmapTree({ books: initialBooks, onBookSelect, selectedBook }: RoadmapTreeProps) {
-  // Change from using props.books directly to using state
   const [books, setBooks] = useState<BookNode[]>(initialBooks)
   const [positionedNodes, setPositionedNodes] = useState<PositionedNode[]>([])
   const [hoveredBook, setHoveredBook] = useState<BookNode | null>(null)
   const [hoveredConnection, setHoveredConnection] = useState<string | null>(null)
+  const [screenDimensions, setScreenDimensions] = useState({ width: 1200, height: 800 })
+  const [horizontalOffset, setHorizontalOffset] = useState(0)
 
-  // Add this function to handle node deletion
+  useEffect(() => {
+    const updateScreenDimensions = () => {
+      setScreenDimensions({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      })
+    }
+    updateScreenDimensions()
+    window.addEventListener("resize", updateScreenDimensions)
+    return () => window.removeEventListener("resize", updateScreenDimensions)
+  }, [])
+
+  const getContainerDimensions = useCallback(() => {
+    const containerWidth = Math.max(screenDimensions.width - 80, 800)
+    const containerHeight = Math.max(screenDimensions.height - 180, 500)
+    return { width: containerWidth, height: containerHeight }
+  }, [screenDimensions])
+
+  const handleDownload = useCallback(async () => {
+    try {
+      await generateRoadmapPDF(books, "Roadmap #1", "roadmap-tree-content-area")
+    } catch (error) {
+      console.error("Failed to generate PDF:", error)
+      await generateRoadmapPDF(books, "Roadmap #1")
+    }
+  }, [books])
+
   const handleDeleteNode = useCallback(
     (bookId: string) => {
-      // Find the book to be deleted
       const bookToDelete = books.find((book) => book.id === bookId)
       if (!bookToDelete) return
 
-      // Create a map of all books by their titles for easy lookup
-      const booksByTitle = new Map<string, BookNode>()
-      books.forEach((book) => booksByTitle.set(book.title, book))
+      const booksByISBN13 = new Map<number, BookNode>()
+      books.forEach((book) => booksByISBN13.set(book.isbn13, book))
 
-      // Find all books that have this book as a prerequisite
-      const dependentBooks = books.filter((book) => book.prerequisites.includes(bookToDelete.title))
-
-      // Create a set of books to remove (start with the book to delete)
+      const dependentBooks = books.filter((book) => book.prerequisites.includes(bookToDelete.isbn13))
       const booksToRemove = new Set<string>([bookId])
 
-      // Function to check if a book would become orphaned
       const wouldBecomeOrphaned = (book: BookNode) => {
-        // If it has no prerequisites, it can't be orphaned
         if (book.prerequisites.length === 0) return false
-
-        // Check if all prerequisites are being removed
-        const remainingPrereqs = book.prerequisites.filter((prereqTitle) => {
-          const prereqBook = booksByTitle.get(prereqTitle)
+        const remainingPrereqs = book.prerequisites.filter((prereqISBN13) => {
+          const prereqBook = booksByISBN13.get(prereqISBN13)
           return prereqBook && !booksToRemove.has(prereqBook.id)
         })
-
-        // If no prerequisites remain, it's orphaned
         return remainingPrereqs.length === 0
       }
 
-      // Recursively find orphaned children
       const findOrphanedChildren = (currentBookId: string) => {
         const orphanedChildren = dependentBooks.filter((book) => {
-          // Find books that depend on the current book
-          const prereqBook = booksByTitle.get(bookToDelete.title)
-          return prereqBook && book.prerequisites.includes(prereqBook.title) && wouldBecomeOrphaned(book)
+          return book.prerequisites.includes(bookToDelete.isbn13) && wouldBecomeOrphaned(book)
         })
-
-        // Add orphaned children to the removal set
         orphanedChildren.forEach((child) => {
           if (!booksToRemove.has(child.id)) {
             booksToRemove.add(child.id)
-            // Recursively check this child's dependents
             findOrphanedChildren(child.id)
           }
         })
       }
-
-      // Start the recursive search from the book to delete
       findOrphanedChildren(bookId)
-
-      // Update the books state by filtering out the books to remove
       setBooks((prevBooks) => prevBooks.filter((book) => !booksToRemove.has(book.id)))
-
-      // If the selected book is being removed, clear the selection
       if (selectedBook && booksToRemove.has(selectedBook.id)) {
-        onBookSelect(null as any) // Temporary fix, but better to update the interface
+        onBookSelect(null)
       }
     },
     [books, selectedBook, onBookSelect],
   )
 
-  // Helper function to find book by title
-  const findBookByTitle = useCallback(
-    (title: string) => {
-      return books.find((book) => book.title === title)
-    },
-    [books],
-  )
+  const findBookByISBN13 = useCallback((isbn13: number) => books.find((book) => book.isbn13 === isbn13), [books])
 
-  // Calculate horizontally balanced positions with proper level ordering
   useEffect(() => {
     const calculatePositions = () => {
-      // Create a map to store the level of each book
+      if (books.length === 0) return
+
+      const containerDimensions = getContainerDimensions()
+      const headerBarHeight = 80
+      const sidePadding = 40
+      const verticalPadding = 20
+
+      const drawableCanvasWidth = containerDimensions.width - sidePadding
+      const drawableCanvasHeight = containerDimensions.height - headerBarHeight - verticalPadding * 2
+
       const bookLevels = new Map<string, number>()
       const childrenMap = new Map<string, BookNode[]>()
 
-      // Function to calculate the level of a book recursively
       const calculateBookLevel = (book: BookNode): number => {
-        // If we've already calculated this book's level, return it
-        if (bookLevels.has(book.id)) {
-          return bookLevels.get(book.id)!
-        }
-
-        // If the book has no prerequisites, it's at level 1
+        if (bookLevels.has(book.id)) return bookLevels.get(book.id)!
         if (book.prerequisites.length === 0) {
           bookLevels.set(book.id, 1)
           return 1
         }
-
-        // Otherwise, find the maximum level of its prerequisites and add 1
         let maxPrereqLevel = 0
-        for (const prereqTitle of book.prerequisites) {
-          const prereqBook = findBookByTitle(prereqTitle)
+        for (const prereqISBN13 of book.prerequisites) {
+          const prereqBook = findBookByISBN13(prereqISBN13)
           if (prereqBook) {
-            const prereqLevel = calculateBookLevel(prereqBook)
-            maxPrereqLevel = Math.max(maxPrereqLevel, prereqLevel)
+            maxPrereqLevel = Math.max(maxPrereqLevel, calculateBookLevel(prereqBook))
           }
         }
-
         const level = maxPrereqLevel + 1
         bookLevels.set(book.id, level)
         return level
       }
 
-      // Calculate level for each book
-      books.forEach((book) => {
-        calculateBookLevel(book)
-      })
+      books.forEach(calculateBookLevel)
 
-      // Build parent-child relationships using titles
       books.forEach((book) => {
-        book.prerequisites.forEach((prereqTitle) => {
-          const prereqBook = findBookByTitle(prereqTitle)
+        book.prerequisites.forEach((prereqISBN13) => {
+          const prereqBook = findBookByISBN13(prereqISBN13)
           if (prereqBook) {
-            if (!childrenMap.has(prereqBook.id)) {
-              childrenMap.set(prereqBook.id, [])
-            }
+            if (!childrenMap.has(prereqBook.id)) childrenMap.set(prereqBook.id, [])
             childrenMap.get(prereqBook.id)!.push(book)
           }
         })
       })
 
-      // Group books by level
       const levelGroups: { [level: number]: BookNode[] } = {}
       books.forEach((book) => {
         const level = bookLevels.get(book.id) || 1
-        if (!levelGroups[level]) {
-          levelGroups[level] = []
-        }
+        if (!levelGroups[level]) levelGroups[level] = []
         levelGroups[level].push(book)
       })
 
-      // Calculate positions with horizontal balancing
-      const levelSpacing = 200
-      const nodeSpacing = 280
-      const containerWidth = Math.max(1200, window.innerWidth)
+      const totalLevels = Object.keys(levelGroups).length
+      const maxBooksInLevel = Math.max(1, ...Object.values(levelGroups).map((levelBooks) => levelBooks.length))
+
+      const baseNodeWidth = Math.max(120, Math.min(300, drawableCanvasWidth / maxBooksInLevel - 30))
+      const baseNodeHeight = Math.max(60, Math.min(120, drawableCanvasHeight / Math.max(totalLevels, 1) - 30))
+
+      const screenScale = Math.min(screenDimensions.width / 1200, screenDimensions.height / 800)
+      const scaledNodeWidth = baseNodeWidth * Math.max(0.7, Math.min(1.2, screenScale))
+      const scaledNodeHeight = baseNodeHeight * Math.max(0.7, Math.min(1.2, screenScale))
+
       const positions = new Map<string, { x: number; y: number }>()
 
-      // Position nodes based on levels (top to bottom)
-      Object.entries(levelGroups).forEach(([levelStr, levelBooks]) => {
-        const level = Number.parseInt(levelStr)
-        const y = (level - 1) * levelSpacing + 100 // Start from top
+      let actualVerticalGap = Math.max(20, scaledNodeHeight * 0.3)
+      if (totalLevels > 1) {
+        const requiredHeightForNodes = totalLevels * scaledNodeHeight
+        const requiredHeightForGaps = (totalLevels - 1) * actualVerticalGap
+        const totalContentTreeHeight = requiredHeightForNodes + requiredHeightForGaps
+        if (totalContentTreeHeight > drawableCanvasHeight) {
+          actualVerticalGap = Math.max(10, (drawableCanvasHeight - requiredHeightForNodes) / (totalLevels - 1))
+        }
+      }
 
-        // Calculate horizontal positions to center the level
-        const totalWidth = Math.max(levelBooks.length - 1, 0) * nodeSpacing
-        const startX = (containerWidth - totalWidth) / 2
+      const finalContentTreeHeight = totalLevels * scaledNodeHeight + Math.max(0, totalLevels - 1) * actualVerticalGap
+      const topOffset =
+        headerBarHeight + verticalPadding + Math.max(0, (drawableCanvasHeight - finalContentTreeHeight) / 2)
+
+      Object.entries(levelGroups).forEach(([levelStr, levelBooks]) => {
+        const level = Number.parseInt(levelStr, 10)
+        const y = topOffset + (level - 1) * (scaledNodeHeight + actualVerticalGap) + scaledNodeHeight / 2
+        const currentLevelBookCount = levelBooks.length
+        let actualHorizontalGap = Math.max(15, scaledNodeWidth * 0.15)
+
+        if (currentLevelBookCount > 1) {
+          const requiredWidthForNodesInLevel = currentLevelBookCount * scaledNodeWidth
+          const requiredWidthForGapsInLevel = (currentLevelBookCount - 1) * actualHorizontalGap
+          const totalLevelContentWidth = requiredWidthForNodesInLevel + requiredWidthForGapsInLevel
+          if (totalLevelContentWidth > drawableCanvasWidth) {
+            actualHorizontalGap = Math.max(
+              5,
+              (drawableCanvasWidth - requiredWidthForNodesInLevel) / (currentLevelBookCount - 1),
+            )
+          }
+        }
+
+        const finalLevelContentWidth =
+          currentLevelBookCount * scaledNodeWidth + Math.max(0, currentLevelBookCount - 1) * actualHorizontalGap
+        const levelStartX =
+          sidePadding / 2 + Math.max(0, (drawableCanvasWidth - finalLevelContentWidth) / 2) + horizontalOffset
 
         levelBooks.forEach((book, index) => {
-          const x = startX + index * nodeSpacing
+          const x = levelStartX + index * (scaledNodeWidth + actualHorizontalGap) + scaledNodeWidth / 2
           positions.set(book.id, { x, y })
         })
       })
 
-      // Convert to positioned nodes
       const positioned: PositionedNode[] = books.map((book) => {
         const pos = positions.get(book.id) || { x: 0, y: 0 }
         const level = bookLevels.get(book.id) || 1
-
-        // Find parent by title (first prerequisite)
-        const parentTitle = book.prerequisites[0]
-        const parentBook = parentTitle ? findBookByTitle(parentTitle) : null
-
+        const parentISBN13 = book.prerequisites[0]
+        const parentBook = parentISBN13 ? findBookByISBN13(parentISBN13) : null
         return {
           id: book.id,
           book,
@@ -203,31 +223,22 @@ export function RoadmapTree({ books: initialBooks, onBookSelect, selectedBook }:
           level,
           parent: parentBook?.id,
           children: childrenMap.get(book.id)?.map((c) => c.id) || [],
+          width: scaledNodeWidth,
+          height: scaledNodeHeight,
         }
       })
-
       setPositionedNodes(positioned)
     }
+    calculatePositions()
+  }, [books, findBookByISBN13, screenDimensions, getContainerDimensions, horizontalOffset])
 
-    if (books.length > 0) {
-      calculatePositions()
-    }
-  }, [books, findBookByTitle])
+  const getNodeById = useCallback((id: string) => positionedNodes.find((node) => node.id === id), [positionedNodes])
 
-  const getNodeById = useCallback(
-    (id: string) => {
-      return positionedNodes.find((node) => node.id === id)
-    },
-    [positionedNodes],
-  )
-
-  // Get all connections between books using titles
   const getConnections = useCallback(() => {
     const connections: { source: string; target: string; id: string }[] = []
-
     books.forEach((book) => {
-      book.prerequisites.forEach((prereqTitle) => {
-        const prereqBook = findBookByTitle(prereqTitle)
+      book.prerequisites.forEach((prereqISBN13) => {
+        const prereqBook = findBookByISBN13(prereqISBN13)
         if (prereqBook) {
           connections.push({
             source: prereqBook.id,
@@ -237,108 +248,125 @@ export function RoadmapTree({ books: initialBooks, onBookSelect, selectedBook }:
         }
       })
     })
-
     return connections
-  }, [books, findBookByTitle])
+  }, [books, findBookByISBN13])
 
-  // Check if a connection is highlighted
   const isConnectionHighlighted = useCallback(
     (sourceId: string, targetId: string) => {
       const connectionId = `${sourceId}-${targetId}`
-
       if (hoveredConnection === connectionId) return true
-
       if (hoveredBook) {
-        const sourceBook = getNodeById(sourceId)?.book
-        if (sourceBook && hoveredBook.id === targetId && hoveredBook.prerequisites.includes(sourceBook.title)) {
+        const sourceNode = getNodeById(sourceId)
+        if (sourceNode && hoveredBook.id === targetId && hoveredBook.prerequisites.includes(sourceNode.book.isbn13))
           return true
-        }
       }
-
       if (selectedBook) {
-        const sourceBook = getNodeById(sourceId)?.book
-        if (sourceBook && selectedBook.id === targetId && selectedBook.prerequisites.includes(sourceBook.title)) {
+        const sourceNode = getNodeById(sourceId)
+        if (sourceNode && selectedBook.id === targetId && selectedBook.prerequisites.includes(sourceNode.book.isbn13))
           return true
-        }
       }
-
       return false
     },
     [hoveredConnection, hoveredBook, selectedBook, getNodeById],
   )
 
   if (positionedNodes.length === 0) {
-    return <div className="flex justify-center items-center h-64">Loading...</div>
+    return (
+      <main className="w-full h-screen flex items-center justify-center">
+        <div className="text-xl">Loading...</div>
+      </main>
+    )
   }
 
-  // Calculate container dimensions
-  const maxX = Math.max(...positionedNodes.map((n) => n.x)) + 150
-  const maxY = Math.max(...positionedNodes.map((n) => n.y)) + 150
-  const minX = Math.min(...positionedNodes.map((n) => n.x)) - 150
+  const containerDimensions = getContainerDimensions()
 
   return (
-    <div className="bg-white rounded-lg shadow-lg p-8 min-h-[600px] overflow-auto">
-      {/* Header with title and action buttons */}
-      <div className="flex items-center justify-between mb-12">
-        <div className="flex items-center gap-3">
-          <button className="flex items-center gap-2 px-3 py-2 text-gray-600 hover:text-orange-500 hover:bg-orange-50 rounded-lg transition-all duration-200 text-sm">
-            <Download className="w-4 h-4" />
-            Download
-          </button>
-          <button className="flex items-center gap-2 px-3 py-2 text-gray-600 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all duration-200 text-sm">
-            <Trash2 className="w-4 h-4" />
-            Delete
-          </button>
-        </div>
-        <h2 className="text-3xl font-bold text-gray-900">Roadmap #1</h2>
-        <div className="w-32"></div> {/* Spacer for centering */}
-      </div>
-
-      <div
-        className="relative mx-auto"
-        style={{
-          width: Math.max(maxX - minX, 800),
-          height: maxY,
-          minHeight: "400px",
-        }}
-      >
-        {/* SVG for animated connections */}
-        <svg
-          className="absolute inset-0 pointer-events-none"
-          width="100%"
-          height="100%"
-          style={{ zIndex: 1, overflow: "visible" }}
+    <main className="w-full h-screen overflow-hidden bg-gradient-to-b from-orange-50 to-yellow-50">
+      <div className="w-full h-full flex flex-col">
+        <div
+          id="roadmap-tree-full"
+          className="flex-1 bg-white rounded-lg shadow-lg m-4 overflow-hidden relative"
+          style={{
+            width: `${containerDimensions.width}px`,
+            height: `${containerDimensions.height}px`,
+            maxWidth: "calc(100vw - 32px)",
+            maxHeight: "calc(100vh - 32px)",
+          }}
         >
-          {/* Arrow definitions */}
-          <ArrowDefinitions />
+          {/* Header with title and action buttons */}
+          <div className="absolute top-0 left-0 right-0 z-30 bg-white/95 backdrop-blur-sm border-b">
+            <div className="flex items-center justify-between p-4">
+              <div className="flex items-center gap-3">
+                <button
+                  className="flex items-center gap-2 px-3 py-2 text-gray-600 hover:text-orange-500 hover:bg-orange-50 rounded-lg transition-all duration-200 text-sm"
+                  onClick={handleDownload}
+                >
+                  <Download className="w-4 h-4" />
+                  Download
+                </button>
+                <button
+                  className="flex items-center gap-2 px-3 py-2 text-gray-600 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all duration-200 text-sm"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    if (selectedBook) {
+                      handleDeleteNode(selectedBook.id)
+                    }
+                  }}
+                >
+                  <Trash2 className="w-4 h-4" />
+                  Delete
+                </button>
+              </div>
+              <h2 className="text-2xl md:text-3xl font-bold text-gray-900">Roadmap #1</h2>
+              <div className="w-32"></div> {/* Spacer for centering */}
+            </div>
+          </div>
 
-          {/* Connections */}
-          {getConnections().map(({ source, target, id }) => (
-            <BookConnection
-              key={id}
-              sourceId={source}
-              targetId={target}
-              id={id}
-              isHighlighted={isConnectionHighlighted(source, target)}
-              getNodeById={getNodeById}
-              onHover={setHoveredConnection}
-            />
-          ))}
-        </svg>
+          {/* Roadmap content area */}
+          <div
+            id="roadmap-tree-content-area"
+            className="absolute inset-0 pt-20" // pt-20 is for the header bar above
+            style={{
+              width: "100%",
+              height: "100%",
+            }}
+          >
+            {/* SVG for animated connections */}
+            <svg
+              className="absolute inset-0 pointer-events-none"
+              width="100%"
+              height="100%"
+              style={{ zIndex: 1, overflow: "visible" }}
+            >
+              <ArrowDefinitions />
+              {getConnections().map(({ source, target, id }) => (
+                <BookConnection
+                  key={id}
+                  sourceId={source}
+                  targetId={target}
+                  id={id}
+                  isHighlighted={isConnectionHighlighted(source, target)}
+                  getNodeById={getNodeById}
+                  onHover={setHoveredConnection}
+                />
+              ))}
+            </svg>
 
-        {/* Nodes */}
-        {positionedNodes.map((node) => (
-          <TreeNodePositioned
-            key={node.id}
-            node={node}
-            onSelect={onBookSelect}
-            isSelected={selectedBook?.id === node.id}
-            isHovered={hoveredBook?.id === node.id}
-            onHover={setHoveredBook}
-            onDelete={handleDeleteNode} // Pass the delete handler
-          />
-        ))}
+            {/* Nodes */}
+            {positionedNodes.map((node) => (
+              <TreeNodePositioned
+                key={node.id}
+                node={node}
+                onSelect={onBookSelect}
+                isSelected={selectedBook?.id === node.id}
+                isHovered={hoveredBook?.id === node.id}
+                onHover={setHoveredBook}
+                onDelete={handleDeleteNode}
+              />
+            ))}
+          </div>
+        </div>
       </div>
-    </div>
+    </main>
   )
 }
