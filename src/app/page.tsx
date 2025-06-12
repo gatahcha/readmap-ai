@@ -1,13 +1,10 @@
 // src/app/page.tsx
 import { bookPipeline } from "@/book/bookPipeline"
-import { bookNode } from "@/book/bookNode"
-
+import { BookNode } from "@/book/bookNode"
 import Header          from "@/components/layout/Header"
 import Footer         from "@/components/layout/Footer"
 
 import HeroSection      from "@/components/sections/HeroSection"
-import HelpSection      from "@/components/sections/HelpSection"
-import ReadingRoadmapSection from "@/components/sections/ReadingRoadmapSection"
 
 interface HomeProps {
   searchParams: { query?: string }
@@ -16,7 +13,7 @@ interface HomeProps {
 export default async function Home({ searchParams }: HomeProps) {
   const query = searchParams.query ?? ""
   let finalResponse = ""
-  let books: bookNode[] = []
+  let books: BookNode[] = []
 
   if (query) {
     try {
@@ -37,11 +34,9 @@ export default async function Home({ searchParams }: HomeProps) {
           initialQuery={query}
           finalResponse={finalResponse}
         />
-
-        {books.length > 0 && (
-          <ReadingRoadmapSection books={books} />
-        )}
       </main>
+
+
 
       <Footer />
     </div>

@@ -1,16 +1,15 @@
-// Book node for Readmap AI
-export interface bookNode {
-    id? : string,
-    isbn13 : Number,
-    isbn10 : Number,
-    title : String,
-    subtitle : String,
-    author : String,
-    categories : String,
-    thumbail : String, // link to the picture
-    description : String,
-    published_year : Number,
-    average_rating : Number,
-    num_page : Number,
-    prevNode?: bookNode[]; // array of previous nodes
+export interface BookNode {
+  id: string
+  isbn13: number
+  isbn10: string
+  title: string
+  subtitle: string
+  author: string
+  categories: string
+  thumbnail: string
+  description: string
+  published_year: number
+  average_rating: number
+  num_pages: number
+  prerequisites: string[] // IDs of prerequisite books
 }

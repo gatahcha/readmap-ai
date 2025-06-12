@@ -29,11 +29,11 @@ const book1: bookNode = {
     subtitle: "A Novel",
     author: "George Orwell",
     categories: "Dystopian, Political Fiction",
-    thumbail: "https://example.com/1984.jpg",
+    thumbnail: "https://example.com/1984.jpg",
     description: "A chilling prophecy about the future.",
     published_year: 1949,
     average_rating: 4.2,
-    num_page: 328,
+    num_pages: 328,
     prevNode: [],
 };
 
@@ -44,11 +44,11 @@ const book2: bookNode = {
     subtitle: "",
     author: "Harper Lee",
     categories: "Classic, Legal Story",
-    thumbail: "https://example.com/mockingbird.jpg",
+    thumbnail: "https://example.com/mockingbird.jpg",
     description: "A novel of warmth and humor despite dealing with serious issues.",
     published_year: 1960,
     average_rating: 4.3,
-    num_page: 281,
+    num_pages: 281,
     prevNode: [book1],
 };
 
@@ -59,11 +59,11 @@ const book3: bookNode = {
     subtitle: "",
     author: "F. Scott Fitzgerald",
     categories: "Classic, Tragedy",
-    thumbail: "https://example.com/gatsby.jpg",
+    thumbnail: "https://example.com/gatsby.jpg",
     description: "The story of the mysteriously wealthy Jay Gatsby and his love for Daisy Buchanan.",
     published_year: 1925,
     average_rating: 3.9,
-    num_page: 180,
+    num_pages: 180,
     prevNode: [book1, book2],
 };
 
