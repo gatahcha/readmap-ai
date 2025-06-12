@@ -1,5 +1,3 @@
-"use client"
-
 import type { BookNode } from "@/book/bookNode"
 import { Button } from "@/components/ui/button"
 import { X, Star } from "lucide-react"

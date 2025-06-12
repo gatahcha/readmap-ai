@@ -47,23 +47,23 @@ export default async function Home({ searchParams }: HomeProps) {
   }
 
    return (
-    // <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50">
-    //   <Header />
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50">
+      <Header />
 
-    //   <main>
-    //     <HeroSection
-    //       initialQuery={query}
-    //       finalResponse={finalResponse}
-    //     />
-    //   </main>
+      <main>
+        <HeroSection
+          initialQuery={query}
+          finalResponse={finalResponse}
+        />
+      </main>
 
-    //   <Footer />
-    // </div>
-
-    <div className="relative">
+      <div className="relative">
         <RoadmapTree books={sampleBooks} onBookSelect={handleBookSelect} selectedBook={selectedBook} />
 
         <BookDetailPanel book={selectedBook} isOpen={!!selectedBook} onClose={handleClosePanel} />
+      </div>
+
+      <Footer />
     </div>
 
   )

@@ -1,9 +1,9 @@
 "use client"
 
 import type React from "react"
+import { useState } from "react"
 import type { BookNode } from "@/book/bookNode"
 import { Star, Hash, Trash2 } from "lucide-react"
-import Image from "next/image"
 
 interface PositionedNode {
   id: string
@@ -34,9 +34,15 @@ export function TreeNodePositioned({
   onHover,
   onDelete,
 }: TreeNodePositionedProps) {
+  const [imageError, setImageError] = useState(false)
+
   const handleDeleteClick = (e: React.MouseEvent) => {
     e.stopPropagation()
     onDelete(node.id)
+  }
+
+  const handleImageError = () => {
+    setImageError(true)
   }
 
   // Calculate responsive dimensions and styling
@@ -98,14 +104,36 @@ export function TreeNodePositioned({
       <div className="flex gap-2 h-full">
         {width > 140 && (
           <div style={{ width: `${imgWidth}px`, minWidth: `${imgWidth}px` }}>
-            <Image
-              src={node.book.thumbnail || "/placeholder.svg?height=96&width=64"}
-              alt={node.book.title}
-              width={imgWidth}
-              height={imgHeight}
-              className="object-cover rounded shadow-sm"
-              style={{ maxHeight: `${imgHeight}px` }}
-            />
+            {!imageError && node.book.thumbnail ? (
+              <img
+                src={node.book.thumbnail}
+                alt={node.book.title}
+                width={imgWidth}
+                height={imgHeight}
+                className="object-cover rounded shadow-sm"
+                style={{ maxHeight: `${imgHeight}px` }}
+                onError={handleImageError}
+              />
+            ) : (
+              <div 
+                className={`flex items-center justify-center rounded shadow-sm ${
+                  isSelected || isHovered ? "bg-white/20" : "bg-gray-200"
+                }`}
+                style={{ 
+                  width: `${imgWidth}px`, 
+                  height: `${imgHeight}px`,
+                  maxHeight: `${imgHeight}px`
+                }}
+              >
+                <span 
+                  className={`text-xs ${
+                    isSelected || isHovered ? "text-white" : "text-gray-500"
+                  }`}
+                >
+                  No Image
+                </span>
+              </div>
+            )}
           </div>
         )}
         <div className="flex-1 min-w-0 flex flex-col justify-between">
