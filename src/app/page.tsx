@@ -10,6 +10,7 @@ import HeroSection      from "@/components/sections/HeroSection"
 import { RoadmapTree } from "@/components/sections/RoadmapTree"
 import { useState } from "react"
 import { BookDetailPanel } from "@/components/roadmap_components/BookDetailPanel"
+import { sampleBooks } from "@/components/SampleBooks"
 
 interface HomeProps {
   searchParams: { query?: string }

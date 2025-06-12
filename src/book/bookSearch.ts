@@ -2,13 +2,8 @@
 import { BookNode } from "./bookNode";
 import { MongoClient } from 'mongodb';
 import * as dotenv from 'dotenv';
-import { fileURLToPath } from 'url';
-import * as path from 'path';
-
 //loading information from .env
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-dotenv.config({ path: path.resolve(__dirname, '../../.env') });
+dotenv.config();
 
 // Environment variables for configuration
 const MONGODB_USERNAME = process.env.MONGO_DB_USERNAME || 'your_username';
