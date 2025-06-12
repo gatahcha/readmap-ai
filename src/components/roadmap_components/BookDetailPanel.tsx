@@ -5,6 +5,12 @@ import { Button } from "@/components/ui/button"
 import { X, Star } from "lucide-react"
 import Image from "next/image"
 
+declare global {
+  interface Window {
+    bookRegistry?: BookNode[]
+  }
+}
+
 interface BookDetailPanelProps {
   book: BookNode | null
   isOpen: boolean

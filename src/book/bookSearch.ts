@@ -22,52 +22,58 @@ const COLLECTION_NAME = 'books';
 
 
 // NOTE: This is a mock implementation for demonstration purposes.
-const book1: bookNode = {
-    isbn13: 9780451524935,
-    isbn10: 451524935,
-    title: "1984",
-    subtitle: "A Novel",
-    author: "George Orwell",
-    categories: "Dystopian, Political Fiction",
-    thumbnail: "https://example.com/1984.jpg",
-    description: "A chilling prophecy about the future.",
-    published_year: 1949,
-    average_rating: 4.2,
-    num_pages: 328,
-    prevNode: [],
-};
+const book1: BookNode = {
+    id: "clean-code",
+    isbn13: 9780132350884,
+    isbn10: "0132350882",
+    title: "Clean Code",
+    subtitle: "A Handbook of Agile Software Craftsmanship",
+    author: "Robert C. Martin",
+    categories: "Programming, Software Engineering",
+    thumbnail: "https://dynamic.indigoimages.ca/v1/books/books/0140280197/1.jpg",
+    description:
+      "Even bad code can function. But if code isn't clean, it can bring a development organization to its knees. Every year, countless hours and significant resources are lost because of poorly written code. But it doesn't have to be that way.",
+    published_year: 2008,
+    average_rating: 4.6,
+    num_pages: 464,
+    prerequisites: [],
+  };
 
-const book2: bookNode = {
-    isbn13: 9780061120084,
-    isbn10: 61120081,
-    title: "To Kill a Mockingbird",
-    subtitle: "",
-    author: "Harper Lee",
-    categories: "Classic, Legal Story",
-    thumbnail: "https://example.com/mockingbird.jpg",
-    description: "A novel of warmth and humor despite dealing with serious issues.",
-    published_year: 1960,
-    average_rating: 4.3,
-    num_pages: 281,
-    prevNode: [book1],
-};
+const book2: BookNode = {
+    id: "code-complete",
+    isbn13: 9780735619678,
+    isbn10: "0735619670",
+    title: "Code Complete",
+    subtitle: "A Practical Handbook of Software Construction",
+    author: "Steve McConnell",
+    categories: "Programming, Software Engineering",
+    thumbnail: "https://dynamic.indigoimages.ca/v1/books/books/0140280197/1.jpg",
+    description:
+      "Widely considered one of the best practical guides to programming, Steve McConnell's original CODE COMPLETE has been helping developers write better software for more than a decade.",
+    published_year: 2004,
+    average_rating: 4.6,
+    num_pages: 960,
+    prerequisites: [],
+  };
 
-const book3: bookNode = {
-    isbn13: 9780743273565,
-    isbn10: 743273565,
-    title: "The Great Gatsby",
-    subtitle: "",
-    author: "F. Scott Fitzgerald",
-    categories: "Classic, Tragedy",
-    thumbnail: "https://example.com/gatsby.jpg",
-    description: "The story of the mysteriously wealthy Jay Gatsby and his love for Daisy Buchanan.",
-    published_year: 1925,
-    average_rating: 3.9,
-    num_pages: 180,
-    prevNode: [book1, book2],
-};
+const book3: BookNode = {
+    id: "clean-architecture",
+    isbn13: 9780134494166,
+    isbn10: "0134494164",
+    title: "Clean Architecture",
+    subtitle: "A Craftsman's Guide to Software Structure and Design",
+    author: "Robert C. Martin",
+    categories: "Programming, Software Architecture",
+    thumbnail: "https://dynamic.indigoimages.ca/v1/books/books/0140280197/1.jpg",
+    description:
+      "By applying universal rules of software architecture, you can dramatically improve developer productivity throughout the life of any software system.",
+    published_year: 2017,
+    average_rating: 4.4,
+    num_pages: 432,
+    prerequisites: [9780132350884], // Clean Code
+  };
 
-export async function bookDatabaseSearch(query: string): Promise<bookNode[]> {
+export async function bookDatabaseSearch(query: string): Promise<BookNode[]> {
     // This function would normally perform a database search.
     // For now, we return a static list
 
@@ -87,7 +93,7 @@ export async function bookDatabaseSearch(query: string): Promise<bookNode[]> {
     return [book1, book2]
 }
 
-export async function bookVectorSearch(query: string): Promise<bookNode[]> {
+export async function bookVectorSearch(query: string): Promise<BookNode[]> {
     // This function would normally perform a vector search.
     // For now, we return a static list
 

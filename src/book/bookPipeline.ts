@@ -8,7 +8,7 @@ import { writeFileSync } from 'fs';
 // Initialize Gemini client
 const geminiClient = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY || "YOUR_API_KEY" });
 
-export async function bookPipeline(userQuery: string): Promise<{ finalResponse: string, books: bookNode[] }> {
+export async function bookPipeline(userQuery: string): Promise<{ finalResponse: string, books: BookNode[] }> {
     // Define the user query 
 
     const responseQuery = await geminiClient.models.generateContent({
