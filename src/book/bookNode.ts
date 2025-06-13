@@ -1,6 +1,6 @@
 export interface bookNode {
   isbn13: number
-  isbn10: string
+  isbn10: number
   title: string
   subtitle: string
   author: string
