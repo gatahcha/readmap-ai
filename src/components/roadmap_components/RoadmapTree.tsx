@@ -7,8 +7,7 @@ import { BookConnection } from "@/components/roadmap_components/BookConnection"
 import { ArrowDefinitions } from "@/components/roadmap_components/ArrowDefinition"
 import { Download, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-
-import { generateRoadmapJPEG } from "../utils/jpeg-generator"
+import { generateRoadmapPDF } from "@/components/utils/pdf-generator"
 
 interface RoadmapTreeProps {
   books: BookNode[]
@@ -62,13 +61,15 @@ export function RoadmapTree({ books, onBookSelect, selectedBook, onDeleteNode, o
     return { width: containerWidth, height: containerHeight }
   }, [screenDimensions])
 
+  // Updated to use PDF generator for book details only
   const handleDownload = useCallback(async () => {
-  try {
-    await generateRoadmapJPEG(books, "Roadmap #1", "roadmap-tree-content-area")
-  } catch (error) {
-    console.error("Failed to generate JPEG:", error)
-  }
-}, [books])
+    try {
+      await generateRoadmapPDF(books, "Roadmap #1")
+    } catch (error) {
+      console.error("Failed to generate PDF:", error)
+      alert("Failed to generate PDF. Please try again.")
+    }
+  }, [books])
 
   const findBookByISBN13 = useCallback((isbn13: number) => books.find((book) => book.isbn13 === isbn13), [books])
 
@@ -271,7 +272,7 @@ export function RoadmapTree({ books, onBookSelect, selectedBook, onDeleteNode, o
   const containerDimensions = getContainerDimensions()
 
   return (
-    <main className="w-full h-screen overflow-hidden bg-gradient-to-b from-orange-50 to-yellow-50 flex items-start justify-center px-2 pt-4"> {/* Reduced padding */}
+    <main className="w-full h-screen overflow-hidden bg-gradient-to-b from-orange-50 to-yellow-50 flex items-start justify-center px-2 pt-4">
       <div className="flex flex-col items-center">
         <div
           id="roadmap-tree-full"
@@ -279,8 +280,8 @@ export function RoadmapTree({ books, onBookSelect, selectedBook, onDeleteNode, o
           style={{
             width: `${containerDimensions.width}px`,
             height: `${containerDimensions.height}px`,
-            maxWidth: "calc(100vw - 16px)", // Reduced from 32px
-            maxHeight: "calc(100vh - 32px)", // Reduced from 64px
+            maxWidth: "calc(100vw - 16px)",
+            maxHeight: "calc(100vh - 32px)",
           }}
         >
           {/* Header with title and action buttons - now sticky */}
@@ -292,7 +293,7 @@ export function RoadmapTree({ books, onBookSelect, selectedBook, onDeleteNode, o
                   onClick={handleDownload}
                 >
                   <Download className="w-4 h-4" />
-                  Download
+                  Download PDF
                 </button>
                 <Button
                   variant="outline"
@@ -304,7 +305,15 @@ export function RoadmapTree({ books, onBookSelect, selectedBook, onDeleteNode, o
                   Clear All
                 </Button>
               </div>
-              <h2 className="text-2xl md:text-3xl font-bold text-gray-900">Roadmap #1</h2>
+              <div className="text-center flex-1">
+                <h2 className="text-2xl md:text-3xl font-bold text-gray-900">Roadmap #1</h2>
+                <p className="text-xs text-gray-500 mt-1">
+                  📸 For roadmap image: Please take a screenshot • Download creates book details PDF
+                </p>
+                <p className="text-xs text-blue-600 mt-0.5">
+                  💡 Working on improved download features - stay tuned!
+                </p>
+              </div>
               <div className="w-32"></div> {/* Spacer for centering */}
             </div>
           </div>
@@ -316,7 +325,7 @@ export function RoadmapTree({ books, onBookSelect, selectedBook, onDeleteNode, o
             style={{
               width: "100%",
               minHeight: "100%",
-              paddingBottom: "100px", // Increased from 60px for better MacBook spacing
+              paddingBottom: "100px",
             }}
           >
             {/* SVG for animated connections */}
