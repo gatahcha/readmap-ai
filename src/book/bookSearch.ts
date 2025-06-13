@@ -152,13 +152,13 @@ async function performVectorSearch(
             subtitle: doc.subtitle || "",
             author: doc.authors || "", // mapping authors to author
             categories: doc.categories || "",
-            thumbail: doc.thumbnail || "", // keeping original field name from bookNode
+            thumbnail: doc.thumbnail || "", // keeping original field name from bookNode
             description: doc.description || "",
             published_year: doc.published_year || 0,
             average_rating: doc.average_rating || 0,
-            num_page: doc.num_pages || 0, // mapping num_pages to num_page
+            num_pages: doc.num_pages || 0, // mapping num_pages to num_page
             embedding: doc.embedding || [], // ensure embedding is present
-            prevNodes: [] // will be populated later
+            prerequisites: [] // will be populated later
         }));
 
     } catch (error) {
@@ -271,13 +271,13 @@ export async function bookDatabaseSearch(query: string): Promise<bookNode[]> {
             subtitle: doc.subtitle || "",
             author: doc.authors || "", // mapping authors to author
             categories: doc.categories || "",
-            thumbail: doc.thumbnail || "", // mapping thumbnail to thumbail
+            thumbnail: doc.thumbnail || "", // mapping thumbnail to thumbail
             description: doc.description || "",
             published_year: doc.published_year || 0,
             average_rating: doc.average_rating || 0,
-            num_page: doc.num_pages || 0, // mapping num_pages to num_page
+            num_pages: doc.num_pages || 0, // mapping num_pages to num_page
             embedding: doc.embedding || [], // ensure embedding is present
-            prevNodes: []
+            prerequisites: []
         }));
 
     } catch (error) {
