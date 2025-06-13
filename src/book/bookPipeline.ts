@@ -58,11 +58,11 @@ export async function bookPipeline(userQuery: string): Promise<{ finalResponse: 
             Subtitle: ${book.subtitle}
             Author: ${book.author}
             Categories: ${book.categories}
-            Thumbnail: ${book.thumbail}
+            Thumbnail: ${book.thumbnail}
             Description: ${book.description}
             Published Year: ${book.published_year}
             Average Rating: ${book.average_rating}
-            Number of Pages: ${book.num_page}`;
+            Number of Pages: ${book.num_pages}`;
     })
         .join("\n\n");
 
