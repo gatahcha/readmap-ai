@@ -1,5 +1,4 @@
 export interface bookNode {
-  id: string
   isbn13: number
   isbn10: string
   title: string
