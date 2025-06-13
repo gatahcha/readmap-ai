@@ -16,18 +16,18 @@ function printBook(book: bookNode, index: number): void {
     console.log(`📚 Categories: ${book.categories}`);
     console.log(`📅 Published: ${book.published_year}`);
     console.log(`⭐ Rating: ${book.average_rating}/5`);
-    console.log(`📄 Pages: ${book.num_page}`);
+    console.log(`📄 Pages: ${book.num_pages}`);
     console.log(`🔢 ISBN13: ${book.isbn13}`);
     console.log(`🔢 ISBN10: ${book.isbn10}`);
-    if (book.thumbail) {
-        console.log(`🖼️  Thumbnail: ${book.thumbail}`);
+    if (book.thumbnail) {
+        console.log(`🖼️  Thumbnail: ${book.thumbnail}`);
     }
     console.log(`📋 Description: ${book.description}`);
 
-    if (book.prevNodes && book.prevNodes.length > 0) {
-        console.log(`🔗 Prerequisites (${book.prevNodes.length} books):`);
-        book.prevNodes.forEach((prevBook, i) => {
-            console.log(`   ${i + 1}. "${prevBook.title}" by ${prevBook.author}`);
+    if (book.prerequisites && book.prerequisites.length > 0) {
+        console.log(`🔗 Prerequisites (${book.prerequisites.length} books):`);
+        book.prerequisites.forEach((isbn, i) => {
+            console.log(`   ${i + 1}. ISBN: ${isbn}`);
         });
     }
 }
@@ -42,8 +42,8 @@ function printSummary(books: bookNode[]): void {
 
     if (books.length > 0) {
         const avgRating = books.reduce((sum, book) => sum + book.average_rating, 0) / books.length;
-        const avgPages = books.reduce((sum, book) => sum + book.num_page, 0) / books.length;
-        const totalPrereqs = books.reduce((sum, book) => sum + (book.prevNodes?.length || 0), 0);
+        const avgPages = books.reduce((sum, book) => sum + book.num_pages, 0) / books.length;
+        const totalPrereqs = books.reduce((sum, book) => sum + (book.prerequisites?.length || 0), 0);
 
         console.log(`⭐ Average rating: ${avgRating.toFixed(2)}/5`);
         console.log(`📄 Average pages: ${Math.round(avgPages)}`);
