@@ -36,56 +36,6 @@ function renderStars(doc: jsPDF, x: number, y: number, rating: number): void {
   doc.text(stars, x, y)
 }
 
-// Function to load image with multiple fallback strategies (for book detail pages, not component capture)
-async function loadImageAsBase64(url: string): Promise<string | null> {
-  if (url.includes("placeholder.svg")) return null
-  try {
-    const response = await fetch(url, { mode: "cors" })
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status} for ${url}`)
-    const blob = await response.blob()
-    if (blob.size === 0) throw new Error("Empty blob received for " + url)
-
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader()
-      reader.onload = () => resolve(reader.result as string)
-      reader.onerror = () => reject(new Error("FileReader error for " + url))
-      reader.readAsDataURL(blob)
-    })
-  } catch (error) {
-    console.log(`Failed to load image ${url} via fetch, trying Image() fallback:`, error)
-    return new Promise((resolve) => {
-      const img = new Image()
-      img.crossOrigin = "Anonymous" // Correct casing
-      const timeout = 15000
-      const timer = setTimeout(() => {
-        console.warn(`Timeout loading image with Image(): ${url}`)
-        resolve(null)
-      }, timeout)
-      img.onload = () => {
-        clearTimeout(timer)
-        try {
-          const canvas = document.createElement("canvas")
-          canvas.width = img.naturalWidth
-          canvas.height = img.naturalHeight
-          const ctx = canvas.getContext("2d")
-          if (!ctx) return resolve(null)
-          ctx.drawImage(img, 0, 0)
-          resolve(canvas.toDataURL("image/png"))
-        } catch (e) {
-          console.error("Canvas conversion failed for Image():", e)
-          resolve(null)
-        }
-      }
-      img.onerror = () => {
-        clearTimeout(timer)
-        console.error(`Error loading image with Image(): ${url}`)
-        resolve(null)
-      }
-      img.src = url
-    })
-  }
-}
-
 // Enhanced function to wait for all images within an element to load
 async function waitForImagesToLoad(element: HTMLElement): Promise<void> {
   const images = Array.from(element.querySelectorAll("img"))
@@ -145,112 +95,195 @@ async function waitForImagesToLoad(element: HTMLElement): Promise<void> {
   ])
 }
 
-// Function to capture React component as image with proper sizing
-async function captureComponentAsImage(
+// Function to capture React component as image with proper sizing for full roadmap visibility
+async function captureRoadmapAsImage(
   elementId: string,
 ): Promise<{ dataUrl: string; width: number; height: number } | null> {
   try {
+    console.log(`🔍 Looking for element with ID: ${elementId}`)
     const element = document.getElementById(elementId)
     if (!element) {
-      console.error("Element not found for capture:", elementId)
+      console.error(`❌ Element with ID '${elementId}' not found`)
       return null
     }
 
-    console.log("Waiting for images to load within the component for PDF capture...")
-    await waitForImagesToLoad(element) // Use the enhanced wait function
-    // Add a small extra delay, sometimes helps with complex rendering after image loads
+    console.log("✅ Element found, checking dimensions...")
+    const rect = element.getBoundingClientRect()
+    console.log("📐 Element bounds:", rect)
+    
+    if (rect.width === 0 || rect.height === 0) {
+      console.error("❌ Element has zero dimensions")
+      return null
+    }
+
+    console.log("⏳ Waiting for images to load...")
+    await waitForImagesToLoad(element)
     await new Promise((resolve) => setTimeout(resolve, 500))
-    console.log("Image loading wait complete for PDF capture.")
 
-    const scrollWidth = element.scrollWidth
-    const scrollHeight = element.scrollHeight
-
-    const EXCLUDE_BOTTOM_PX = 0 // Set to 0 if no bottom part needs exclusion, or adjust as needed
-    const captureHeight = Math.max(0, scrollHeight - EXCLUDE_BOTTOM_PX)
-
-    console.log("Element dimensions for html2canvas:", {
-      targetElementId: elementId,
-      scrollWidth,
-      originalScrollHeight: scrollHeight,
-      captureHeight,
+    const scrollWidth = Math.max(element.scrollWidth, element.clientWidth, rect.width)
+    const scrollHeight = Math.max(element.scrollHeight, element.clientHeight, rect.height)
+    
+    console.log("📏 Final capture dimensions:", { 
+      scrollWidth, 
+      scrollHeight,
+      clientWidth: element.clientWidth,
+      clientHeight: element.clientHeight
     })
 
+    if (scrollWidth === 0 || scrollHeight === 0) {
+      console.error("❌ Calculated dimensions are zero")
+      return null
+    }
+
+    console.log("📸 Starting html2canvas capture...")
+    
     const canvas = await html2canvas(element, {
-      backgroundColor: "#ffffff", // Explicit background
-      scale: Math.min(window.devicePixelRatio || 1, 1.5), // Cap scale to 1.5x for balance
-      useCORS: true, // Important for external images
-      allowTaint: false, // Keep false and rely on CORS
+      backgroundColor: "#ffffff",
+      scale: 1, // Reduced scale to avoid memory issues
+      useCORS: true,
+      allowTaint: false,
       logging: true,
-      foreignObjectRendering: true, // Crucial for next/image sometimes
-      imageTimeout: 30000, // 30s timeout for images html2canvas might re-fetch
       width: scrollWidth,
-      height: captureHeight,
+      height: scrollHeight,
       windowWidth: scrollWidth,
-      windowHeight: captureHeight,
+      windowHeight: scrollHeight,
       x: 0,
       y: 0,
-      scrollX: -element.scrollLeft, // Account for internal scroll of the element
-      scrollY: -element.scrollTop,
-      removeContainer: true, // Clean up the cloned container html2canvas creates
+      scrollX: 0,
+      scrollY: 0,
+      foreignObjectRendering: true,
+      imageTimeout: 15000,
       onclone: (clonedDoc) => {
-        // Post-clone modifications if needed
-        // Example: If next/image uses specific classes that hide things during clone
-        // const images = Array.from(clonedDoc.querySelectorAll('img'));
-        // images.forEach(img => {
-        //   // Force styles if next/image is doing something tricky
-        //   img.style.opacity = '1';
-        //   img.style.visibility = 'visible';
-        // });
+        console.log("🔄 Cloning element for capture...")
+        const clonedElement = clonedDoc.getElementById(elementId)
+        if (clonedElement) {
+          clonedElement.style.height = `${scrollHeight}px`
+          clonedElement.style.width = `${scrollWidth}px`
+          clonedElement.style.overflow = 'visible'
+          clonedElement.style.position = 'static'
+          clonedElement.style.transform = 'none'
+          
+          // Make sure all content is visible
+          const allElements = clonedElement.querySelectorAll('*')
+          allElements.forEach((el: Element) => {
+            if (el instanceof HTMLElement) {
+              el.style.visibility = 'visible'
+              el.style.opacity = '1'
+            }
+          })
+          console.log("✅ Cloned element prepared")
+        }
       },
     })
 
-    console.log("Canvas dimensions after html2canvas:", { width: canvas.width, height: canvas.height })
+    console.log("🎨 Canvas created:", { 
+      width: canvas.width, 
+      height: canvas.height 
+    })
 
     if (canvas.width === 0 || canvas.height === 0) {
-      console.error("html2canvas returned a zero-dimension canvas.")
+      console.error("❌ Canvas has zero dimensions")
+      return null
+    }
+
+    const dataUrl = canvas.toDataURL("image/png", 0.8)
+    console.log("🖼️ Image generated, data URL length:", dataUrl.length)
+    
+    // Quick validation of the data URL
+    if (!dataUrl.startsWith('data:image/png;base64,')) {
+      console.error("❌ Invalid data URL format")
       return null
     }
 
     return {
-      dataUrl: canvas.toDataURL("image/png", 0.92), // PNG with slight compression
+      dataUrl,
       width: canvas.width,
       height: canvas.height,
     }
   } catch (error) {
-    console.error(`Failed to capture component '${elementId}' with html2canvas:`, error)
+    console.error("❌ Failed to capture roadmap as image:", error)
     return null
   }
 }
 
-// Function to calculate dimensions to fit image in page while maintaining aspect ratio
-function calculateFitDimensions(
-  imageWidth: number,
-  imageHeight: number,
-  pageWidth: number,
-  pageHeight: number,
-  margin = 10, // mm
-): { width: number; height: number; x: number; y: number } {
-  const availableWidth = pageWidth - margin * 2
-  const availableHeight = pageHeight - margin * 2
-
-  const imageAspectRatio = imageWidth / imageHeight
-  const pageAspectRatio = availableWidth / availableHeight
-
-  let finalWidth: number
-  let finalHeight: number
-
-  if (imageAspectRatio > pageAspectRatio) {
-    finalWidth = availableWidth
-    finalHeight = finalWidth / imageAspectRatio
+// Function to create PDF page sized to fit the roadmap image
+function createPDFWithRoadmapImage(roadmapImage: { dataUrl: string; width: number; height: number }): jsPDF {
+  console.log("📄 Creating PDF with roadmap image...")
+  
+  const imageAspectRatio = roadmapImage.width / roadmapImage.height
+  console.log("📊 Image aspect ratio:", imageAspectRatio)
+  
+  // Calculate PDF page dimensions - use more conservative sizing
+  let pdfWidth: number
+  let pdfHeight: number
+  
+  if (imageAspectRatio > 1.5) {
+    // Very wide image - use landscape A3
+    pdfWidth = 420 // A3 landscape width
+    pdfHeight = 297 // A3 landscape height
+  } else if (imageAspectRatio > 1) {
+    // Landscape image - use A4 landscape
+    pdfWidth = 297 // A4 landscape width  
+    pdfHeight = 210 // A4 landscape height
   } else {
+    // Portrait or square image - use A4 portrait
+    pdfWidth = 210 // A4 portrait width
+    pdfHeight = 297 // A4 portrait height
+  }
+  
+  console.log("📏 PDF dimensions:", { width: pdfWidth, height: pdfHeight })
+  
+  const doc = new jsPDF({
+    orientation: pdfWidth > pdfHeight ? "landscape" : "portrait",
+    unit: "mm",
+    format: [pdfWidth, pdfHeight],
+  })
+  
+  // Calculate image placement to fit the page
+  const margin = 10 // Reasonable margin
+  const availableWidth = pdfWidth - (margin * 2)
+  const availableHeight = pdfHeight - (margin * 2)
+  
+  // Scale image to fit available space while maintaining aspect ratio
+  let finalWidth = availableWidth
+  let finalHeight = finalWidth / imageAspectRatio
+  
+  if (finalHeight > availableHeight) {
     finalHeight = availableHeight
     finalWidth = finalHeight * imageAspectRatio
   }
-
-  const x = (pageWidth - finalWidth) / 2
-  const y = margin // Align to top margin, instead of centering vertically
-
-  return { width: finalWidth, height: finalHeight, x, y }
+  
+  // Center the image
+  const x = (pdfWidth - finalWidth) / 2
+  const y = (pdfHeight - finalHeight) / 2
+  
+  console.log("🎯 Image placement:", { 
+    x, y, 
+    width: finalWidth, 
+    height: finalHeight,
+    margin 
+  })
+  
+  try {
+    doc.addImage(
+      roadmapImage.dataUrl,
+      "PNG",
+      x,
+      y,
+      finalWidth,
+      finalHeight,
+      undefined,
+      "MEDIUM"
+    )
+    console.log("✅ Successfully added image to PDF")
+  } catch (error) {
+    console.error("❌ Failed to add image to PDF:", error)
+    // Add a placeholder text instead
+    doc.setFontSize(20)
+    doc.text("Roadmap Image Failed to Load", pdfWidth / 2, pdfHeight / 2, { align: "center" })
+  }
+  
+  return doc
 }
 
 // Fallback function for text-based roadmap visualization
@@ -269,7 +302,6 @@ function addFallbackRoadmapVisualization(doc: jsPDF, books: BookNode[]): void {
 
   books.forEach((book) => {
     if (yPos > pageHeight - margin - 10) {
-      // Adjusted overflow check
       doc.addPage()
       yPos = margin
     }
@@ -286,84 +318,71 @@ export async function generateRoadmapPDF(
   let doc: jsPDF
 
   if (componentElementId) {
-    console.log("Attempting to capture component for PDF:", componentElementId)
-    const componentCapture = await captureComponentAsImage(componentElementId)
-    if (componentCapture && componentCapture.dataUrl && componentCapture.width > 0 && componentCapture.height > 0) {
+    console.log("=== 🚀 STARTING PDF GENERATION ===")
+    console.log(`📋 Books count: ${books.length}`)
+    console.log(`🎯 Target element ID: ${componentElementId}`)
+    
+    // Step 1: Convert roadmap to image
+    const roadmapImage = await captureRoadmapAsImage(componentElementId)
+    
+    if (roadmapImage && roadmapImage.dataUrl) {
+      console.log("=== ✅ IMAGE CAPTURE SUCCESSFUL ===")
+      console.log(`📊 Image dimensions: ${roadmapImage.width} x ${roadmapImage.height}`)
+      
+      // Optional: Create a test link to view the captured image
+      if (typeof window !== 'undefined') {
+        const testLink = document.createElement('a')
+        testLink.href = roadmapImage.dataUrl
+        testLink.download = 'roadmap-test.png'
+        testLink.style.display = 'none'
+        document.body.appendChild(testLink)
+        console.log("🔗 Test image link created (check browser dev tools)")
+        // Uncomment next line to auto-download test image:
+        // testLink.click()
+        document.body.removeChild(testLink)
+      }
+      
+      // Step 2: Create PDF with the image
       try {
-        const imageAspectRatio = componentCapture.width / componentCapture.height
-        const MAX_PDF_PAGE_WIDTH_MM = 400
-        const MAX_PDF_PAGE_HEIGHT_MM = 300
-
-        let pdfPageWidth = Math.min(MAX_PDF_PAGE_WIDTH_MM, componentCapture.width / 4) // Adjusted heuristic
-        let pdfPageHeight = pdfPageWidth / imageAspectRatio
-
-        if (pdfPageHeight > MAX_PDF_PAGE_HEIGHT_MM) {
-          pdfPageHeight = MAX_PDF_PAGE_HEIGHT_MM
-          pdfPageWidth = pdfPageHeight * imageAspectRatio
-        }
-        if (pdfPageWidth > MAX_PDF_PAGE_WIDTH_MM) {
-          pdfPageWidth = MAX_PDF_PAGE_WIDTH_MM
-          pdfPageHeight = pdfPageWidth / imageAspectRatio
-        }
-        if (pdfPageWidth <= 0 || pdfPageHeight <= 0) {
-          // Sanity check
-          console.warn("Calculated PDF page dimensions are invalid, defaulting to A4.")
-          pdfPageWidth = 297
-          pdfPageHeight = 210 // A4 Landscape
-        }
-
-        console.log("Calculated PDF Page 1 dimensions (mm):", { width: pdfPageWidth, height: pdfPageHeight })
-
-        doc = new jsPDF({
-          orientation: pdfPageWidth > pdfPageHeight ? "landscape" : "portrait",
-          unit: "mm",
-          format: [pdfPageWidth, pdfPageHeight],
-        })
-        doc.setFont("helvetica")
-
-        const fitMargin = 5
-        const fitDimensions = calculateFitDimensions(
-          componentCapture.width,
-          componentCapture.height,
-          pdfPageWidth,
-          pdfPageHeight,
-          fitMargin,
-        )
-
-        console.log("Roadmap image fit dimensions (mm) on PDF page:", fitDimensions)
-
-        doc.addImage(
-          componentCapture.dataUrl,
-          "PNG",
-          fitDimensions.x,
-          fitDimensions.y,
-          fitDimensions.width,
-          fitDimensions.height,
-          undefined, // alias
-          "FAST", // compression FAST, MEDIUM, SLOW (might help with large images)
-        )
-        console.log("Successfully added roadmap image to PDF (Page 1)")
+        doc = createPDFWithRoadmapImage(roadmapImage)
+        console.log("=== ✅ PDF CREATION SUCCESSFUL ===")
       } catch (error) {
-        console.error("Failed to add component image to PDF:", error)
+        console.error("=== ❌ PDF CREATION FAILED ===", error)
+        // Fallback to text-based roadmap
         doc = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" })
         doc.setFont("helvetica")
+        doc.setFontSize(16)
+        doc.text("Roadmap Image Failed to Load", 148.5, 105, { align: "center" })
+        doc.setFontSize(12)
+        doc.text("Please check browser console for details", 148.5, 120, { align: "center" })
         addFallbackRoadmapVisualization(doc, books)
       }
     } else {
-      console.warn("Component capture for PDF failed or yielded empty/invalid image, using fallback.")
+      console.error("=== ❌ IMAGE CAPTURE FAILED ===")
+      // Fallback to text-based roadmap
       doc = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" })
       doc.setFont("helvetica")
+      doc.setFontSize(16)
+      doc.text("Unable to Capture Roadmap Image", 148.5, 105, { align: "center" })
+      doc.setFontSize(12)
+      doc.text("Using text-based fallback instead", 148.5, 120, { align: "center" })
       addFallbackRoadmapVisualization(doc, books)
     }
   } else {
+    console.log("=== ℹ️ NO COMPONENT ID PROVIDED ===")
+    // No component ID provided, use fallback
     doc = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" })
     doc.setFont("helvetica")
     addFallbackRoadmapVisualization(doc, books)
   }
 
-  // Pages 2+: Book Details
+  console.log("=== 📚 ADDING BOOK DETAIL PAGES ===")
+  
+  // Step 3: Add book details on subsequent pages
   for (let index = 0; index < books.length; index++) {
     const book = books[index]
+    console.log(`📖 Adding page for: ${book.title}`)
+    
     doc.addPage("a4", "landscape")
     doc.setFont("helvetica")
 
@@ -380,9 +399,9 @@ export async function generateRoadmapPDF(
     let detailsY = book.subtitle ? 40 : 30
     const fieldX = 20
     const valueX = 60
-    const lineHeight = 7 // Further reduced line height for denser info
+    const lineHeight = 7
 
-    doc.setFontSize(10) // Smaller font for details
+    doc.setFontSize(10)
     doc.setFont("helvetica", "normal")
 
     const addDetail = (label: string, value: string | number) => {
@@ -418,7 +437,7 @@ export async function generateRoadmapPDF(
 
     addDetail("ISBN-13:", book.isbn13)
     addDetail("ISBN-10:", book.isbn10)
-    detailsY += 2 // Extra space after ISBN
+    detailsY += 2
 
     if (book.prerequisites.length > 0) {
       doc.setFont("helvetica", "bold")
@@ -441,7 +460,6 @@ export async function generateRoadmapPDF(
     detailsY += lineHeight
     doc.setFont("helvetica", "normal")
     addWrappedText(
-      // addWrappedText returns next Y, so no need to increment detailsY after this
       doc,
       book.description,
       fieldX,
@@ -456,6 +474,9 @@ export async function generateRoadmapPDF(
     })
   }
 
-  doc.save(`${title.replace(/\s+/g, "_")}.pdf`)
-  console.log("PDF generation completed.")
+  console.log("=== 💾 SAVING PDF ===")
+  const filename = `${title.replace(/\s+/g, "_")}.pdf`
+  doc.save(filename)
+  console.log(`🎉 PDF saved as: ${filename}`)
+  console.log("=== ✅ PDF GENERATION COMPLETED ===")
 }

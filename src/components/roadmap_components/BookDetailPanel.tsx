@@ -1,7 +1,9 @@
+"use client"
+
 import type { BookNode } from "@/book/bookNode"
 import { Button } from "@/components/ui/button"
 import { X, Star } from "lucide-react"
-import Image from "next/image"
+import { useState } from "react"
 
 declare global {
   interface Window {
@@ -16,6 +18,8 @@ interface BookDetailPanelProps {
 }
 
 export function BookDetailPanel({ book, isOpen, onClose }: BookDetailPanelProps) {
+  const [imageError, setImageError] = useState(false)
+
   if (!isOpen || !book) return null
 
   const renderStars = (rating: number) => {
@@ -25,6 +29,10 @@ export function BookDetailPanel({ book, isOpen, onClose }: BookDetailPanelProps)
         className={`w-4 h-4 ${i < Math.floor(rating) ? "fill-yellow-400 text-yellow-400" : "text-gray-300"}`}
       />
     ))
+  }
+
+  const handleImageError = () => {
+    setImageError(true)
   }
 
   return (
@@ -40,13 +48,23 @@ export function BookDetailPanel({ book, isOpen, onClose }: BookDetailPanelProps)
 
         {/* Book Cover */}
         <div className="mb-6">
-          <Image
-            src={book.thumbnail || "/placeholder.svg?height=200&width=150"}
-            alt={book.title}
-            width={150}
-            height={200}
-            className="rounded-lg shadow-md mx-auto"
-          />
+          {!imageError && book.thumbnail ? (
+            <img
+              src={book.thumbnail}
+              alt={book.title}
+              width={150}
+              height={200}
+              className="rounded-lg shadow-md mx-auto object-cover"
+              onError={handleImageError}
+            />
+          ) : (
+            <div className="w-[150px] h-[200px] bg-gray-200 rounded-lg shadow-md mx-auto flex items-center justify-center">
+              <div className="text-center text-gray-500">
+                <div className="text-4xl mb-2">📚</div>
+                <div className="text-sm">No Image</div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Book Info */}

@@ -6,12 +6,15 @@ import { TreeNodePositioned } from "@/components/roadmap_components/TreeNodePosi
 import { BookConnection } from "@/components/roadmap_components/BookConnection"
 import { ArrowDefinitions } from "@/components/roadmap_components/ArrowDefinition"
 import { Download, Trash2 } from "lucide-react"
+import { Button } from "@/components/ui/button"
 import { generateRoadmapPDF } from "@/components/utils/pdf-generator"
 
 interface RoadmapTreeProps {
   books: BookNode[]
   onBookSelect: (book: BookNode | null) => void
   selectedBook: BookNode | null
+  onDeleteNode: (bookId: string) => void
+  onClearRoadmap: () => void
 }
 
 interface PositionedNode {
@@ -26,8 +29,7 @@ interface PositionedNode {
   height: number
 }
 
-export function RoadmapTree({ books: initialBooks, onBookSelect, selectedBook }: RoadmapTreeProps) {
-  const [books, setBooks] = useState<BookNode[]>(initialBooks)
+export function RoadmapTree({ books, onBookSelect, selectedBook, onDeleteNode, onClearRoadmap }: RoadmapTreeProps) {
   const [positionedNodes, setPositionedNodes] = useState<PositionedNode[]>([])
   const [hoveredBook, setHoveredBook] = useState<BookNode | null>(null)
   const [hoveredConnection, setHoveredConnection] = useState<string | null>(null)
@@ -47,8 +49,15 @@ export function RoadmapTree({ books: initialBooks, onBookSelect, selectedBook }:
   }, [])
 
   const getContainerDimensions = useCallback(() => {
-    const containerWidth = Math.max(screenDimensions.width - 80, 800)
-    const containerHeight = Math.max(screenDimensions.height - 180, 500)
+    // Ensure consistent container sizing with more height for bottom padding
+    const containerWidth = Math.min(
+      Math.max(screenDimensions.width - 60, 1400), 
+      screenDimensions.width * 0.95 // Max 95% of screen width
+    )
+    const containerHeight = Math.min(
+      Math.max(screenDimensions.height - 100, 1000), // Increased height significantly
+      screenDimensions.height * 0.98 // Almost full screen height
+    )
     return { width: containerWidth, height: containerHeight }
   }, [screenDimensions])
 
@@ -61,46 +70,6 @@ export function RoadmapTree({ books: initialBooks, onBookSelect, selectedBook }:
     }
   }, [books])
 
-  const handleDeleteNode = useCallback(
-    (bookId: string) => {
-      const bookToDelete = books.find((book) => book.id === bookId)
-      if (!bookToDelete) return
-
-      const booksByISBN13 = new Map<number, BookNode>()
-      books.forEach((book) => booksByISBN13.set(book.isbn13, book))
-
-      const dependentBooks = books.filter((book) => book.prerequisites.includes(bookToDelete.isbn13))
-      const booksToRemove = new Set<string>([bookId])
-
-      const wouldBecomeOrphaned = (book: BookNode) => {
-        if (book.prerequisites.length === 0) return false
-        const remainingPrereqs = book.prerequisites.filter((prereqISBN13) => {
-          const prereqBook = booksByISBN13.get(prereqISBN13)
-          return prereqBook && !booksToRemove.has(prereqBook.id)
-        })
-        return remainingPrereqs.length === 0
-      }
-
-      const findOrphanedChildren = (currentBookId: string) => {
-        const orphanedChildren = dependentBooks.filter((book) => {
-          return book.prerequisites.includes(bookToDelete.isbn13) && wouldBecomeOrphaned(book)
-        })
-        orphanedChildren.forEach((child) => {
-          if (!booksToRemove.has(child.id)) {
-            booksToRemove.add(child.id)
-            findOrphanedChildren(child.id)
-          }
-        })
-      }
-      findOrphanedChildren(bookId)
-      setBooks((prevBooks) => prevBooks.filter((book) => !booksToRemove.has(book.id)))
-      if (selectedBook && booksToRemove.has(selectedBook.id)) {
-        onBookSelect(null)
-      }
-    },
-    [books, selectedBook, onBookSelect],
-  )
-
   const findBookByISBN13 = useCallback((isbn13: number) => books.find((book) => book.isbn13 === isbn13), [books])
 
   useEffect(() => {
@@ -109,11 +78,13 @@ export function RoadmapTree({ books: initialBooks, onBookSelect, selectedBook }:
 
       const containerDimensions = getContainerDimensions()
       const headerBarHeight = 80
-      const sidePadding = 40
-      const verticalPadding = 20
+      const sidePadding = 80 // Consistent padding on both sides
+      const verticalPadding = 10 // Further reduced top padding
+      const bottomPadding = 160 // Increased bottom padding for more space
 
-      const drawableCanvasWidth = containerDimensions.width - sidePadding
-      const drawableCanvasHeight = containerDimensions.height - headerBarHeight - verticalPadding * 2
+      // Calculate drawable area accounting for both top and bottom padding
+      const drawableCanvasWidth = containerDimensions.width - (sidePadding * 2)
+      const drawableCanvasHeight = containerDimensions.height - headerBarHeight - verticalPadding - bottomPadding
 
       const bookLevels = new Map<string, number>()
       const childrenMap = new Map<string, BookNode[]>()
@@ -158,53 +129,73 @@ export function RoadmapTree({ books: initialBooks, onBookSelect, selectedBook }:
       const totalLevels = Object.keys(levelGroups).length
       const maxBooksInLevel = Math.max(1, ...Object.values(levelGroups).map((levelBooks) => levelBooks.length))
 
-      const baseNodeWidth = Math.max(120, Math.min(300, drawableCanvasWidth / maxBooksInLevel - 30))
-      const baseNodeHeight = Math.max(60, Math.min(120, drawableCanvasHeight / Math.max(totalLevels, 1) - 30))
+      // Better node sizing calculation
+      const minNodeWidth = 180 // Minimum readable width
+      const maxNodeWidth = 320 // Maximum width to prevent too large nodes
+      const minNodeHeight = 100 // Increased minimum height for better content display
+      const maxNodeHeight = 140 // Increased maximum height
 
-      const screenScale = Math.min(screenDimensions.width / 1200, screenDimensions.height / 800)
-      const scaledNodeWidth = baseNodeWidth * Math.max(0.7, Math.min(1.2, screenScale))
-      const scaledNodeHeight = baseNodeHeight * Math.max(0.7, Math.min(1.2, screenScale))
+      // Calculate base dimensions with generous spacing
+      const baseNodeWidth = Math.max(
+        minNodeWidth, 
+        Math.min(maxNodeWidth, (drawableCanvasWidth - (maxBooksInLevel - 1) * 40) / maxBooksInLevel) // Increased spacing allowance
+      )
+      const baseNodeHeight = Math.max(
+        minNodeHeight, 
+        Math.min(maxNodeHeight, (drawableCanvasHeight - (totalLevels - 1) * 60) / totalLevels) // Increased spacing allowance
+      )
+
+      // Apply responsive scaling
+      const screenScale = Math.min(screenDimensions.width / 1400, screenDimensions.height / 900)
+      const scaledNodeWidth = baseNodeWidth * Math.max(0.85, Math.min(1.1, screenScale))
+      const scaledNodeHeight = baseNodeHeight * Math.max(0.85, Math.min(1.1, screenScale))
 
       const positions = new Map<string, { x: number; y: number }>()
 
-      let actualVerticalGap = Math.max(20, scaledNodeHeight * 0.3)
+      // Improved vertical gap calculation for much better spacing
+      let actualVerticalGap = Math.max(60, scaledNodeHeight * 0.7) // Increased base gap and ratio
       if (totalLevels > 1) {
         const requiredHeightForNodes = totalLevels * scaledNodeHeight
         const requiredHeightForGaps = (totalLevels - 1) * actualVerticalGap
         const totalContentTreeHeight = requiredHeightForNodes + requiredHeightForGaps
         if (totalContentTreeHeight > drawableCanvasHeight) {
-          actualVerticalGap = Math.max(10, (drawableCanvasHeight - requiredHeightForNodes) / (totalLevels - 1))
+          actualVerticalGap = Math.max(40, (drawableCanvasHeight - requiredHeightForNodes) / (totalLevels - 1))
         }
       }
 
       const finalContentTreeHeight = totalLevels * scaledNodeHeight + Math.max(0, totalLevels - 1) * actualVerticalGap
-      const topOffset =
-        headerBarHeight + verticalPadding + Math.max(0, (drawableCanvasHeight - finalContentTreeHeight) / 2)
+      // Position content accounting for both top padding and ensuring bottom space
+      const topOffset = headerBarHeight + verticalPadding + Math.max(20, (drawableCanvasHeight - finalContentTreeHeight) / 2)
 
       Object.entries(levelGroups).forEach(([levelStr, levelBooks]) => {
         const level = Number.parseInt(levelStr, 10)
         const y = topOffset + (level - 1) * (scaledNodeHeight + actualVerticalGap) + scaledNodeHeight / 2
         const currentLevelBookCount = levelBooks.length
-        let actualHorizontalGap = Math.max(15, scaledNodeWidth * 0.15)
+        
+        // Much better horizontal spacing calculation
+        let actualHorizontalGap = Math.max(40, scaledNodeWidth * 0.18) // Increased base gap and ratio
 
         if (currentLevelBookCount > 1) {
           const requiredWidthForNodesInLevel = currentLevelBookCount * scaledNodeWidth
           const requiredWidthForGapsInLevel = (currentLevelBookCount - 1) * actualHorizontalGap
           const totalLevelContentWidth = requiredWidthForNodesInLevel + requiredWidthForGapsInLevel
+          
           if (totalLevelContentWidth > drawableCanvasWidth) {
             actualHorizontalGap = Math.max(
-              5,
-              (drawableCanvasWidth - requiredWidthForNodesInLevel) / (currentLevelBookCount - 1),
+              25, // Increased minimum gap even when constrained
+              (drawableCanvasWidth - requiredWidthForNodesInLevel) / (currentLevelBookCount - 1)
             )
           }
         }
 
         const finalLevelContentWidth =
           currentLevelBookCount * scaledNodeWidth + Math.max(0, currentLevelBookCount - 1) * actualHorizontalGap
-        const levelStartX =
-          sidePadding / 2 + Math.max(0, (drawableCanvasWidth - finalLevelContentWidth) / 2) + horizontalOffset
+        
+        // Improved centering calculation - ensure perfect center alignment
+        const levelStartX = sidePadding + (drawableCanvasWidth - finalLevelContentWidth) / 2
 
         levelBooks.forEach((book, index) => {
+          // Calculate exact position for each node to ensure even spacing
           const x = levelStartX + index * (scaledNodeWidth + actualHorizontalGap) + scaledNodeWidth / 2
           positions.set(book.id, { x, y })
         })
@@ -281,41 +272,38 @@ export function RoadmapTree({ books: initialBooks, onBookSelect, selectedBook }:
   const containerDimensions = getContainerDimensions()
 
   return (
-    <main className="w-full h-screen overflow-hidden bg-gradient-to-b from-orange-50 to-yellow-50">
-      <div className="w-full h-full flex flex-col">
+    <main className="w-full h-screen overflow-hidden bg-gradient-to-b from-orange-50 to-yellow-50 flex items-start justify-center px-4 pt-8">
+      <div className="flex flex-col items-center">
         <div
           id="roadmap-tree-full"
-          className="flex-1 bg-white rounded-lg shadow-lg m-4 overflow-hidden relative"
+          className="bg-white rounded-lg shadow-lg overflow-auto relative mx-auto"
           style={{
             width: `${containerDimensions.width}px`,
             height: `${containerDimensions.height}px`,
             maxWidth: "calc(100vw - 32px)",
-            maxHeight: "calc(100vh - 32px)",
+            maxHeight: "calc(100vh - 64px)",
           }}
         >
-          {/* Header with title and action buttons */}
-          <div className="absolute top-0 left-0 right-0 z-30 bg-white/95 backdrop-blur-sm border-b">
+          {/* Header with title and action buttons - now sticky */}
+          <div className="sticky top-0 left-0 right-0 z-30 bg-white/95 backdrop-blur-sm border-b">
             <div className="flex items-center justify-between p-4">
               <div className="flex items-center gap-3">
                 <button
-                  className="flex items-center gap-2 px-3 py-2 text-gray-600 hover:text-orange-500 hover:bg-orange-50 rounded-lg transition-all duration-200 text-sm"
+                  className="flex items-center gap-2 px-3 py-2 text-green-600 border border-green-300 hover:text-green-700 hover:bg-green-50 hover:border-green-400 rounded-lg transition-all duration-200 text-sm h-9"
                   onClick={handleDownload}
                 >
                   <Download className="w-4 h-4" />
                   Download
                 </button>
-                <button
-                  className="flex items-center gap-2 px-3 py-2 text-gray-600 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all duration-200 text-sm"
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    if (selectedBook) {
-                      handleDeleteNode(selectedBook.id)
-                    }
-                  }}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={onClearRoadmap}
+                  className="flex items-center gap-2 text-red-600 border-red-300 hover:bg-red-50 hover:border-red-400 text-sm h-9"
                 >
                   <Trash2 className="w-4 h-4" />
-                  Delete
-                </button>
+                  Clear All
+                </Button>
               </div>
               <h2 className="text-2xl md:text-3xl font-bold text-gray-900">Roadmap #1</h2>
               <div className="w-32"></div> {/* Spacer for centering */}
@@ -325,10 +313,11 @@ export function RoadmapTree({ books: initialBooks, onBookSelect, selectedBook }:
           {/* Roadmap content area */}
           <div
             id="roadmap-tree-content-area"
-            className="absolute inset-0 pt-20" // pt-20 is for the header bar above
+            className="relative"
             style={{
               width: "100%",
-              height: "100%",
+              minHeight: "100%",
+              paddingBottom: "120px", // Add substantial bottom padding to prevent cutoff
             }}
           >
             {/* SVG for animated connections */}
@@ -361,7 +350,7 @@ export function RoadmapTree({ books: initialBooks, onBookSelect, selectedBook }:
                 isSelected={selectedBook?.id === node.id}
                 isHovered={hoveredBook?.id === node.id}
                 onHover={setHoveredBook}
-                onDelete={handleDeleteNode}
+                onDelete={onDeleteNode} 
               />
             ))}
           </div>

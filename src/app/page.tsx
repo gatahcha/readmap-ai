@@ -1,15 +1,10 @@
-"use client"
-
-// src/app/page.tsx
+// src/app/page.tsx (Server Component)
 import { bookPipeline } from "@/book/bookPipeline"
 import { BookNode } from "@/book/bookNode"
-import Header          from "@/components/layout/Header"
-import Footer         from "@/components/layout/Footer"
-
-import HeroSection      from "@/components/sections/HeroSection"
-import { RoadmapTree } from "@/components/sections/RoadmapTree"
-import { useState } from "react"
-import { BookDetailPanel } from "@/components/roadmap_components/BookDetailPanel"
+import Header from "@/components/layout/Header"
+import Footer from "@/components/layout/Footer"
+import HeroSection from "@/components/sections/HeroSection"
+import { RoadmapSection } from "@/components/sections/RoadmapSection"
 import { sampleBooks } from "@/components/SampleBooks"
 
 interface HomeProps {
@@ -31,22 +26,7 @@ export default async function Home({ searchParams }: HomeProps) {
     }
   }
 
-  const [selectedBook, setSelectedBook] = useState<BookNode | null>(null)
-  const [roadmapGenerated, setRoadmapGenerated] = useState(false)
-
-  const handleBookSelect = (book: BookNode | null) => {
-    setSelectedBook(book)
-  }
-
-  const handleClosePanel = () => {
-    setSelectedBook(null)
-  }
-
-  const handleGenerateRoadmap = () => {
-    setRoadmapGenerated(true)
-  }
-
-   return (
+  return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50">
       <Header />
 
@@ -57,14 +37,9 @@ export default async function Home({ searchParams }: HomeProps) {
         />
       </main>
 
-      <div className="relative">
-        <RoadmapTree books={sampleBooks} onBookSelect={handleBookSelect} selectedBook={selectedBook} />
-
-        <BookDetailPanel book={selectedBook} isOpen={!!selectedBook} onClose={handleClosePanel} />
-      </div>
+      <RoadmapSection books={sampleBooks} />
 
       <Footer />
     </div>
-
   )
 }
