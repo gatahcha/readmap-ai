@@ -1,12 +1,9 @@
 "use client"
 
-// src/components/sections/RoadmapSection.tsx
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { BookNode } from "@/book/bookNode"
 import { RoadmapTree } from "@/components/roadmap_components/RoadmapTree"
 import { BookDetailPanel } from "@/components/roadmap_components/BookDetailPanel"
-import { Trash2 } from "lucide-react"
-import { Button } from "@/components/ui/button"
 
 interface RoadmapSectionProps {
   books: BookNode[]
@@ -16,12 +13,23 @@ export function RoadmapSection({ books: initialBooks }: RoadmapSectionProps) {
   const [books, setBooks] = useState<BookNode[]>(initialBooks)
   const [selectedBook, setSelectedBook] = useState<BookNode | null>(null)
   const [showPanelOnLeft, setShowPanelOnLeft] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768)
+    }
+    
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
 
   const handleBookSelect = (book: BookNode | null, clickEvent?: React.MouseEvent) => {
     setSelectedBook(book)
     
-    // Determine panel position based on where the book node was clicked
-    if (book && clickEvent) {
+    // On mobile, panel position doesn't matter as it's full screen
+    if (!isMobile && book && clickEvent) {
       const rect = (clickEvent.currentTarget as HTMLElement).getBoundingClientRect()
       const nodeX = rect.left + rect.width / 2
       const screenWidth = window.innerWidth
@@ -42,9 +50,7 @@ export function RoadmapSection({ books: initialBooks }: RoadmapSectionProps) {
   }
 
   const handleDeleteNode = (bookId: string) => {
-    // Filter by the string id, not isbn13
     setBooks(prevBooks => prevBooks.filter(book => book.id !== bookId))
-    // Close panel if the deleted book was selected
     if (selectedBook?.id === bookId) {
       setSelectedBook(null)
     }
@@ -61,10 +67,14 @@ export function RoadmapSection({ books: initialBooks }: RoadmapSectionProps) {
           onClearRoadmap={handleClearRoadmap}
         />
       ) : (
-        <div className="flex flex-col items-center justify-center py-16 text-center">
-          <div className="text-6xl mb-4 text-gray-300">📚</div>
-          <h3 className="text-xl font-semibold text-gray-600 mb-2">No Roadmap Yet</h3>
-          <p className="text-gray-500">Search for a topic to generate your learning roadmap</p>
+        <div className={`flex flex-col items-center justify-center ${isMobile ? 'py-12 px-4' : 'py-16'} text-center`}>
+          <div className={`${isMobile ? 'text-4xl' : 'text-6xl'} mb-4 text-gray-300`}>📚</div>
+          <h3 className={`${isMobile ? 'text-lg' : 'text-xl'} font-semibold text-gray-600 mb-2`}>
+            No Roadmap Yet
+          </h3>
+          <p className={`text-gray-500 ${isMobile ? 'text-sm px-2' : ''}`}>
+            Search for a topic to generate your learning roadmap
+          </p>
         </div>
       )}
 

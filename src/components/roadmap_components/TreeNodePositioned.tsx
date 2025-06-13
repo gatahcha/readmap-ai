@@ -19,11 +19,12 @@ interface PositionedNode {
 
 interface TreeNodePositionedProps {
   node: PositionedNode
-  onSelect: (book: BookNode, clickEvent?: React.MouseEvent) => void // Updated to include click event
+  onSelect: (book: BookNode, clickEvent?: React.MouseEvent) => void
   isSelected: boolean
   isHovered: boolean
   onHover: (book: BookNode | null) => void
   onDelete: (bookId: string) => void
+  isMobile?: boolean
 }
 
 export function TreeNodePositioned({
@@ -33,42 +34,70 @@ export function TreeNodePositioned({
   isHovered,
   onHover,
   onDelete,
+  isMobile = false,
 }: TreeNodePositionedProps) {
   const [imageError, setImageError] = useState(false)
 
-  const handleDeleteClick = (e: React.MouseEvent) => {
+  const handleDeleteClick = (e: React.MouseEvent | React.TouchEvent) => {
     e.stopPropagation()
+    e.preventDefault()
     onDelete(node.id)
   }
 
-  const handleNodeClick = (e: React.MouseEvent) => {
-    onSelect(node.book, e) // Pass the click event
+  const handleNodeClick = (e: React.MouseEvent | React.TouchEvent) => {
+    e.preventDefault()
+    onSelect(node.book, e as React.MouseEvent)
   }
 
   const handleImageError = () => {
     setImageError(true)
   }
 
-  // Calculate responsive dimensions and styling
+  // Mobile-responsive dimensions and styling
   const width = node.width
   const height = node.height
 
-  // Calculate image dimensions based on node size
-  const imgWidth = Math.min(64, width * 0.25)
-  const imgHeight = Math.min(96, height * 0.8)
+  // Mobile-optimized image dimensions
+  const showImage = !isMobile || width > 140 // Reduced threshold from 160
+  const imgWidth = showImage ? Math.min(isMobile ? 40 : 64, width * 0.25) : 0 // Reduced mobile from 48
+  const imgHeight = showImage ? Math.min(isMobile ? 60 : 96, height * 0.8) : 0 // Reduced mobile from 72
 
-  // Calculate font sizes based on node size - improved scaling
-  const titleFontSize = Math.max(12, Math.min(15, width / 18))
-  const authorFontSize = Math.max(10, Math.min(12, width / 22))
-  const metaFontSize = Math.max(9, Math.min(11, width / 25))
+  // Mobile-responsive font sizes - more aggressive scaling
+  const titleFontSize = Math.max(
+    isMobile ? 10 : 12, // Reduced mobile minimum from 11
+    Math.min(isMobile ? 12 : 15, width / (isMobile ? 12 : 18)) // Improved scaling
+  )
+  const authorFontSize = Math.max(
+    isMobile ? 8 : 10, // Reduced mobile minimum from 9
+    Math.min(isMobile ? 10 : 12, width / (isMobile ? 18 : 22))
+  )
+  const metaFontSize = Math.max(
+    isMobile ? 7 : 9, // Reduced mobile minimum from 8
+    Math.min(isMobile ? 9 : 11, width / (isMobile ? 20 : 25))
+  )
 
-  // Calculate padding based on node size - reduced for more content space
-  const padding = Math.max(8, Math.min(14, width / 22))
+  // Mobile-responsive padding - more compact
+  const padding = Math.max(isMobile ? 4 : 8, Math.min(isMobile ? 8 : 14, width / 22)) // Reduced mobile padding
 
   // Calculate available width for text content
-  const trashButtonWidth = Math.max(12, Math.min(16, width / 20)) + Math.max(4, padding / 4) * 2 + 8 // icon + padding + margin
-  const imageAreaWidth = width > 140 ? imgWidth + 8 : 0 // image width + gap
+  const trashButtonWidth = Math.max(isMobile ? 8 : 12, Math.min(isMobile ? 12 : 16, width / 20)) + Math.max(3, padding / 4) * 2 + (isMobile ? 4 : 8) // Reduced mobile sizing
+  const imageAreaWidth = showImage ? imgWidth + (isMobile ? 4 : 8) : 0 // Reduced mobile gap
   const availableTextWidth = width - padding * 2 - imageAreaWidth - trashButtonWidth
+
+  // Touch event handlers for mobile
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (isMobile) {
+      // Prevent default to avoid scroll on touch
+      e.preventDefault()
+    }
+  }
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (isMobile) {
+      e.preventDefault()
+      handleNodeClick(e)
+    }
+  }
 
   return (
     <div
@@ -78,7 +107,7 @@ export function TreeNodePositioned({
           : isHovered
             ? "bg-gradient-to-br from-orange-300 to-orange-400 text-white border-2 border-orange-500 shadow-lg scale-105"
             : "bg-gradient-to-br from-orange-100 to-orange-200 text-gray-800 border border-orange-300 hover:from-orange-200 hover:to-orange-300"
-      }`}
+      } ${isMobile ? 'touch-manipulation' : ''}`}
       style={{
         left: `${node.x - width / 2}px`,
         top: `${node.y - height / 2}px`,
@@ -86,32 +115,40 @@ export function TreeNodePositioned({
         height: `${height}px`,
         zIndex: isSelected || isHovered ? 20 : 10,
         padding: `${padding}px`,
+        // Mobile-specific touch optimizations
+        WebkitTapHighlightColor: 'transparent',
+        touchAction: 'manipulation',
       }}
-      onClick={handleNodeClick} // Updated to use new handler
-      onMouseEnter={() => onHover(node.book)}
-      onMouseLeave={() => onHover(null)}
+      onClick={!isMobile ? handleNodeClick : undefined}
+      onTouchStart={isMobile ? handleTouchStart : undefined}
+      onTouchEnd={isMobile ? handleTouchEnd : undefined}
+      onMouseEnter={!isMobile ? () => onHover(node.book) : undefined}
+      onMouseLeave={!isMobile ? () => onHover(null) : undefined}
     >
       <button
         className={`absolute top-1 right-1 rounded-full transition-colors z-10 ${
           isSelected || isHovered ? "bg-white/20 hover:bg-white/40" : "bg-white/60 hover:bg-white/80"
-        }`}
+        } ${isMobile ? 'touch-manipulation' : ''}`}
         style={{
-          padding: `${Math.max(4, padding / 4)}px`,
+          padding: `${Math.max(isMobile ? 3 : 4, padding / 4)}px`,
+          WebkitTapHighlightColor: 'transparent',
+          touchAction: 'manipulation',
         }}
-        onClick={handleDeleteClick}
+        onClick={!isMobile ? handleDeleteClick : undefined}
+        onTouchEnd={isMobile ? handleDeleteClick : undefined}
         aria-label="Delete node"
       >
         <Trash2
           className={`${isSelected || isHovered ? "text-white" : "text-gray-700"}`}
           style={{
-            width: `${Math.max(12, Math.min(16, width / 20))}px`,
-            height: `${Math.max(12, Math.min(16, width / 20))}px`,
+            width: `${Math.max(isMobile ? 10 : 12, Math.min(isMobile ? 14 : 16, width / 20))}px`,
+            height: `${Math.max(isMobile ? 10 : 12, Math.min(isMobile ? 14 : 16, width / 20))}px`,
           }}
         />
       </button>
 
-      <div className="flex gap-2 h-full overflow-hidden">
-        {width > 140 && (
+      <div className={`flex ${isMobile ? 'gap-1' : 'gap-2'} h-full overflow-hidden`}>
+        {showImage && (
           <div 
             className="flex-shrink-0"
             style={{ width: `${imgWidth}px`, minWidth: `${imgWidth}px` }}
@@ -141,13 +178,15 @@ export function TreeNodePositioned({
                   className={`text-xs ${
                     isSelected || isHovered ? "text-white" : "text-gray-500"
                   }`}
+                  style={{ fontSize: `${Math.max(8, metaFontSize - 1)}px` }}
                 >
-                  No Image
+                  {isMobile ? "📚" : "No Image"}
                 </span>
               </div>
             )}
           </div>
         )}
+        
         <div 
           className="flex-1 min-w-0 flex flex-col justify-between overflow-hidden"
           style={{ maxWidth: `${availableTextWidth}px` }}
@@ -159,9 +198,9 @@ export function TreeNodePositioned({
               }`}
               style={{ 
                 fontSize: `${titleFontSize}px`,
-                lineHeight: '1.1',
+                lineHeight: isMobile ? '1.0' : '1.1',
                 display: '-webkit-box',
-                WebkitLineClamp: height > 90 ? 2 : 1,
+                WebkitLineClamp: height > (isMobile ? 70 : 90) ? 2 : 1,
                 WebkitBoxOrient: 'vertical',
                 overflow: 'hidden',
                 wordBreak: 'break-word',
@@ -170,14 +209,14 @@ export function TreeNodePositioned({
             >
               {node.book.title}
             </h3>
-            {height > 55 && (
+            {height > (isMobile ? 45 : 55) && (
               <p
                 className={`mt-1 break-words ${isSelected || isHovered ? "text-orange-100" : "text-gray-600"}`}
                 style={{ 
                   fontSize: `${authorFontSize}px`,
-                  lineHeight: '1.1',
+                  lineHeight: isMobile ? '1.0' : '1.1',
                   display: '-webkit-box',
-                  WebkitLineClamp: height > 80 ? 2 : 1,
+                  WebkitLineClamp: height > (isMobile ? 60 : 80) ? 2 : 1,
                   WebkitBoxOrient: 'vertical',
                   overflow: 'hidden',
                   wordBreak: 'break-word'
@@ -188,36 +227,40 @@ export function TreeNodePositioned({
             )}
           </div>
 
-          {height > 65 && width > 150 && (
+          {height > (isMobile ? 55 : 65) && width > (isMobile ? 120 : 150) && (
             <div className="flex flex-col gap-1 overflow-hidden mt-1">
               <div
                 className={`flex items-center flex-wrap gap-1 ${isSelected || isHovered ? "text-orange-100" : "text-gray-700"}`}
-                style={{ fontSize: `${metaFontSize}px`, lineHeight: '1.1' }}
+                style={{ fontSize: `${metaFontSize}px`, lineHeight: isMobile ? '1.0' : '1.1' }}
               >
                 <div className="flex items-center flex-shrink-0">
                   <Star
                     className={`mr-0.5 flex-shrink-0 ${isSelected || isHovered ? "text-yellow-200" : "text-orange-400"}`}
                     style={{ width: `${metaFontSize + 1}px`, height: `${metaFontSize + 1}px` }}
                   />
-                  <span className="truncate">{node.book.average_rating}</span>
+                  <span className="truncate">{node.book.average_rating.toFixed(1)}</span>
                 </div>
-                <span className="mx-0.5 flex-shrink-0">•</span>
-                <div className="flex items-center flex-shrink-0">
-                  <Hash
-                    className="mr-0.5 flex-shrink-0"
-                    style={{ width: `${metaFontSize + 1}px`, height: `${metaFontSize + 1}px` }}
-                  />
-                  <span className="truncate">{node.book.num_pages} pg</span>
-                </div>
+                {!isMobile && (
+                  <>
+                    <span className="mx-0.5 flex-shrink-0">•</span>
+                    <div className="flex items-center flex-shrink-0">
+                      <Hash
+                        className="mr-0.5 flex-shrink-0"
+                        style={{ width: `${metaFontSize + 1}px`, height: `${metaFontSize + 1}px` }}
+                      />
+                      <span className="truncate">{node.book.num_pages} pg</span>
+                    </div>
+                  </>
+                )}
               </div>
 
-              {width > 170 && height > 85 && (
+              {width > (isMobile ? 140 : 170) && height > (isMobile ? 70 : 85) && (
                 <div className="overflow-hidden">
                   <span
                     className={`inline-block px-1.5 py-0.5 rounded text-xs truncate max-w-full ${
                       isSelected || isHovered ? "bg-white/20 text-white" : "bg-white/60 text-gray-700"
                     }`}
-                    style={{ fontSize: `${Math.max(8, metaFontSize - 1)}px` }}
+                    style={{ fontSize: `${Math.max(isMobile ? 7 : 8, metaFontSize - 1)}px` }}
                   >
                     {node.book.categories.split(",")[0].trim()}
                   </span>
