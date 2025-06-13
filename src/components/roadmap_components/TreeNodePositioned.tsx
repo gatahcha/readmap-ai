@@ -19,7 +19,7 @@ interface PositionedNode {
 
 interface TreeNodePositionedProps {
   node: PositionedNode
-  onSelect: (book: BookNode) => void
+  onSelect: (book: BookNode, clickEvent?: React.MouseEvent) => void // Updated to include click event
   isSelected: boolean
   isHovered: boolean
   onHover: (book: BookNode | null) => void
@@ -41,6 +41,10 @@ export function TreeNodePositioned({
     onDelete(node.id)
   }
 
+  const handleNodeClick = (e: React.MouseEvent) => {
+    onSelect(node.book, e) // Pass the click event
+  }
+
   const handleImageError = () => {
     setImageError(true)
   }
@@ -53,13 +57,13 @@ export function TreeNodePositioned({
   const imgWidth = Math.min(64, width * 0.25)
   const imgHeight = Math.min(96, height * 0.8)
 
-  // Calculate font sizes based on node size
-  const titleFontSize = Math.max(11, Math.min(16, width / 16))
-  const authorFontSize = Math.max(9, Math.min(13, width / 20))
-  const metaFontSize = Math.max(8, Math.min(11, width / 23))
+  // Calculate font sizes based on node size - improved scaling
+  const titleFontSize = Math.max(12, Math.min(15, width / 18))
+  const authorFontSize = Math.max(10, Math.min(12, width / 22))
+  const metaFontSize = Math.max(9, Math.min(11, width / 25))
 
-  // Calculate padding based on node size
-  const padding = Math.max(10, Math.min(18, width / 18))
+  // Calculate padding based on node size - reduced for more content space
+  const padding = Math.max(8, Math.min(14, width / 22))
 
   // Calculate available width for text content
   const trashButtonWidth = Math.max(12, Math.min(16, width / 20)) + Math.max(4, padding / 4) * 2 + 8 // icon + padding + margin
@@ -83,7 +87,7 @@ export function TreeNodePositioned({
         zIndex: isSelected || isHovered ? 20 : 10,
         padding: `${padding}px`,
       }}
-      onClick={() => onSelect(node.book)}
+      onClick={handleNodeClick} // Updated to use new handler
       onMouseEnter={() => onHover(node.book)}
       onMouseLeave={() => onHover(null)}
     >
@@ -155,9 +159,9 @@ export function TreeNodePositioned({
               }`}
               style={{ 
                 fontSize: `${titleFontSize}px`,
-                lineHeight: '1.2',
+                lineHeight: '1.1',
                 display: '-webkit-box',
-                WebkitLineClamp: height > 80 ? 2 : 1,
+                WebkitLineClamp: height > 90 ? 2 : 1,
                 WebkitBoxOrient: 'vertical',
                 overflow: 'hidden',
                 wordBreak: 'break-word',
@@ -166,14 +170,14 @@ export function TreeNodePositioned({
             >
               {node.book.title}
             </h3>
-            {height > 60 && (
+            {height > 55 && (
               <p
                 className={`mt-1 break-words ${isSelected || isHovered ? "text-orange-100" : "text-gray-600"}`}
                 style={{ 
                   fontSize: `${authorFontSize}px`,
-                  lineHeight: '1.2',
+                  lineHeight: '1.1',
                   display: '-webkit-box',
-                  WebkitLineClamp: 1,
+                  WebkitLineClamp: height > 80 ? 2 : 1,
                   WebkitBoxOrient: 'vertical',
                   overflow: 'hidden',
                   wordBreak: 'break-word'
@@ -184,36 +188,36 @@ export function TreeNodePositioned({
             )}
           </div>
 
-          {height > 70 && width > 160 && (
-            <div className="flex flex-col gap-1 overflow-hidden">
+          {height > 65 && width > 150 && (
+            <div className="flex flex-col gap-1 overflow-hidden mt-1">
               <div
-                className={`flex items-center flex-wrap ${isSelected || isHovered ? "text-orange-100" : "text-gray-700"}`}
-                style={{ fontSize: `${metaFontSize}px` }}
+                className={`flex items-center flex-wrap gap-1 ${isSelected || isHovered ? "text-orange-100" : "text-gray-700"}`}
+                style={{ fontSize: `${metaFontSize}px`, lineHeight: '1.1' }}
               >
                 <div className="flex items-center flex-shrink-0">
                   <Star
-                    className={`mr-1 flex-shrink-0 ${isSelected || isHovered ? "text-yellow-200" : "text-orange-400"}`}
-                    style={{ width: `${metaFontSize + 2}px`, height: `${metaFontSize + 2}px` }}
+                    className={`mr-0.5 flex-shrink-0 ${isSelected || isHovered ? "text-yellow-200" : "text-orange-400"}`}
+                    style={{ width: `${metaFontSize + 1}px`, height: `${metaFontSize + 1}px` }}
                   />
                   <span className="truncate">{node.book.average_rating}</span>
                 </div>
-                <span className="mx-1 flex-shrink-0">•</span>
+                <span className="mx-0.5 flex-shrink-0">•</span>
                 <div className="flex items-center flex-shrink-0">
                   <Hash
-                    className="mr-1 flex-shrink-0"
-                    style={{ width: `${metaFontSize + 2}px`, height: `${metaFontSize + 2}px` }}
+                    className="mr-0.5 flex-shrink-0"
+                    style={{ width: `${metaFontSize + 1}px`, height: `${metaFontSize + 1}px` }}
                   />
                   <span className="truncate">{node.book.num_pages} pg</span>
                 </div>
               </div>
 
-              {width > 180 && (
+              {width > 170 && height > 85 && (
                 <div className="overflow-hidden">
                   <span
-                    className={`inline-block px-2 py-1 rounded-full truncate max-w-full ${
+                    className={`inline-block px-1.5 py-0.5 rounded text-xs truncate max-w-full ${
                       isSelected || isHovered ? "bg-white/20 text-white" : "bg-white/60 text-gray-700"
                     }`}
-                    style={{ fontSize: `${metaFontSize}px` }}
+                    style={{ fontSize: `${Math.max(8, metaFontSize - 1)}px` }}
                   >
                     {node.book.categories.split(",")[0].trim()}
                   </span>

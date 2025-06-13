@@ -7,11 +7,12 @@ import { BookConnection } from "@/components/roadmap_components/BookConnection"
 import { ArrowDefinitions } from "@/components/roadmap_components/ArrowDefinition"
 import { Download, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { generateRoadmapPDF } from "@/components/utils/pdf-generator"
+
+import { generateRoadmapJPEG } from "../utils/jpeg-generator"
 
 interface RoadmapTreeProps {
   books: BookNode[]
-  onBookSelect: (book: BookNode | null) => void
+  onBookSelect: (book: BookNode | null, clickEvent?: React.MouseEvent) => void
   selectedBook: BookNode | null
   onDeleteNode: (bookId: string) => void
   onClearRoadmap: () => void
@@ -49,26 +50,25 @@ export function RoadmapTree({ books, onBookSelect, selectedBook, onDeleteNode, o
   }, [])
 
   const getContainerDimensions = useCallback(() => {
-    // Ensure consistent container sizing with more height for bottom padding
+    // Improved container sizing with better space utilization
     const containerWidth = Math.min(
-      Math.max(screenDimensions.width - 60, 1400), 
-      screenDimensions.width * 0.95 // Max 95% of screen width
+      Math.max(screenDimensions.width - 40, 1400), // Reduced margin from 60 to 40
+      screenDimensions.width * 0.97 // Increased from 95% to 97%
     )
     const containerHeight = Math.min(
-      Math.max(screenDimensions.height - 100, 1000), // Increased height significantly
-      screenDimensions.height * 0.98 // Almost full screen height
+      Math.max(screenDimensions.height - 60, 1200), // Reduced from 100 to 60
+      screenDimensions.height * 0.99 // Increased from 98% to 99%
     )
     return { width: containerWidth, height: containerHeight }
   }, [screenDimensions])
 
   const handleDownload = useCallback(async () => {
-    try {
-      await generateRoadmapPDF(books, "Roadmap #1", "roadmap-tree-content-area")
-    } catch (error) {
-      console.error("Failed to generate PDF:", error)
-      await generateRoadmapPDF(books, "Roadmap #1")
-    }
-  }, [books])
+  try {
+    await generateRoadmapJPEG(books, "Roadmap #1", "roadmap-tree-content-area")
+  } catch (error) {
+    console.error("Failed to generate JPEG:", error)
+  }
+}, [books])
 
   const findBookByISBN13 = useCallback((isbn13: number) => books.find((book) => book.isbn13 === isbn13), [books])
 
@@ -78,11 +78,11 @@ export function RoadmapTree({ books, onBookSelect, selectedBook, onDeleteNode, o
 
       const containerDimensions = getContainerDimensions()
       const headerBarHeight = 80
-      const sidePadding = 80 // Consistent padding on both sides
-      const verticalPadding = 10 // Further reduced top padding
-      const bottomPadding = 160 // Increased bottom padding for more space
+      const sidePadding = 60 // Reduced from 80 to 60
+      const verticalPadding = 10 // Keep minimal top padding
+      const bottomPadding = 120 // Increased from 80 to 120 for MacBook screens
 
-      // Calculate drawable area accounting for both top and bottom padding
+      // Calculate drawable area with optimized spacing
       const drawableCanvasWidth = containerDimensions.width - (sidePadding * 2)
       const drawableCanvasHeight = containerDimensions.height - headerBarHeight - verticalPadding - bottomPadding
 
@@ -129,20 +129,20 @@ export function RoadmapTree({ books, onBookSelect, selectedBook, onDeleteNode, o
       const totalLevels = Object.keys(levelGroups).length
       const maxBooksInLevel = Math.max(1, ...Object.values(levelGroups).map((levelBooks) => levelBooks.length))
 
-      // Better node sizing calculation
-      const minNodeWidth = 180 // Minimum readable width
-      const maxNodeWidth = 320 // Maximum width to prevent too large nodes
-      const minNodeHeight = 100 // Increased minimum height for better content display
-      const maxNodeHeight = 140 // Increased maximum height
+      // Optimized node sizing calculation
+      const minNodeWidth = 180
+      const maxNodeWidth = 320
+      const minNodeHeight = 100
+      const maxNodeHeight = 140
 
-      // Calculate base dimensions with generous spacing
+      // Better base dimensions calculation
       const baseNodeWidth = Math.max(
         minNodeWidth, 
-        Math.min(maxNodeWidth, (drawableCanvasWidth - (maxBooksInLevel - 1) * 40) / maxBooksInLevel) // Increased spacing allowance
+        Math.min(maxNodeWidth, (drawableCanvasWidth - (maxBooksInLevel - 1) * 35) / maxBooksInLevel) // Reduced spacing from 40 to 35
       )
       const baseNodeHeight = Math.max(
         minNodeHeight, 
-        Math.min(maxNodeHeight, (drawableCanvasHeight - (totalLevels - 1) * 60) / totalLevels) // Increased spacing allowance
+        Math.min(maxNodeHeight, (drawableCanvasHeight - (totalLevels - 1) * 50) / totalLevels) // Reduced spacing from 60 to 50
       )
 
       // Apply responsive scaling
@@ -152,28 +152,28 @@ export function RoadmapTree({ books, onBookSelect, selectedBook, onDeleteNode, o
 
       const positions = new Map<string, { x: number; y: number }>()
 
-      // Improved vertical gap calculation for much better spacing
-      let actualVerticalGap = Math.max(60, scaledNodeHeight * 0.7) // Increased base gap and ratio
+      // Optimized vertical gap calculation
+      let actualVerticalGap = Math.max(50, scaledNodeHeight * 0.6) // Reduced from 60 and 0.7
       if (totalLevels > 1) {
         const requiredHeightForNodes = totalLevels * scaledNodeHeight
         const requiredHeightForGaps = (totalLevels - 1) * actualVerticalGap
         const totalContentTreeHeight = requiredHeightForNodes + requiredHeightForGaps
         if (totalContentTreeHeight > drawableCanvasHeight) {
-          actualVerticalGap = Math.max(40, (drawableCanvasHeight - requiredHeightForNodes) / (totalLevels - 1))
+          actualVerticalGap = Math.max(35, (drawableCanvasHeight - requiredHeightForNodes) / (totalLevels - 1)) // Reduced from 40
         }
       }
 
       const finalContentTreeHeight = totalLevels * scaledNodeHeight + Math.max(0, totalLevels - 1) * actualVerticalGap
-      // Position content accounting for both top padding and ensuring bottom space
-      const topOffset = headerBarHeight + verticalPadding + Math.max(20, (drawableCanvasHeight - finalContentTreeHeight) / 2)
+      // Better positioning - use more of the available space
+      const topOffset = headerBarHeight + verticalPadding + Math.max(15, (drawableCanvasHeight - finalContentTreeHeight) / 4) // Changed from /2 to /4
 
       Object.entries(levelGroups).forEach(([levelStr, levelBooks]) => {
         const level = Number.parseInt(levelStr, 10)
         const y = topOffset + (level - 1) * (scaledNodeHeight + actualVerticalGap) + scaledNodeHeight / 2
         const currentLevelBookCount = levelBooks.length
         
-        // Much better horizontal spacing calculation
-        let actualHorizontalGap = Math.max(40, scaledNodeWidth * 0.18) // Increased base gap and ratio
+        // Optimized horizontal spacing calculation
+        let actualHorizontalGap = Math.max(35, scaledNodeWidth * 0.15) // Reduced from 40 and 0.18
 
         if (currentLevelBookCount > 1) {
           const requiredWidthForNodesInLevel = currentLevelBookCount * scaledNodeWidth
@@ -182,7 +182,7 @@ export function RoadmapTree({ books, onBookSelect, selectedBook, onDeleteNode, o
           
           if (totalLevelContentWidth > drawableCanvasWidth) {
             actualHorizontalGap = Math.max(
-              25, // Increased minimum gap even when constrained
+              20, // Reduced from 25
               (drawableCanvasWidth - requiredWidthForNodesInLevel) / (currentLevelBookCount - 1)
             )
           }
@@ -191,11 +191,10 @@ export function RoadmapTree({ books, onBookSelect, selectedBook, onDeleteNode, o
         const finalLevelContentWidth =
           currentLevelBookCount * scaledNodeWidth + Math.max(0, currentLevelBookCount - 1) * actualHorizontalGap
         
-        // Improved centering calculation - ensure perfect center alignment
+        // Perfect center alignment
         const levelStartX = sidePadding + (drawableCanvasWidth - finalLevelContentWidth) / 2
 
         levelBooks.forEach((book, index) => {
-          // Calculate exact position for each node to ensure even spacing
           const x = levelStartX + index * (scaledNodeWidth + actualHorizontalGap) + scaledNodeWidth / 2
           positions.set(book.id, { x, y })
         })
@@ -272,7 +271,7 @@ export function RoadmapTree({ books, onBookSelect, selectedBook, onDeleteNode, o
   const containerDimensions = getContainerDimensions()
 
   return (
-    <main className="w-full h-screen overflow-hidden bg-gradient-to-b from-orange-50 to-yellow-50 flex items-start justify-center px-4 pt-8">
+    <main className="w-full h-screen overflow-hidden bg-gradient-to-b from-orange-50 to-yellow-50 flex items-start justify-center px-2 pt-4"> {/* Reduced padding */}
       <div className="flex flex-col items-center">
         <div
           id="roadmap-tree-full"
@@ -280,8 +279,8 @@ export function RoadmapTree({ books, onBookSelect, selectedBook, onDeleteNode, o
           style={{
             width: `${containerDimensions.width}px`,
             height: `${containerDimensions.height}px`,
-            maxWidth: "calc(100vw - 32px)",
-            maxHeight: "calc(100vh - 64px)",
+            maxWidth: "calc(100vw - 16px)", // Reduced from 32px
+            maxHeight: "calc(100vh - 32px)", // Reduced from 64px
           }}
         >
           {/* Header with title and action buttons - now sticky */}
@@ -317,7 +316,7 @@ export function RoadmapTree({ books, onBookSelect, selectedBook, onDeleteNode, o
             style={{
               width: "100%",
               minHeight: "100%",
-              paddingBottom: "120px", // Add substantial bottom padding to prevent cutoff
+              paddingBottom: "100px", // Increased from 60px for better MacBook spacing
             }}
           >
             {/* SVG for animated connections */}
@@ -346,7 +345,7 @@ export function RoadmapTree({ books, onBookSelect, selectedBook, onDeleteNode, o
               <TreeNodePositioned
                 key={node.id}
                 node={node}
-                onSelect={onBookSelect}
+                onSelect={(book, clickEvent) => onBookSelect(book, clickEvent)}
                 isSelected={selectedBook?.id === node.id}
                 isHovered={hoveredBook?.id === node.id}
                 onHover={setHoveredBook}

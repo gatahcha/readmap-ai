@@ -5,7 +5,7 @@ export const sampleBooks: BookNode[] = [
   {
     id: "clean-code",
     isbn13: 9780132350884,
-    isbn10: "0132350882",
+    isbn10: 132350882,
     title: "Clean Code",
     subtitle: "A Handbook of Agile Software Craftsmanship",
     author: "Robert C. Martin",
@@ -16,12 +16,13 @@ export const sampleBooks: BookNode[] = [
     published_year: 2008,
     average_rating: 4.6,
     num_pages: 464,
+    embedding: [],
     prerequisites: [],
   },
   {
     id: "pragmatic-programmer",
     isbn13: 9780201616224,
-    isbn10: "020161622X",
+    isbn10: 201616224,
     title: "The Pragmatic Programmer",
     subtitle: "From Journeyman to Master",
     author: "Andrew Hunt, David Thomas",
@@ -32,12 +33,13 @@ export const sampleBooks: BookNode[] = [
     published_year: 1999,
     average_rating: 4.7,
     num_pages: 352,
+    embedding: [],
     prerequisites: [],
   },
   {
     id: "code-complete",
     isbn13: 9780735619678,
-    isbn10: "0735619670",
+    isbn10: 735619670,
     title: "Code Complete",
     subtitle: "A Practical Handbook of Software Construction",
     author: "Steve McConnell",
@@ -48,6 +50,7 @@ export const sampleBooks: BookNode[] = [
     published_year: 2004,
     average_rating: 4.6,
     num_pages: 960,
+    embedding: [],
     prerequisites: [],
   },
 
@@ -55,7 +58,7 @@ export const sampleBooks: BookNode[] = [
   {
     id: "clean-architecture",
     isbn13: 9780134494166,
-    isbn10: "0134494164",
+    isbn10: 134494164,
     title: "Clean Architecture",
     subtitle: "A Craftsman's Guide to Software Structure and Design",
     author: "Robert C. Martin",
@@ -66,12 +69,13 @@ export const sampleBooks: BookNode[] = [
     published_year: 2017,
     average_rating: 4.4,
     num_pages: 432,
+    embedding: [],
     prerequisites: [9780132350884], // Clean Code
   },
   {
     id: "refactoring",
     isbn13: 9780201485677,
-    isbn10: "0201485672",
+    isbn10: 201485672,
     title: "Refactoring",
     subtitle: "Improving the Design of Existing Code",
     author: "Martin Fowler",
@@ -82,12 +86,13 @@ export const sampleBooks: BookNode[] = [
     published_year: 1999,
     average_rating: 4.5,
     num_pages: 464,
+    embedding: [],
     prerequisites: [9780132350884], // Clean Code
   },
   {
     id: "design-patterns",
     isbn13: 9780201633610,
-    isbn10: "0201633612",
+    isbn10: 201633612,
     title: "Design Patterns",
     subtitle: "Elements of Reusable Object-Oriented Software",
     author: "Erich Gamma, Richard Helm, Ralph Johnson, John Vlissides",
@@ -98,12 +103,13 @@ export const sampleBooks: BookNode[] = [
     published_year: 1994,
     average_rating: 4.5,
     num_pages: 416,
+    embedding: [],
     prerequisites: [9780201616224], // The Pragmatic Programmer
   },
   {
     id: "tdd",
     isbn13: 9780321146533,
-    isbn10: "0321146530",
+    isbn10: 321146530,
     title: "Test Driven Development",
     subtitle: "By Example",
     author: "Kent Beck",
@@ -114,6 +120,7 @@ export const sampleBooks: BookNode[] = [
     published_year: 2002,
     average_rating: 4.2,
     num_pages: 240,
+    embedding: [],
     prerequisites: [9780735619678], // Code Complete
   },
 
@@ -121,7 +128,7 @@ export const sampleBooks: BookNode[] = [
   {
     id: "domain-driven-design",
     isbn13: 9780321125217,
-    isbn10: "0321125215",
+    isbn10: 321125215,
     title: "Domain-Driven Design",
     subtitle: "Tackling Complexity in the Heart of Software",
     author: "Eric Evans",
@@ -132,12 +139,13 @@ export const sampleBooks: BookNode[] = [
     published_year: 2003,
     average_rating: 4.4,
     num_pages: 560,
+    embedding: [],
     prerequisites: [9780134494166], // Clean Architecture
   },
   {
     id: "continuous-delivery",
     isbn13: 9780321601919,
-    isbn10: "0321601912",
+    isbn10: 321601912,
     title: "Continuous Delivery",
     subtitle: "Reliable Software Releases through Build, Test, and Deployment Automation",
     author: "Jez Humble, David Farley",
@@ -148,12 +156,13 @@ export const sampleBooks: BookNode[] = [
     published_year: 2010,
     average_rating: 4.5,
     num_pages: 512,
+    embedding: [],
     prerequisites: [9780201485677, 9780321146533], // Refactoring, Test Driven Development
   },
   {
     id: "patterns-enterprise-app",
     isbn13: 9780321127426,
-    isbn10: "0321127420",
+    isbn10: 321127420,
     title: "Patterns of Enterprise Application Architecture",
     subtitle: "",
     author: "Martin Fowler",
@@ -164,6 +173,7 @@ export const sampleBooks: BookNode[] = [
     published_year: 2002,
     average_rating: 4.3,
     num_pages: 560,
+    embedding: [],
     prerequisites: [9780201633610], // Design Patterns
   },
 
@@ -171,7 +181,7 @@ export const sampleBooks: BookNode[] = [
   {
     id: "implementing-ddd",
     isbn13: 9780321834577,
-    isbn10: "0321834577",
+    isbn10: 321834577,
     title: "Implementing Domain-Driven Design",
     subtitle: "",
     author: "Vaughn Vernon",
@@ -182,12 +192,13 @@ export const sampleBooks: BookNode[] = [
     published_year: 2013,
     average_rating: 4.4,
     num_pages: 656,
+    embedding: [],
     prerequisites: [9780321125217], // Domain-Driven Design
   },
   {
     id: "microservices-patterns",
     isbn13: 9781617294549,
-    isbn10: "1617294543",
+    isbn10: 1617294543,
     title: "Microservices Patterns",
     subtitle: "With examples in Java",
     author: "Chris Richardson",
@@ -198,12 +209,13 @@ export const sampleBooks: BookNode[] = [
     published_year: 2018,
     average_rating: 4.5,
     num_pages: 520,
+    embedding: [],
     prerequisites: [9780321127426, 9780321601919], // Patterns of Enterprise Application Architecture, Continuous Delivery
   },
   {
     id: "release-it",
     isbn13: 9781680502398,
-    isbn10: "1680502395",
+    isbn10: 1680502395,
     title: "Release It!",
     subtitle: "Design and Deploy Production-Ready Software",
     author: "Michael T. Nygard",
@@ -214,6 +226,7 @@ export const sampleBooks: BookNode[] = [
     published_year: 2018,
     average_rating: 4.6,
     num_pages: 376,
+    embedding: [],
     prerequisites: [9780321601919], // Continuous Delivery
   },
 
@@ -221,7 +234,7 @@ export const sampleBooks: BookNode[] = [
   {
     id: "building-microservices",
     isbn13: 9781491950357,
-    isbn10: "1491950358",
+    isbn10: 1491950358,
     title: "Building Microservices",
     subtitle: "Designing Fine-Grained Systems",
     author: "Sam Newman",
@@ -232,12 +245,13 @@ export const sampleBooks: BookNode[] = [
     published_year: 2015,
     average_rating: 4.3,
     num_pages: 280,
+    embedding: [],
     prerequisites: [9781617294549], // Microservices Patterns
   },
   {
     id: "devops-handbook",
     isbn13: 9781942788003,
-    isbn10: "1942788002",
+    isbn10: 1942788002,
     title: "The DevOps Handbook",
     subtitle: "How to Create World-Class Agility, Reliability, & Security in Technology Organizations",
     author: "Gene Kim, Jez Humble, Patrick Debois, John Willis",
@@ -248,12 +262,13 @@ export const sampleBooks: BookNode[] = [
     published_year: 2016,
     average_rating: 4.6,
     num_pages: 480,
+    embedding: [],
     prerequisites: [9781680502398], // Release It!
   },
   {
     id: "data-intensive-apps",
     isbn13: 9781449373320,
-    isbn10: "1449373321",
+    isbn10: 1449373321,
     title: "Designing Data-Intensive Applications",
     subtitle: "The Big Ideas Behind Reliable, Scalable, and Maintainable Systems",
     author: "Martin Kleppmann",
@@ -264,6 +279,7 @@ export const sampleBooks: BookNode[] = [
     published_year: 2017,
     average_rating: 4.8,
     num_pages: 616,
+    embedding: [],
     prerequisites: [9780321834577, 9781680502398], // Implementing Domain-Driven Design, Release It!
   },
 
@@ -271,7 +287,7 @@ export const sampleBooks: BookNode[] = [
   {
     id: "site-reliability-engineering",
     isbn13: 9781491929124,
-    isbn10: "149192912X",
+    isbn10: 149192912,
     title: "Site Reliability Engineering",
     subtitle: "How Google Runs Production Systems",
     author: "Niall Richard Murphy, Betsy Beyer, Chris Jones, Jennifer Petoff",
@@ -282,12 +298,13 @@ export const sampleBooks: BookNode[] = [
     published_year: 2016,
     average_rating: 4.4,
     num_pages: 552,
+    embedding: [],
     prerequisites: [9781942788003, 9781491950357], // DevOps Handbook, Building Microservices
   },
   {
     id: "accelerate",
     isbn13: 9781942788331,
-    isbn10: "1942788339",
+    isbn10: 1942788339,
     title: "Accelerate",
     subtitle: "The Science of Lean Software and DevOps: Building and Scaling High Performing Technology Organizations",
     author: "Nicole Forsgren, Jez Humble, Gene Kim",
@@ -298,12 +315,13 @@ export const sampleBooks: BookNode[] = [
     published_year: 2018,
     average_rating: 4.5,
     num_pages: 288,
+    embedding: [],
     prerequisites: [9781942788003], // DevOps Handbook
   },
   {
     id: "database-internals",
     isbn13: 9781492040347,
-    isbn10: "1492040347",
+    isbn10: 1492040347,
     title: "Database Internals",
     subtitle: "A Deep Dive into How Distributed Data Systems Work",
     author: "Alex Petrov",
@@ -314,6 +332,7 @@ export const sampleBooks: BookNode[] = [
     published_year: 2019,
     average_rating: 4.6,
     num_pages: 376,
+    embedding: [],
     prerequisites: [9781449373320], // Designing Data-Intensive Applications
   },
 
@@ -321,7 +340,7 @@ export const sampleBooks: BookNode[] = [
   {
     id: "system-design-interview",
     isbn13: 9798664653403,
-    isbn10: "B08CMF2CQF",
+    isbn10: 8664653403,
     title: "System Design Interview",
     subtitle: "An Insider's Guide",
     author: "Alex Xu",
@@ -332,12 +351,13 @@ export const sampleBooks: BookNode[] = [
     published_year: 2020,
     average_rating: 4.6,
     num_pages: 322,
+    embedding: [],
     prerequisites: [9781491929124, 9781492040347, 9781942788331], // Site Reliability Engineering, Database Internals, Accelerate
   },
   {
     id: "staff-engineer",
     isbn13: 9781736417911,
-    isbn10: "1736417916",
+    isbn10: 1736417916,
     title: "Staff Engineer",
     subtitle: "Leadership beyond the management track",
     author: "Will Larson",
@@ -348,6 +368,7 @@ export const sampleBooks: BookNode[] = [
     published_year: 2021,
     average_rating: 4.5,
     num_pages: 284,
+    embedding: [],
     prerequisites: [9781942788331], // Accelerate
   },
 ]

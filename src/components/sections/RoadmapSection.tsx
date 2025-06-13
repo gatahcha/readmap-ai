@@ -15,9 +15,21 @@ interface RoadmapSectionProps {
 export function RoadmapSection({ books: initialBooks }: RoadmapSectionProps) {
   const [books, setBooks] = useState<BookNode[]>(initialBooks)
   const [selectedBook, setSelectedBook] = useState<BookNode | null>(null)
+  const [showPanelOnLeft, setShowPanelOnLeft] = useState(false)
 
-  const handleBookSelect = (book: BookNode | null) => {
+  const handleBookSelect = (book: BookNode | null, clickEvent?: React.MouseEvent) => {
     setSelectedBook(book)
+    
+    // Determine panel position based on where the book node was clicked
+    if (book && clickEvent) {
+      const rect = (clickEvent.currentTarget as HTMLElement).getBoundingClientRect()
+      const nodeX = rect.left + rect.width / 2
+      const screenWidth = window.innerWidth
+      
+      // If node is on the right side of screen, show panel on left
+      const isNodeOnRightSide = nodeX > screenWidth / 2
+      setShowPanelOnLeft(isNodeOnRightSide)
+    }
   }
 
   const handleClosePanel = () => {
@@ -40,11 +52,10 @@ export function RoadmapSection({ books: initialBooks }: RoadmapSectionProps) {
 
   return (
     <div className="relative">
-
       {books.length > 0 ? (
-        <RoadmapTree 
-          books={books} 
-          onBookSelect={handleBookSelect} 
+        <RoadmapTree
+          books={books}
+          onBookSelect={handleBookSelect}
           selectedBook={selectedBook}
           onDeleteNode={handleDeleteNode}
           onClearRoadmap={handleClearRoadmap}
@@ -57,10 +68,11 @@ export function RoadmapSection({ books: initialBooks }: RoadmapSectionProps) {
         </div>
       )}
 
-      <BookDetailPanel 
-        book={selectedBook} 
-        isOpen={!!selectedBook} 
+      <BookDetailPanel
+        book={selectedBook}
+        isOpen={!!selectedBook}
         onClose={handleClosePanel}
+        showOnLeft={showPanelOnLeft}
       />
     </div>
   )

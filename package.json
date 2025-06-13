@@ -21,6 +21,7 @@
     "@types/dotenv": "^6.1.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "dom-to-image": "^2.6.0",
     "dotenv": "^16.5.0",
     "genai": "^0.0.18",
     "google-auth-library": "^10.0.0-rc.2",
@@ -37,6 +38,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
+    "@types/dom-to-image": "^2.6.7",
     "@types/node": "^20.19.0",
     "@types/react": "^19.1.6",
     "@types/react-dom": "^19",

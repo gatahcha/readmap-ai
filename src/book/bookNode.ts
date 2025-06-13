@@ -1,7 +1,7 @@
 export interface BookNode {
   id: string
   isbn13: number
-  isbn10: string
+  isbn10: number
   title: string
   subtitle: string
   author: string
@@ -11,5 +11,6 @@ export interface BookNode {
   published_year: number
   average_rating: number
   num_pages: number
+  embedding: number[]
   prerequisites: number[] //isbn as the prerequisites
 }
