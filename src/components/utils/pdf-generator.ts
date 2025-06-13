@@ -24,15 +24,10 @@ function addWrappedText(doc: jsPDF, text: string, x: number, y: number, maxWidth
   return currentY + lineHeight
 }
 
-// Function to render stars for ratings
-function renderStars(doc: jsPDF, x: number, y: number, rating: number): void {
-  const fullStar = "★"
-  const emptyStar = "☆"
-  const stars = Array(5)
-    .fill(emptyStar)
-    .map((star, i) => (i < Math.floor(rating) ? fullStar : star))
-    .join(" ")
-  doc.text(stars, x, y)
+// Function to render rating as simple number
+function renderRating(doc: jsPDF, x: number, y: number, rating: number): void {
+  doc.setTextColor(75, 85, 99)
+  doc.text(`${rating.toFixed(1)}/5.0`, x, y)
 }
 
 // Create cover page for the roadmap
@@ -82,7 +77,7 @@ function createCoverPage(doc: jsPDF, title: string, books: BookNode[]): void {
   doc.text(`Total Pages: ${totalPages.toLocaleString()}`, pageWidth / 2, boxY + 50, { align: "center" })
   
   const avgRating = books.reduce((sum, book) => sum + book.average_rating, 0) / books.length
-  doc.text(`Average Rating: ${avgRating.toFixed(1)} ★`, pageWidth / 2, boxY + 65, { align: "center" })
+  doc.text(`Average Rating: ${avgRating.toFixed(1)}/5.0`, pageWidth / 2, boxY + 65, { align: "center" })
   
   // Categories section
   const categories = [...new Set(books.flatMap(book => book.categories.split(", ")))]
@@ -208,7 +203,18 @@ function getLevelName(level: number): string {
   return levelNames[level as keyof typeof levelNames] || `Level ${level}`
 }
 
-// Add book details pages
+// Simple page footer with just page number
+function addSimpleFooter(doc: jsPDF, pageNumber: number): void {
+  const pageWidth = doc.internal.pageSize.getWidth()
+  const pageHeight = doc.internal.pageSize.getHeight()
+  const margin = 20
+  
+  // Just add page number - no logo
+  doc.setFontSize(10)
+  doc.setTextColor(107, 114, 128)
+  doc.text(`Page ${pageNumber}`, pageWidth - margin, pageHeight - 10, { align: "right" })
+}
+  // Add book details pages - SIMPLIFIED
 function addBookDetailsPages(doc: jsPDF, books: BookNode[]): void {
   books.forEach((book, index) => {
     doc.addPage("a4", "portrait")
@@ -220,24 +226,25 @@ function addBookDetailsPages(doc: jsPDF, books: BookNode[]): void {
     let currentY = margin + 10
 
     // Book header with background
+    const headerHeight = book.subtitle ? 30 : 20
     doc.setFillColor(254, 215, 170) // Orange 200
-    doc.rect(margin, currentY - 5, contentWidth, 25, 'F')
+    doc.rect(margin, currentY, contentWidth, headerHeight, 'F')
     
     // Book title
     doc.setFontSize(18)
     doc.setFont("helvetica", "bold")
     doc.setTextColor(31, 41, 55)
-    currentY = addWrappedText(doc, book.title, margin + 5, currentY + 10, contentWidth - 10, 8)
+    doc.text(book.title, margin + 5, currentY + 12)
 
     // Subtitle
     if (book.subtitle) {
-      doc.setFontSize(14)
+      doc.setFontSize(12)
       doc.setFont("helvetica", "italic")
       doc.setTextColor(75, 85, 99)
-      currentY = addWrappedText(doc, book.subtitle, margin + 5, currentY + 2, contentWidth - 10, 7)
+      doc.text(book.subtitle, margin + 5, currentY + 24)
     }
 
-    currentY += 10
+    currentY += headerHeight + 10
 
     // Two column layout for details
     const leftColumnX = margin
@@ -288,13 +295,12 @@ function addBookDetailsPages(doc: jsPDF, books: BookNode[]): void {
     doc.text(book.num_pages.toString(), rightColumnX + 25, rightY)
     rightY += lineHeight + 2
 
-    // Rating
+    // Rating - SIMPLIFIED to numbers only
     doc.setFont("helvetica", "bold")
     doc.setTextColor(31, 41, 55)
     doc.text("Rating:", rightColumnX, rightY)
     doc.setFont("helvetica", "normal")
-    renderStars(doc, rightColumnX + 25, rightY, book.average_rating)
-    doc.text(`(${book.average_rating.toFixed(1)})`, rightColumnX + 65, rightY)
+    renderRating(doc, rightColumnX + 25, rightY, book.average_rating)
     rightY += lineHeight + 5
 
     // ISBN
@@ -343,10 +349,8 @@ function addBookDetailsPages(doc: jsPDF, books: BookNode[]): void {
     doc.setTextColor(75, 85, 99)
     addWrappedText(doc, book.description, margin, currentY, contentWidth, lineHeight)
 
-    // Page number
-    doc.setFontSize(10)
-    doc.setTextColor(107, 114, 128)
-    doc.text(`Page ${index + 3}`, pageWidth - margin, doc.internal.pageSize.height - 10, { align: "right" })
+    // Add simple footer with just page number
+    addSimpleFooter(doc, index + 3)
   })
 }
 
