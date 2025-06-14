@@ -354,15 +354,13 @@ export function RoadmapTree({ books, onBookSelect, selectedBook, onDeleteNode, o
                       <Download className="w-4 h-4" />
                       Download PDF
                     </button>
-                    <Button
-                      variant="outline"
-                      size="sm"
+                    <button
+                      className="flex items-center justify-center gap-2 px-3 py-2 text-red-600 bg-white border border-red-300 hover:text-red-700 hover:bg-red-50 hover:border-red-400 rounded-lg transition-all duration-200 text-sm w-full"
                       onClick={onClearRoadmap}
-                      className="flex items-center justify-center gap-2 text-red-600 border-red-300 hover:bg-red-50 hover:border-red-400 text-sm w-full"
                     >
                       <Trash2 className="w-4 h-4" />
                       Clear All
-                    </Button>
+                    </button>
                   </div>
                 )}
                 
@@ -386,15 +384,13 @@ export function RoadmapTree({ books, onBookSelect, selectedBook, onDeleteNode, o
                     <Download className="w-4 h-4" />
                     Download PDF
                   </button>
-                  <Button
-                    variant="outline"
-                    size="sm"
+                  <button
+                    className="flex items-center gap-2 px-3 py-2 text-red-600 bg-white border border-red-300 hover:text-red-700 hover:bg-red-50 hover:border-red-400 rounded-lg transition-all duration-200 text-sm h-9"
                     onClick={onClearRoadmap}
-                    className="flex items-center gap-2 text-red-600 border-red-300 hover:bg-red-50 hover:border-red-400 text-sm h-9"
                   >
                     <Trash2 className="w-4 h-4" />
                     Clear All
-                  </Button>
+                  </button>
                 </div>
                 <div className="text-center flex-1">
                   <h2 className="text-2xl md:text-3xl font-bold text-gray-900">Roadmap #1</h2>
