@@ -5,7 +5,7 @@ import type { BookNode } from "@/book/bookNode"
 import { TreeNodePositioned } from "@/components/roadmap_components/TreeNodePositioned"
 import { BookConnection } from "@/components/roadmap_components/BookConnection"
 import { ArrowDefinitions } from "@/components/roadmap_components/ArrowDefinition"
-import { Download, Trash2, Menu } from "lucide-react"
+import { Download, Trash2, Menu, Edit3 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { generateRoadmapPDF } from "@/components/utils/pdf-generator"
 
@@ -37,6 +37,9 @@ export function RoadmapTree({ books, onBookSelect, selectedBook, onDeleteNode, o
   const [isMobile, setIsMobile] = useState(false)
   const [isTablet, setIsTablet] = useState(false)
   const [showMobileMenu, setShowMobileMenu] = useState(false)
+  const [roadmapTitle, setRoadmapTitle] = useState("Roadmap #1")
+  const [isEditingTitle, setIsEditingTitle] = useState(false)
+  const [tempTitle, setTempTitle] = useState("")
 
   useEffect(() => {
     const updateScreenDimensions = () => {
@@ -80,12 +83,37 @@ export function RoadmapTree({ books, onBookSelect, selectedBook, onDeleteNode, o
 
   const handleDownload = useCallback(async () => {
     try {
-      await generateRoadmapPDF(books, "Roadmap #1")
+      await generateRoadmapPDF(books, roadmapTitle)
     } catch (error) {
       console.error("Failed to generate PDF:", error)
       alert("Failed to generate PDF. Please try again.")
     }
-  }, [books])
+  }, [books, roadmapTitle])
+
+  const handleTitleEdit = useCallback(() => {
+    setTempTitle(roadmapTitle)
+    setIsEditingTitle(true)
+  }, [roadmapTitle])
+
+  const handleTitleSave = useCallback(() => {
+    if (tempTitle.trim()) {
+      setRoadmapTitle(tempTitle.trim())
+    }
+    setIsEditingTitle(false)
+  }, [tempTitle])
+
+  const handleTitleCancel = useCallback(() => {
+    setIsEditingTitle(false)
+    setTempTitle("")
+  }, [])
+
+  const handleTitleKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleTitleSave()
+    } else if (e.key === 'Escape') {
+      handleTitleCancel()
+    }
+  }, [handleTitleSave, handleTitleCancel])
 
   const findBookByISBN13 = useCallback((isbn13: number) => books.find((book) => book.isbn13 === isbn13), [books])
 
@@ -336,7 +364,28 @@ export function RoadmapTree({ books, onBookSelect, selectedBook, onDeleteNode, o
               // Mobile Header Layout
               <div className="p-3">
                 <div className="flex items-center justify-between mb-3">
-                  <h2 className="text-xl font-bold text-gray-900">Roadmap #1</h2>
+                  {isEditingTitle ? (
+                    <input
+                      type="text"
+                      value={tempTitle}
+                      onChange={(e) => setTempTitle(e.target.value)}
+                      onBlur={handleTitleSave}
+                      onKeyDown={handleTitleKeyDown}
+                      className="text-xl font-bold text-gray-900 bg-transparent border-b-2 border-blue-500 outline-none flex-1 mr-2"
+                      autoFocus
+                    />
+                  ) : (
+                    <div 
+                      className="flex items-center group cursor-pointer"
+                      onClick={handleTitleEdit}
+                      title="Click to edit title"
+                    >
+                      <h2 className="text-xl font-bold text-gray-900 hover:text-blue-600 transition-colors">
+                        {roadmapTitle}
+                      </h2>
+                      <Edit3 className="w-4 h-4 ml-2 text-gray-400 group-hover:text-blue-500 transition-colors" />
+                    </div>
+                  )}
                   <button
                     onClick={() => setShowMobileMenu(!showMobileMenu)}
                     className="p-2 text-gray-600 hover:text-gray-800 rounded-lg hover:bg-gray-100"
@@ -393,7 +442,30 @@ export function RoadmapTree({ books, onBookSelect, selectedBook, onDeleteNode, o
                   </button>
                 </div>
                 <div className="text-center flex-1">
-                  <h2 className="text-2xl md:text-3xl font-bold text-gray-900">Roadmap #1</h2>
+                  {isEditingTitle ? (
+                    <input
+                      type="text"
+                      value={tempTitle}
+                      onChange={(e) => setTempTitle(e.target.value)}
+                      onBlur={handleTitleSave}
+                      onKeyDown={handleTitleKeyDown}
+                      className="text-2xl md:text-3xl font-bold text-gray-900 bg-transparent border-b-2 border-blue-500 outline-none text-center"
+                      autoFocus
+                    />
+                  ) : (
+                    <div 
+                      className="group cursor-pointer"
+                      onClick={handleTitleEdit}
+                      title="Click to edit title"
+                    >
+                      <div className="flex items-center justify-center">
+                        <h2 className="text-2xl md:text-3xl font-bold text-gray-900 hover:text-blue-600 transition-colors">
+                          {roadmapTitle}
+                        </h2>
+                        <Edit3 className="w-5 h-5 ml-2 text-gray-400 group-hover:text-blue-500 transition-colors" />
+                      </div>
+                    </div>
+                  )}
                   <p className="text-xs text-gray-500 mt-1">
                     📸 For roadmap image: Please take a screenshot • Download creates book details PDF
                   </p>
