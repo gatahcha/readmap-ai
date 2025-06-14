@@ -1,6 +1,9 @@
 import type { BookNode } from "@/book/bookNode"
 
 export const sampleBooks: BookNode[] = [
+]
+
+const sampleBooks1: BookNode[] = [
   // Level 1 - Foundational Books
   {
     id: "clean-code",

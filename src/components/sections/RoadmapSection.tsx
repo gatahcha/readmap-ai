@@ -67,7 +67,7 @@ export function RoadmapSection({ books: initialBooks }: RoadmapSectionProps) {
           onClearRoadmap={handleClearRoadmap}
         />
       ) : (
-        <div className={`flex flex-col items-center justify-center ${isMobile ? 'py-12 px-4' : 'py-16'} text-center`}>
+        <div className={`flex flex-col items-center justify-center text-center ${isMobile ? 'h-48 px-4' : 'h-56'}`}>
           <div className={`${isMobile ? 'text-4xl' : 'text-6xl'} mb-4 text-gray-300`}>📚</div>
           <h3 className={`${isMobile ? 'text-lg' : 'text-xl'} font-semibold text-gray-600 mb-2`}>
             No Roadmap Yet

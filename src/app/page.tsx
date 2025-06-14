@@ -27,17 +27,19 @@ export default async function Home({ searchParams }: HomeProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50">
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50 flex flex-col">
       <Header />
 
-      <main>
-        <HeroSection
-          initialQuery={query}
-          finalResponse={finalResponse}
-        />
-      </main>
+      <div className="flex-1">
+        <main>
+          <HeroSection
+            initialQuery={query}
+            finalResponse={finalResponse}
+          />
+        </main>
 
-      <RoadmapSection books={sampleBooks} />
+        <RoadmapSection books={books} />
+      </div>
 
       <Footer />
     </div>

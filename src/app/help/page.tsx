@@ -8,7 +8,7 @@ import { NetworkBackground } from "@/components/NetworkBackground"
 
 export default function HelpPage() {
   return (
-    <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50">
+    <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50 flex flex-col">
       {/* 1) Animated network canvas */}
       <NetworkBackground className="absolute inset-0 z-0" />
 
@@ -23,12 +23,14 @@ export default function HelpPage() {
         <Header />
       </div>
 
-      {/* 4) Main help content */}
-      <main className="relative z-10 pt-16 pb-24">
-        <div className="container mx-auto px-6">
-          <HelpSection />
-        </div>
-      </main>
+      {/* 4) Main help content - wrapped with flex-1 */}
+      <div className="flex-1 relative z-10">
+        <main className="pt-16 pb-24">
+          <div className="container mx-auto px-6">
+            <HelpSection />
+          </div>
+        </main>
+      </div>
 
       {/* 5) Footer */}
       <div className="relative z-10">

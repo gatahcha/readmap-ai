@@ -1,5 +1,5 @@
 // Book search functionality implementation
-import { bookNode } from "./bookNode";
+import { BookNode } from "./bookNode";
 import { MongoClient, Db, Collection } from 'mongodb';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import * as dotenv from 'dotenv';
@@ -93,7 +93,7 @@ async function performVectorSearch(
 	queryEmbedding: number[],
 	limit: number = 5,
 	excludeIds: number[] = []
-): Promise<bookNode[]> {
+): Promise<BookNode[]> {
 	try {
 		// Ensure database connection
 		if (!collection) {
@@ -147,6 +147,7 @@ async function performVectorSearch(
 
 		// Transform results to match bookNode interface
 		return results.map(doc => ({
+			id : "memek",
 			isbn13: doc.isbn13 || 0,
 			isbn10: doc.isbn10 || 0,
 			title: doc.title || "",
@@ -172,7 +173,7 @@ async function performVectorSearch(
 /**
  * Remove duplicate books based on ISBN13
  */
-function removeDuplicates(books: bookNode[]): bookNode[] {
+function removeDuplicates(books: BookNode[]): BookNode[] {
 	const seen = new Set<number>();
 	return books.filter(book => {
 		if (seen.has(book.isbn13)) {
@@ -186,20 +187,20 @@ function removeDuplicates(books: bookNode[]): bookNode[] {
 /**
  * Build recommendation tree with prerequisite books
  */
-async function buildRecommendationTree(initialBooks: bookNode[], depth: number = 2): Promise<bookNode[]> {
+async function buildRecommendationTree(initialBooks: BookNode[], depth: number = 2): Promise<BookNode[]> {
 	// track which ISBNs we've already returned
 	const processedIds = new Set<number>(
 		initialBooks.map((book) => book.isbn13)
 	);
 
 	// collect all books across all levels
-	const allBooks: bookNode[] = [...initialBooks];
+	const allBooks: BookNode[] = [...initialBooks];
 
 	// start from your initial "roots"
 	let currentLevel = initialBooks;
 
 	for (let level = 0; level < depth; level++) {
-		const nextLevelBooks: bookNode[] = [];
+		const nextLevelBooks: BookNode[] = [];
 
 		for (const book of currentLevel) {
 			try {
@@ -249,7 +250,7 @@ async function buildRecommendationTree(initialBooks: bookNode[], depth: number =
 /**
  * Basic database search by title, author, or description
  */
-export async function bookDatabaseSearch(query: string): Promise<bookNode[]> {
+export async function bookDatabaseSearch(query: string): Promise<BookNode[]> {
 	try {
 		// Ensure database connection
 		if (!collection) {
@@ -273,6 +274,7 @@ export async function bookDatabaseSearch(query: string): Promise<bookNode[]> {
 			.toArray();
 
 		return results.map(doc => ({
+			id : "memek",
 			isbn13: doc.isbn13 || 0,
 			isbn10: doc.isbn10 || 0,
 			title: doc.title || "",
@@ -297,7 +299,7 @@ export async function bookDatabaseSearch(query: string): Promise<bookNode[]> {
 /**
  * Advanced vector search with recommendation tree building
  */
-export async function bookVectorSearch(query: string): Promise<bookNode[]> {
+export async function bookVectorSearch(query: string): Promise<BookNode[]> {
 	try {
 		// Ensure database connection
 		if (!collection) {
