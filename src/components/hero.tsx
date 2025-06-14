@@ -1,5 +1,5 @@
 import { bookPipeline } from "@/book/bookPipeline";
-import { bookNode } from "@/book/bookNode";
+import { BookNode } from "@/book/bookNode";
 
 interface HeroProps {
   query?: string;
@@ -7,7 +7,7 @@ interface HeroProps {
 
 export default async function Hero({ query }: HeroProps) {
   let finalResponse = '';
-  let books: bookNode[] = [];
+  let books: BookNode[] = [];
 
   if (query) {
     try {
@@ -48,7 +48,7 @@ export default async function Hero({ query }: HeroProps) {
         {books.map((book, index) => (
           <div key={index} className="border p-4 rounded shadow">
             <img
-              src={book.thumbail?.toString()}
+              src={book.thumbnail?.toString()}
               alt={book.title?.toString()}
               className="w-full h-48 object-cover rounded mb-2"
             />
@@ -56,7 +56,7 @@ export default async function Hero({ query }: HeroProps) {
             <p className="text-sm text-gray-500">by {book.author} ({book.published_year?.toString()})</p>
             <p className="mt-2 text-sm line-clamp-3">{book.description}</p>
             <p className="mt-1 text-xs text-gray-400">
-              Rating: {book.average_rating?.toString()} | Pages: {book.num_page?.toString()}
+              Rating: {book.average_rating?.toString()} | Pages: {book.num_pages.toString()}
             </p>
           </div>
         ))}

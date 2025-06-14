@@ -11,6 +11,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.resolve(__dirname, '../../.env') });  // Adjust if your .env is not two levels up
 
+
 // Environment variables for configuration
 const MONGO_DB_USERNAME = process.env.MONGO_DB_USERNAME || 'your_username';
 const MONGO_DB_PASSWORD = process.env.MONGO_DB_PASSWORD || 'your_password';

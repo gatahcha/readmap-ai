@@ -1,5 +1,5 @@
 // Main function to process user query and return book nodes
-import { bookNode } from "./bookNode";
+import { BookNode } from "./bookNode";
 import { bookDatabaseSearch, bookVectorSearch } from "./bookSearch";
 import { GoogleGenAI, Type } from "@google/genai";
 import { userInputPrompt } from "./prompts";
@@ -8,7 +8,7 @@ import { writeFileSync } from 'fs';
 // Initialize Gemini client
 const geminiClient = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY || "YOUR_API_KEY" });
 
-export async function bookPipeline(userQuery: string): Promise<{ finalResponse: string, books: bookNode[] }> {
+export async function bookPipeline(userQuery: string): Promise<{ finalResponse: string, books: BookNode[] }> {
     // Define the user query 
 
     const responseQuery = await geminiClient.models.generateContent({

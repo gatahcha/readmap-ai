@@ -1,4 +1,5 @@
-export interface bookNode {
+export interface BookNode {
+  id: string
   isbn13: number
   isbn10: number
   title: string

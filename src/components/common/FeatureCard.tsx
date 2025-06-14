@@ -1,14 +1,16 @@
-import { LucideIcon } from "lucide-react"
+import React from "react"
+import type { LucideProps } from "lucide-react"
+
 
 interface FeatureCardProps {
+  icon: React.ComponentType<LucideProps>
   title: string
   description: string
-  icon: LucideIcon
   gradient: string
   bgGradient: string
 }
 
-export default function FeatureCard({ title, description, icon: Icon, gradient, bgGradient }: FeatureCardProps) {
+export default function FeatureCard({ icon: Icon, title, description, gradient, bgGradient }: FeatureCardProps) {
   return (
     <div className="text-center group">
       <div
