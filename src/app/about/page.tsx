@@ -8,7 +8,7 @@ import { NetworkBackground } from "@/components/NetworkBackground"
 
 export default function AboutPage() {
   return (
-    <div className="relative min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50 overflow-hidden">
+    <div className="relative min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50 overflow-hidden flex flex-col">
       {/* Ensure Header is on top */}
       <div className="relative z-20">
         <Header />
@@ -23,8 +23,7 @@ export default function AboutPage() {
       {/* Network canvas background */}
       <NetworkBackground className="absolute inset-0 z-0" />
 
-
-      <main className="relative z-10 py-24">
+      <main className="relative z-10 py-24 flex-1">
         <div className="container mx-auto px-6">
           <div className="max-w-5xl mx-auto text-center mb-16">
             <h1 className="text-5xl font-bold mb-6 bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
