@@ -1,96 +1,340 @@
-// TODO: @Charsima: Implement book search functionality
-import { BookNode } from "./bookNode";
-import { MongoClient } from 'mongodb';
+// Book search functionality implementation
+import { bookNode } from "./bookNode";
+import { MongoClient, Db, Collection } from 'mongodb';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 import * as dotenv from 'dotenv';
-//loading information from .env
-dotenv.config();
+import { fileURLToPath } from 'url';
+import * as path from 'path';
+
+// Load .env file from the project root
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+dotenv.config({ path: path.resolve(__dirname, '../../.env') });  // Adjust if your .env is not two levels up
+
 
 // Environment variables for configuration
-const MONGODB_USERNAME = process.env.MONGO_DB_USERNAME || 'your_username';
-const MONGODB_PASSWORD = process.env.MONGO_DB_PASSWORD || 'your_password';
-
+const MONGO_DB_USERNAME = process.env.MONGO_DB_USERNAME || 'your_username';
+const MONGO_DB_PASSWORD = process.env.MONGO_DB_PASSWORD || 'your_password';
+const DATABASE_NAME = process.env.DATABASE_NAME || 'ReadmapAIDatabase';
+const COLLECTION_NAME = process.env.COLLECTION_NAME || 'books';
+const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY || 'your_google_api_key';
 
 // Build the connection string manually
-const MONGODB_URI = `mongodb+srv://${MONGODB_USERNAME}:${MONGODB_PASSWORD}@readmapai.v0hldcw.mongodb.net/?retryWrites=true&w=majority&appName=ReadmapAI`;
-const DATABASE_NAME = 'ReadmapAIDatabase';
-const COLLECTION_NAME = 'books';
+const MONGODB_URI = `mongodb+srv://${MONGO_DB_USERNAME}:${MONGO_DB_PASSWORD}@readmapai.v0hldcw.mongodb.net/?retryWrites=true&w=majority&appName=ReadmapAI`;
 
+// Initialize Google AI client
+const genAI = new GoogleGenerativeAI(GOOGLE_API_KEY);
 
-// NOTE: This is a mock implementation for demonstration purposes.
-const book1: BookNode = {
-    id: "clean-code",
-    isbn13: 9780132350884,
-    isbn10: "0132350882",
-    title: "Clean Code",
-    subtitle: "A Handbook of Agile Software Craftsmanship",
-    author: "Robert C. Martin",
-    categories: "Programming, Software Engineering",
-    thumbnail: "https://dynamic.indigoimages.ca/v1/books/books/0140280197/1.jpg",
-    description:
-      "Even bad code can function. But if code isn't clean, it can bring a development organization to its knees. Every year, countless hours and significant resources are lost because of poorly written code. But it doesn't have to be that way.",
-    published_year: 2008,
-    average_rating: 4.6,
-    num_pages: 464,
-    prerequisites: [],
-  };
+// MongoDB connection variables
+let client: MongoClient;
+let db: Db;
+let collection: Collection;
 
-const book2: BookNode = {
-    id: "code-complete",
-    isbn13: 9780735619678,
-    isbn10: "0735619670",
-    title: "Code Complete",
-    subtitle: "A Practical Handbook of Software Construction",
-    author: "Steve McConnell",
-    categories: "Programming, Software Engineering",
-    thumbnail: "https://dynamic.indigoimages.ca/v1/books/books/0140280197/1.jpg",
-    description:
-      "Widely considered one of the best practical guides to programming, Steve McConnell's original CODE COMPLETE has been helping developers write better software for more than a decade.",
-    published_year: 2004,
-    average_rating: 4.6,
-    num_pages: 960,
-    prerequisites: [],
-  };
-
-const book3: BookNode = {
-    id: "clean-architecture",
-    isbn13: 9780134494166,
-    isbn10: "0134494164",
-    title: "Clean Architecture",
-    subtitle: "A Craftsman's Guide to Software Structure and Design",
-    author: "Robert C. Martin",
-    categories: "Programming, Software Architecture",
-    thumbnail: "https://dynamic.indigoimages.ca/v1/books/books/0140280197/1.jpg",
-    description:
-      "By applying universal rules of software architecture, you can dramatically improve developer productivity throughout the life of any software system.",
-    published_year: 2017,
-    average_rating: 4.4,
-    num_pages: 432,
-    prerequisites: [9780132350884], // Clean Code
-  };
-
-export async function bookDatabaseSearch(query: string): Promise<BookNode[]> {
-    // This function would normally perform a database search.
-    // For now, we return a static list
-
-    // const client = new MongoClient(MONGODB_URI);
-
-    // try {
-    //     await client.connect();
-    //     const firstItem = await client.db(DATABASE_NAME)
-    //                                     .collection(COLLECTION_NAME)
-    //                                     .findOne();
-        
-    // } finally {
-    //     await client.close();
-    // }
-    
-
-    return [book1, book2]
+// Interface for vector search results from MongoDB
+interface VectorSearchResult {
+	isbn13?: number;
+	isbn10?: number;
+	title?: string;
+	subtitle?: string;
+	authors?: string;
+	categories?: string;
+	thumbnail?: string;
+	description?: string;
+	published_year?: number;
+	average_rating?: number;
+	num_pages?: number;
+	ratings_count?: number;
+	embedding?: number[];
+	score?: number;
+}
+// Initialize database connection
+async function initializeDatabase(): Promise<void> {
+	try {
+		if (!client) {
+			client = new MongoClient(MONGODB_URI);
+			await client.connect();
+			db = client.db(DATABASE_NAME);
+			collection = db.collection(COLLECTION_NAME);
+			console.log('Connected to MongoDB Atlas');
+		}
+	} catch (error) {
+		console.error('Failed to connect to MongoDB:', error);
+		throw error;
+	}
 }
 
-export async function bookVectorSearch(query: string): Promise<BookNode[]> {
-    // This function would normally perform a vector search.
-    // For now, we return a static list
+// Close database connection
+async function closeDatabaseConnection(): Promise<void> {
+	if (client) {
+		await client.close();
+		console.log('Disconnected from MongoDB Atlas');
+	}
+}
 
-    return [book3];
+/**
+ * Get embedding using Google's Generative AI
+ */
+async function getEmbedding(text: string): Promise<number[]> {
+	try {
+		const model = genAI.getGenerativeModel({ model: "gemini-embedding-exp-03-07" });
+		const result = await model.embedContent(text);
+		return result.embedding.values;
+	} catch (error) {
+		console.error('Error getting embedding:', error);
+		// Return mock embedding for development
+		return Array(3072).fill(0).map(() => Math.random());
+	}
+}
+
+/**
+ * Perform vector search using MongoDB's native $vectorSearch
+ */
+async function performVectorSearch(
+	queryEmbedding: number[],
+	limit: number = 5,
+	excludeIds: number[] = []
+): Promise<bookNode[]> {
+	try {
+		// Ensure database connection
+		if (!collection) {
+			await initializeDatabase();
+		}
+
+		// Build the vector search pipeline
+		const pipeline = [
+			{
+				"$vectorSearch": {
+					"index": "vector_index", // replace with your actual index name
+					"path": "embedding",     // field containing your embeddings
+					"queryVector": queryEmbedding,
+					"numCandidates": 100,
+					"limit": limit
+				}
+			}
+		];
+
+		// Add exclusion filter if needed
+		if (excludeIds.length > 0) {
+			pipeline.push({
+				"$match": {
+					"isbn13": { "$nin": excludeIds }
+				}
+			} as any);
+		}
+
+		// Add projection
+		pipeline.push({
+			"$project": {
+				"isbn13": 1,
+				"isbn10": 1,
+				"title": 1,
+				"subtitle": 1,
+				"authors": 1,
+				"categories": 1,
+				"thumbnail": 1,
+				"description": 1,
+				"published_year": 1,
+				"average_rating": 1,
+				"num_pages": 1,
+				"ratings_count": 1,
+				"embedding": 1,
+				"score": { "$meta": "vectorSearchScore" }
+			}
+		} as any);
+
+		// Execute the aggregation pipeline
+		const results = await collection.aggregate<VectorSearchResult>(pipeline).toArray();
+
+		// Transform results to match bookNode interface
+		return results.map(doc => ({
+			isbn13: doc.isbn13 || 0,
+			isbn10: doc.isbn10 || 0,
+			title: doc.title || "",
+			subtitle: doc.subtitle || "",
+			author: doc.authors || "", // mapping authors to author
+			categories: doc.categories || "",
+			thumbnail: doc.thumbnail || "", // keeping original field name from bookNode
+			description: doc.description || "",
+			published_year: doc.published_year || 0,
+			average_rating: doc.average_rating || 0,
+			num_pages: doc.num_pages || 0, // mapping num_pages to num_page
+			embedding: doc.embedding || [], // ensure embedding is present
+			prerequisites: [] // will be populated later
+		}));
+
+	} catch (error) {
+		console.error('Vector search error:', error);
+		return []; // Return empty array on error
+	}
+}
+
+
+/**
+ * Remove duplicate books based on ISBN13
+ */
+function removeDuplicates(books: bookNode[]): bookNode[] {
+	const seen = new Set<number>();
+	return books.filter(book => {
+		if (seen.has(book.isbn13)) {
+			return false;
+		}
+		seen.add(book.isbn13);
+		return true;
+	});
+}
+
+/**
+ * Build recommendation tree with prerequisite books
+ */
+async function buildRecommendationTree(initialBooks: bookNode[], depth: number = 2): Promise<bookNode[]> {
+	// track which ISBNs we've already returned
+	const processedIds = new Set<number>(
+		initialBooks.map((book) => book.isbn13)
+	);
+
+	// collect all books across all levels
+	const allBooks: bookNode[] = [...initialBooks];
+
+	// start from your initial "roots"
+	let currentLevel = initialBooks;
+
+	for (let level = 0; level < depth; level++) {
+		const nextLevelBooks: bookNode[] = [];
+
+		for (const book of currentLevel) {
+			try {
+				const bookEmbedding = book.embedding;
+				const excludeIds = Array.from(processedIds);
+
+				// this returns e.g. top 3—but might include ones you've already seen
+				const similarBooks = await performVectorSearch(
+					bookEmbedding,
+					3,
+					excludeIds
+				);
+
+				// only keep brand-new ones
+				const newBooks = similarBooks.filter(
+					(sb) => !processedIds.has(sb.isbn13)
+				);
+
+				// mark them processed and queue for the next "wave"
+				for (const nb of newBooks) {
+					processedIds.add(nb.isbn13);
+					nextLevelBooks.push(nb);
+					allBooks.push(nb);
+				}
+
+				// attach only the new book ISBNs as prerequisites
+				const newPrerequisites = newBooks.map(nb => nb.isbn13);
+				book.prerequisites = [...(book.prerequisites || []), ...newPrerequisites];
+			} catch (error) {
+				console.error(`Error processing book ${book.title}:`, error);
+			}
+		}
+
+		// move one level deeper
+		currentLevel = nextLevelBooks;
+	}
+
+	// ensure the last level books have empty prerequisites
+	for (const book of currentLevel) {
+		book.prerequisites = [];
+	}
+
+	// return all books with duplicates removed
+	return removeDuplicates(allBooks);
+}
+
+/**
+ * Basic database search by title, author, or description
+ */
+export async function bookDatabaseSearch(query: string): Promise<bookNode[]> {
+	try {
+		// Ensure database connection
+		if (!collection) {
+			await initializeDatabase();
+		}
+
+		// Create text search query
+		const searchRegex = new RegExp(query, 'i');
+		const searchQuery = {
+			$or: [
+				{ title: searchRegex },
+				{ authors: searchRegex }, // Use 'authors' field from database
+				{ description: searchRegex },
+				{ categories: searchRegex }
+			]
+		};
+
+		const results = await collection
+			.find(searchQuery)
+			.limit(10)
+			.toArray();
+
+		return results.map(doc => ({
+			isbn13: doc.isbn13 || 0,
+			isbn10: doc.isbn10 || 0,
+			title: doc.title || "",
+			subtitle: doc.subtitle || "",
+			author: doc.authors || "", // mapping authors to author
+			categories: doc.categories || "",
+			thumbnail: doc.thumbnail || "", // mapping thumbnail to thumbail
+			description: doc.description || "",
+			published_year: doc.published_year || 0,
+			average_rating: doc.average_rating || 0,
+			num_pages: doc.num_pages || 0, // mapping num_pages to num_page
+			embedding: doc.embedding || [], // ensure embedding is present
+			prerequisites: []
+		}));
+
+	} catch (error) {
+		console.error('Database search error:', error);
+		return []; // Return empty array on error
+	}
+}
+
+/**
+ * Advanced vector search with recommendation tree building
+ */
+export async function bookVectorSearch(query: string): Promise<bookNode[]> {
+	try {
+		// Ensure database connection
+		if (!collection) {
+			await initializeDatabase();
+		}
+
+		// Step 1: Get query embedding from Google AI
+		// console.log('Getting query embedding...');
+		const queryEmbedding = await getEmbedding(query);
+
+		// Step 2: Perform initial vector search (5 books)
+		// console.log('Performing initial vector search...');
+		const initialBooks = await performVectorSearch(queryEmbedding, 5);
+
+		if (initialBooks.length === 0) {
+			console.log('No books found for query');
+			return [];
+		}
+
+		// Step 3-7: Build recommendation tree with prerequisites
+		// console.log('Building recommendation tree...');
+		const allRecommendedBooks = await buildRecommendationTree(initialBooks, 2);
+
+		// console.log(`Found ${allRecommendedBooks.length} books in recommendation tree`);
+		// console.log(`First book: "${allRecommendedBooks[0].title}" has ${allRecommendedBooks[0].prevNodes.length} prerequisite books`);
+		// console.log(`First prerequisite book: "${allRecommendedBooks[0].prevNodes[0]?.title || 'none'}" has ${allRecommendedBooks[0].prevNodes[0]?.prevNodes.length || 0} prerequisite books`);
+		return allRecommendedBooks;
+
+	} catch (error) {
+		console.error('Vector search error:', error);
+		return []; // Return empty array on error
+	}
+}
+
+/**
+ * Clean up database connection (call this when your app shuts down)
+ */
+export async function cleanup(): Promise<void> {
+	await closeDatabaseConnection();
 }
