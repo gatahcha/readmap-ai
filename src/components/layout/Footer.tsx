@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { BookOpen, Facebook, Linkedin, Youtube, Instagram } from "lucide-react"
+import { BookOpen, Facebook, Linkedin, Youtube, Instagram, Mail } from "lucide-react"
 
 export default function Footer() {
   return (
@@ -10,14 +10,14 @@ export default function Footer() {
         <div className="flex flex-col md:flex-row justify-between gap-12 md:items-start">
           {/* Left Section */}
           <div>
-            <div className="flex items-center gap-3 mb-3">
+            <Link href="/" className="flex items-center gap-3 mb-3 hover:opacity-80 transition-opacity">
               <div className="w-8 h-8 bg-gradient-to-r from-orange-500 to-orange-600 rounded-lg flex items-center justify-center shadow-lg">
                 <BookOpen className="w-5 h-5 text-orange-50" />
               </div>
               <span className="text-2xl font-semibold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
                 readmap.ai
               </span>
-            </div>
+            </Link>
             <p className="text-gray-600">AI-powered reading journeys</p>
           </div>
 
@@ -39,20 +39,27 @@ export default function Footer() {
           </div>
 
           {/* Right Section - Contact Us */}
-          <div className="text-center md:text-right">
+          <div className="text-center">
             <h3 className="text-xl font-bold text-gray-900 mb-2">Contact Us:</h3>
-            <div className="flex justify-center md:justify-end gap-4 mt-2">
-              <a href="#" aria-label="Facebook" className="text-gray-800 hover:text-orange-600">
-                <Facebook className="w-5 h-5" />
+            <div className="flex justify-center gap-4 mt-2">
+              <a
+                href="mailto:readmapai@gmail.com"
+                aria-label="Email"
+                className="text-gray-800 hover:text-orange-600"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Mail className="w-5 h-5" />
               </a>
-              <a href="#" aria-label="LinkedIn" className="text-gray-800 hover:text-orange-600">
-                <Linkedin className="w-5 h-5" />
-              </a>
-              <a href="#" aria-label="YouTube" className="text-gray-800 hover:text-orange-600">
+
+              <a
+                href="https://www.youtube.com/@readmapai"
+                aria-label="YouTube"
+                className="text-gray-800 hover:text-orange-600"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <Youtube className="w-5 h-5" />
-              </a>
-              <a href="#" aria-label="Instagram" className="text-gray-800 hover:text-orange-600">
-                <Instagram className="w-5 h-5" />
               </a>
             </div>
           </div>
