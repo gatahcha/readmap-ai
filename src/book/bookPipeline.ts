@@ -24,8 +24,11 @@ export async function bookPipeline(userQuery: string): Promise<{ roadmapTitle: s
                     mongoDBSearch: {
                         type: Type.STRING,
                     },
+                    furtherClarification: {
+                        type: Type.STRING,
+                    }
                 },
-                propertyOrdering: ["vectorSearch", "mongoDBSearch"],
+                propertyOrdering: ["vectorSearch", "mongoDBSearch", "furtherClarification"],
             },
         },
     });
@@ -33,6 +36,13 @@ export async function bookPipeline(userQuery: string): Promise<{ roadmapTitle: s
     const instructionJson = JSON.parse(responseQuery.text || '{}');
 
     // writeFileSync('src/book/trial_lookout.json', JSON.stringify(responseQuery, null, 2));
+    // Check if further clarification is needed
+    if (instructionJson.furtherClarification && instructionJson.furtherClarification.trim() !== "") {
+        return {
+            roadmapTitle: instructionJson.furtherClarification,
+            books: []
+        };
+    }
 
     // Perform database query
     const databaseBooks = await bookDatabaseSearch(instructionJson.mongoDBSearch);
