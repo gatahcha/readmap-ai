@@ -274,7 +274,7 @@ export async function bookDatabaseSearch(query: string): Promise<BookNode[]> {
 			.toArray();
 
 		return results.map(doc => ({
-			id: "memek",
+			id: "",
 			isbn13: doc.isbn13 || 0,
 			isbn10: doc.isbn10 || 0,
 			title: doc.title || "",
