@@ -2,7 +2,7 @@ import { BookOpen, Facebook, Linkedin, Youtube, Instagram } from "lucide-react"
 
 export default function Footer() {
   return (
-    <footer className="py-16 relative bg-[#FFFAF1]">
+    <footer className="pt-16 pb-6 relative bg-[#FFFAF1]">
       {/* if you still want a subtle gradient, update all stops to your new color */}
       <div className="absolute inset-0 bg-gradient-to-r from-[#FFFAF1] via-[#FFFAF1] to-[#FFFAF1]"></div>
       <div className="container mx-auto px-6 relative z-10">

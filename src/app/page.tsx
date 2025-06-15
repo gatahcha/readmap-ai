@@ -10,9 +10,11 @@ import { RoadmapSection } from "@/components/sections/RoadmapSection"
 
 export default function Home() {
   const [books, setBooks] = useState<BookNode[]>([])
+  const [roadmapTitle, setRoadmapTitle] = useState<string>("")
 
   const handleSearchResults = (results: { finalResponse: string; books: BookNode[] }) => {
     setBooks(results.books)
+    setRoadmapTitle(results.finalResponse)
   }
 
   return (
@@ -24,7 +26,7 @@ export default function Home() {
           <HeroSection onSearchResults={handleSearchResults} />
         </main>
 
-        <RoadmapSection books={books} />
+        <RoadmapSection books={books} title={roadmapTitle} />
       </div>
 
       <Footer />
