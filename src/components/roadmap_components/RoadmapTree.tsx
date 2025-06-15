@@ -11,6 +11,7 @@ import { generateRoadmapPDF } from "@/components/utils/pdf-generator"
 
 interface RoadmapTreeProps {
   books: BookNode[]
+  title: string
   onBookSelect: (book: BookNode | null, clickEvent?: React.MouseEvent) => void
   selectedBook: BookNode | null
   onDeleteNode: (bookId: string) => void
@@ -29,7 +30,7 @@ interface PositionedNode {
   height: number
 }
 
-export function RoadmapTree({ books, onBookSelect, selectedBook, onDeleteNode, onClearRoadmap }: RoadmapTreeProps) {
+export function RoadmapTree({ books, title, onBookSelect, selectedBook, onDeleteNode, onClearRoadmap }: RoadmapTreeProps) {
   const [positionedNodes, setPositionedNodes] = useState<PositionedNode[]>([])
   const [hoveredBook, setHoveredBook] = useState<BookNode | null>(null)
   const [hoveredConnection, setHoveredConnection] = useState<string | null>(null)
@@ -37,9 +38,16 @@ export function RoadmapTree({ books, onBookSelect, selectedBook, onDeleteNode, o
   const [isMobile, setIsMobile] = useState(false)
   const [isTablet, setIsTablet] = useState(false)
   const [showMobileMenu, setShowMobileMenu] = useState(false)
-  const [roadmapTitle, setRoadmapTitle] = useState("Roadmap #1")
+  const [roadmapTitle, setRoadmapTitle] = useState(title || "Roadmap #1")
   const [isEditingTitle, setIsEditingTitle] = useState(false)
   const [tempTitle, setTempTitle] = useState("")
+
+  // Update local title when prop changes
+  useEffect(() => {
+    if (title) {
+      setRoadmapTitle(title)
+    }
+  }, [title])
 
   useEffect(() => {
     const updateScreenDimensions = () => {

@@ -1,3 +1,4 @@
+// src/components/sections/RoadmapSection.tsx
 "use client"
 
 import { useState, useEffect } from "react"
@@ -7,9 +8,10 @@ import { BookDetailPanel } from "@/components/roadmap_components/BookDetailPanel
 
 interface RoadmapSectionProps {
   books: BookNode[]
+  title: string
 }
 
-export function RoadmapSection({ books: initialBooks }: RoadmapSectionProps) {
+export function RoadmapSection({ books: initialBooks, title }: RoadmapSectionProps) {
   const [books, setBooks] = useState<BookNode[]>(initialBooks)
   const [selectedBook, setSelectedBook] = useState<BookNode | null>(null)
   const [showPanelOnLeft, setShowPanelOnLeft] = useState(false)
@@ -69,6 +71,7 @@ export function RoadmapSection({ books: initialBooks }: RoadmapSectionProps) {
       {books.length > 0 ? (
         <RoadmapTree
           books={books}
+          title={title}
           onBookSelect={handleBookSelect}
           selectedBook={selectedBook}
           onDeleteNode={handleDeleteNode}
