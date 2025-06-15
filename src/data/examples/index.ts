@@ -27,6 +27,6 @@ export const trendingTopics = [
 // 5. Type for the example structure
 export interface ExampleData {
   query: string
-  finalResponse: string
+  roadmapTitle: string
   books: import("@/book/bookNode").BookNode[]
 }

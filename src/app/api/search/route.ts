@@ -75,7 +75,7 @@ export async function POST(request: NextRequest) {
     const result = await bookPipeline(sanitizedQuery)
 
     return NextResponse.json({
-      finalResponse: result.finalResponse,
+      roadmapTitle: result.roadmapTitle,
       books: result.books
     })
 
