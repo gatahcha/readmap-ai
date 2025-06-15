@@ -87,7 +87,7 @@ export default function HelpSection() {
             Help & Support
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            Find answers to common questions or get in touch with our support team. We're here to help you make the
+            Find answers to common questions or get in touch with our support team. We&apos;re here to help you make the
             most of your reading journey.
           </p>
         </div>

@@ -111,11 +111,11 @@ export default function AboutPage() {
               </h2>
               <p className="text-gray-600 text-sm mb-4">
                 In a world overflowing with information, finding the right books
-                to read can be overwhelming. We're here to cut through the noise
+                to read can be overwhelming. We&apos;re here to cut through the noise
                 and create clear, personalized pathways to knowledge.
               </p>
               <p className="text-gray-600 text-sm">
-                Whether you're looking to master a new skill, explore a
+                Whether you&apos;re looking to master a new skill, explore a
                 fascinating topic, or simply discover your next great read, our
                 AI understands your unique learning journey and recommends
                 books that build upon each other progressively.
@@ -172,7 +172,7 @@ export default function AboutPage() {
                     This project was submitted to
                   </p>
                   <h3 className="text-2xl font-semibold bg-gradient-to-r from-orange-600 via-amber-600 to-red-600 bg-clip-text text-transparent drop-shadow-sm">
-                    "AI in Action: Innovate Together"
+                    &quot;AI in Action: Innovate Together&quot;
                   </h3>
                   <p className="text-lg text-gray-700">
                     A Multi-Partner Google Cloud Hackathon

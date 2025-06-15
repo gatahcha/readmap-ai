@@ -33,14 +33,14 @@ export default function TermsOfService() {
                 <section>
                   <h2 className="text-2xl font-semibold text-gray-800 mb-4">1. Acceptance of Terms</h2>
                   <p>
-                    By accessing and using ReadMap AI ("the Service"), you accept and agree to be bound by the terms and provision of this agreement. If you do not agree to abide by the above, please do not use this service.
+                    By accessing and using ReadMap AI (&quot;the Service&quot;), you accept and agree to be bound by the terms and provision of this agreement. If you do not agree to abide by the above, please do not use this service.
                   </p>
                 </section>
 
                 <section>
                   <h2 className="text-2xl font-semibold text-gray-800 mb-4">2. Description of Service</h2>
                   <p>
-                    ReadMap AI is an AI-powered reading assistant that provides personalized book recommendations and creates learning roadmaps tailored to users' goals and interests. Our service uses artificial intelligence to analyze user queries and recommend relevant books from our database.
+                    ReadMap AI is an AI-powered reading assistant that provides personalized book recommendations and creates learning roadmaps tailored to users&apos; goals and interests. Our service uses artificial intelligence to analyze user queries and recommend relevant books from our database.
                   </p>
                 </section>
 
@@ -80,7 +80,7 @@ export default function TermsOfService() {
                 <section>
                   <h2 className="text-2xl font-semibold text-gray-800 mb-4">7. Disclaimers and Limitations</h2>
                   <p>
-                    ReadMap AI provides book recommendations "as is" without warranty of any kind. We do not guarantee the accuracy, completeness, or usefulness of any recommendations. The service is provided for informational purposes only and should not be considered as professional advice.
+                    ReadMap AI provides book recommendations &quot;as is&quot; without warranty of any kind. We do not guarantee the accuracy, completeness, or usefulness of any recommendations. The service is provided for informational purposes only and should not be considered as professional advice.
                   </p>
                   <p className="mt-4">
                     In no event shall ReadMap AI be liable for any indirect, incidental, special, consequential, or punitive damages arising out of your use of the service.

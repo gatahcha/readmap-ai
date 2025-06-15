@@ -33,7 +33,7 @@ export default function PrivacyPolicy() {
                 <section>
                   <h2 className="text-2xl font-semibold text-gray-800 mb-4">1. Introduction</h2>
                   <p>
-                    ReadMap AI ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our AI-powered reading assistant service.
+                    ReadMap AI (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;) is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our AI-powered reading assistant service.
                   </p>
                 </section>
 
@@ -77,7 +77,7 @@ export default function PrivacyPolicy() {
                     Our service integrates with third-party AI providers to generate recommendations:
                   </p>
                   <ul className="list-disc list-inside space-y-2 mt-4">
-                    <li><strong>Google AI Services:</strong> We use Google's AI models to process your queries and generate book recommendations. Your queries may be processed by Google's servers subject to their privacy policy.</li>
+                    <li><strong>Google AI Services:</strong> We use Google&apos;s AI models to process your queries and generate book recommendations. Your queries may be processed by Google&apos;s servers subject to their privacy policy.</li>
                     <li><strong>Database Providers:</strong> We use cloud database services to store book information and user preferences.</li>
                     <li><strong>Analytics Tools:</strong> We may use analytics services to understand how users interact with our service.</li>
                   </ul>
@@ -135,7 +135,7 @@ export default function PrivacyPolicy() {
                 </section>
 
                 <section>
-                  <h2 className="text-2xl font-semibold text-gray-800 mb-4">10. Children's Privacy</h2>
+                  <h2 className="text-2xl font-semibold text-gray-800 mb-4">10. Children&apos;s Privacy</h2>
                   <p>
                     Our service is not intended for children under 13 years of age. We do not knowingly collect personal information from children under 13. If we become aware that we have collected such information, we will take steps to delete it.
                   </p>
@@ -151,7 +151,7 @@ export default function PrivacyPolicy() {
                 <section>
                   <h2 className="text-2xl font-semibold text-gray-800 mb-4">12. Changes to This Policy</h2>
                   <p>
-                    We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new policy on this page and updating the "Last Updated" date. We encourage you to review this policy periodically.
+                    We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new policy on this page and updating the &quot;Last Updated&quot; date. We encourage you to review this policy periodically.
                   </p>
                 </section>
 
