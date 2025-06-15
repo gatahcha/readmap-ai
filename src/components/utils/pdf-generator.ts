@@ -235,7 +235,7 @@ function createTableOfContents(doc: jsPDF, books: BookNode[]): void {
       currentY += lineHeight + 5
       
       // Books in this level
-      levelBooks.forEach((book, _index) => {
+      levelBooks.forEach((book) => {
         if (currentY > 260) {
           doc.addPage("a4", "portrait")
           currentY = 30

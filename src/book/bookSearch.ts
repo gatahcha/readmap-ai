@@ -101,7 +101,7 @@ async function performVectorSearch(
 		}
 
 		// Build the vector search pipeline
-		const pipeline = [
+		const pipeline: object[] = [
 			{
 				"$vectorSearch": {
 					"index": "vector_index", // replace with your actual index name
@@ -119,7 +119,7 @@ async function performVectorSearch(
 				"$match": {
 					"isbn13": { "$nin": excludeIds }
 				}
-			} as any);
+			});
 		}
 
 		// Add projection
@@ -140,7 +140,7 @@ async function performVectorSearch(
 				"embedding": 1,
 				"score": { "$meta": "vectorSearchScore" }
 			}
-		} as any);
+		});
 
 		// Execute the aggregation pipeline
 		const results = await collection.aggregate<VectorSearchResult>(pipeline).toArray();

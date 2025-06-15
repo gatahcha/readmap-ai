@@ -103,7 +103,7 @@ Generate a concise, clear, and engaging title for a visual diagram showcasing th
     const titleJSON = JSON.parse(responseMessage.text || '{}');
 
     // Helper function to safely convert to number
-    const toSafeNumber = (value: any): number => {
+    const toSafeNumber = (value: string | number | null | undefined): number => {
         if (typeof value === 'number') return value;
         if (typeof value === 'string') {
             const cleaned = value.replace(/[^0-9]/g, '');
