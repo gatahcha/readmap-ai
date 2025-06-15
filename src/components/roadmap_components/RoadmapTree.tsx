@@ -1,12 +1,11 @@
 "use client"
 
-import { useCallback, useEffect, useState, useRef } from "react"
+import { useCallback, useEffect, useState } from "react"
 import type { BookNode } from "@/book/bookNode"
 import { TreeNodePositioned } from "@/components/roadmap_components/TreeNodePositioned"
 import { BookConnection } from "@/components/roadmap_components/BookConnection"
 import { ArrowDefinitions } from "@/components/roadmap_components/ArrowDefinition"
-import { toPng, toBlob } from "html-to-image"
-import { Download, Trash2, Menu, Edit3, Camera } from "lucide-react"
+import { Download, Trash2, Menu, Edit3 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { generateRoadmapPDF } from "@/components/utils/pdf-generator"
 
@@ -42,32 +41,6 @@ export function RoadmapTree({ books, title, onBookSelect, selectedBook, onDelete
   const [roadmapTitle, setRoadmapTitle] = useState(title || "Roadmap #1")
   const [isEditingTitle, setIsEditingTitle] = useState(false)
   const [tempTitle, setTempTitle] = useState("")
-  const roadmapRef = useRef<HTMLDivElement>(null)
-
-  const handleScreenshot = useCallback(async () => {
-    if (!roadmapRef.current) return
-
-    try {
-      // 🟢 Ask html-to-image to ignore <img> entirely
-      const blob = await toBlob(roadmapRef.current, {
-        filter: (node) => !(node instanceof HTMLImageElement),
-        // Optional: give it a solid white background behind transparent areas
-        backgroundColor: "#ffffff",
-      })
-
-      if (!blob) throw new Error("toBlob returned null")
-
-      // 🟢 Copy to clipboard
-      const item = new ClipboardItem({ "image/png": blob })
-      await navigator.clipboard.write([item])
-
-      alert("Roadmap copied to clipboard!")
-    } catch (err: any) {
-      // 🟢 Better logging
-      console.error("Screenshot failed:", err, err.message, err.toString())
-      alert(`Failed to copy screenshot:\n${err.message ?? err.toString()}`)
-    }
-  }, [])
 
   // Update local title when prop changes
   useEffect(() => {
@@ -80,12 +53,12 @@ export function RoadmapTree({ books, title, onBookSelect, selectedBook, onDelete
     const updateScreenDimensions = () => {
       const width = window.innerWidth
       const height = window.innerHeight
-
+      
       setScreenDimensions({ width, height })
       setIsMobile(width < 768)
       setIsTablet(width >= 768 && width < 1024)
     }
-
+    
     updateScreenDimensions()
     window.addEventListener("resize", updateScreenDimensions)
     return () => window.removeEventListener("resize", updateScreenDimensions)
@@ -157,7 +130,7 @@ export function RoadmapTree({ books, title, onBookSelect, selectedBook, onDelete
       if (books.length === 0) return
 
       const containerDimensions = getContainerDimensions()
-
+      
       // Mobile-responsive header and padding
       const headerBarHeight = isMobile ? 120 : 80 // Taller header on mobile for stacked buttons
       const sidePadding = isMobile ? 8 : isTablet ? 32 : 60 // Reduced mobile padding from 16 to 8
@@ -212,7 +185,7 @@ export function RoadmapTree({ books, title, onBookSelect, selectedBook, onDelete
 
       // Mobile-responsive node sizing with better constraints
       let minNodeWidth: number, maxNodeWidth: number, minNodeHeight: number, maxNodeHeight: number
-
+      
       if (isMobile) {
         minNodeWidth = 120 // Reduced from 140
         maxNodeWidth = 180 // Reduced from 200
@@ -235,21 +208,21 @@ export function RoadmapTree({ books, title, onBookSelect, selectedBook, onDelete
       const verticalSpacing = isMobile ? 30 : isTablet ? 45 : 50 // Reduced from 40
 
       const baseNodeWidth = Math.max(
-        minNodeWidth,
+        minNodeWidth, 
         Math.min(maxNodeWidth, (drawableCanvasWidth - (maxBooksInLevel - 1) * horizontalSpacing) / maxBooksInLevel)
       )
       const baseNodeHeight = Math.max(
-        minNodeHeight,
+        minNodeHeight, 
         Math.min(maxNodeHeight, (drawableCanvasHeight - (totalLevels - 1) * verticalSpacing) / totalLevels)
       )
 
       // Apply responsive scaling with tighter constraints for mobile
-      const screenScale = isMobile
+      const screenScale = isMobile 
         ? Math.min(screenDimensions.width / 360, screenDimensions.height / 600) // Changed from 400 to 360
-        : isTablet
-          ? Math.min(screenDimensions.width / 800, screenDimensions.height / 700)
-          : Math.min(screenDimensions.width / 1400, screenDimensions.height / 900)
-
+        : isTablet 
+        ? Math.min(screenDimensions.width / 800, screenDimensions.height / 700)
+        : Math.min(screenDimensions.width / 1400, screenDimensions.height / 900)
+      
       const scaledNodeWidth = baseNodeWidth * Math.max(0.75, Math.min(1.0, screenScale)) // Tighter scaling for mobile
       const scaledNodeHeight = baseNodeHeight * Math.max(0.75, Math.min(1.0, screenScale))
 
@@ -257,17 +230,17 @@ export function RoadmapTree({ books, title, onBookSelect, selectedBook, onDelete
 
       // Responsive vertical gap
       let actualVerticalGap = Math.max(
-        isMobile ? 35 : isTablet ? 45 : 50,
+        isMobile ? 35 : isTablet ? 45 : 50, 
         scaledNodeHeight * (isMobile ? 0.5 : 0.6)
       )
-
+      
       if (totalLevels > 1) {
         const requiredHeightForNodes = totalLevels * scaledNodeHeight
         const requiredHeightForGaps = (totalLevels - 1) * actualVerticalGap
         const totalContentTreeHeight = requiredHeightForNodes + requiredHeightForGaps
         if (totalContentTreeHeight > drawableCanvasHeight) {
           actualVerticalGap = Math.max(
-            isMobile ? 25 : isTablet ? 35 : 40,
+            isMobile ? 25 : isTablet ? 35 : 40, 
             (drawableCanvasHeight - requiredHeightForNodes) / (totalLevels - 1)
           )
         }
@@ -280,7 +253,7 @@ export function RoadmapTree({ books, title, onBookSelect, selectedBook, onDelete
         const level = Number.parseInt(levelStr, 10)
         const y = topOffset + (level - 1) * (scaledNodeHeight + actualVerticalGap) + scaledNodeHeight / 2
         const currentLevelBookCount = levelBooks.length
-
+        
         let actualHorizontalGap = Math.max(
           isMobile ? 10 : isTablet ? 30 : 35, // Reduced from 20
           scaledNodeWidth * (isMobile ? 0.08 : 0.15) // Reduced mobile ratio from 0.12
@@ -290,7 +263,7 @@ export function RoadmapTree({ books, title, onBookSelect, selectedBook, onDelete
           const requiredWidthForNodesInLevel = currentLevelBookCount * scaledNodeWidth
           const requiredWidthForGapsInLevel = (currentLevelBookCount - 1) * actualHorizontalGap
           const totalLevelContentWidth = requiredWidthForNodesInLevel + requiredWidthForGapsInLevel
-
+          
           if (totalLevelContentWidth > drawableCanvasWidth) {
             actualHorizontalGap = Math.max(
               isMobile ? 8 : isTablet ? 20 : 25, // Reduced minimum from 15
@@ -301,7 +274,7 @@ export function RoadmapTree({ books, title, onBookSelect, selectedBook, onDelete
 
         const finalLevelContentWidth =
           currentLevelBookCount * scaledNodeWidth + Math.max(0, currentLevelBookCount - 1) * actualHorizontalGap
-
+        
         const levelStartX = sidePadding + (drawableCanvasWidth - finalLevelContentWidth) / 2
 
         levelBooks.forEach((book, index) => {
@@ -385,7 +358,6 @@ export function RoadmapTree({ books, title, onBookSelect, selectedBook, onDelete
       <div className="flex flex-col items-center w-full">
         <div
           id="roadmap-tree-full"
-          ref={roadmapRef}
           className="bg-white rounded-lg shadow-lg overflow-auto relative mx-auto"
           style={{
             width: `${containerDimensions.width}px`,
@@ -411,7 +383,7 @@ export function RoadmapTree({ books, title, onBookSelect, selectedBook, onDelete
                       autoFocus
                     />
                   ) : (
-                    <div
+                    <div 
                       className="flex items-center group cursor-pointer"
                       onClick={handleTitleEdit}
                       title="Click to edit title"
@@ -429,7 +401,7 @@ export function RoadmapTree({ books, title, onBookSelect, selectedBook, onDelete
                     <Menu className="w-5 h-5" />
                   </button>
                 </div>
-
+                
                 {showMobileMenu && (
                   <div className="flex flex-col gap-2 pb-2 border-t pt-2">
                     <button
@@ -439,15 +411,6 @@ export function RoadmapTree({ books, title, onBookSelect, selectedBook, onDelete
                       <Download className="w-4 h-4" />
                       Download PDF
                     </button>
-                    {/* 🟢 Mobile Screenshot */}
-                    <button
-                      onClick={handleScreenshot}
-                      className="flex items-center justify-center gap-2 px-3 py-2 text-blue-600 border border-blue-300 rounded-lg hover:bg-blue-50 transition text-sm"
-                    >
-                      <Camera className="w-4 h-4" />
-                      Screenshot
-                    </button>
-
                     <button
                       className="flex items-center justify-center gap-2 px-3 py-2 text-red-600 bg-white border border-red-300 hover:text-red-700 hover:bg-red-50 hover:border-red-400 rounded-lg transition-all duration-200 text-sm w-full"
                       onClick={onClearRoadmap}
@@ -457,7 +420,7 @@ export function RoadmapTree({ books, title, onBookSelect, selectedBook, onDelete
                     </button>
                   </div>
                 )}
-
+                
                 <div className="text-center">
                   <p className="text-xs text-gray-500">
                     📸 Screenshot for image • PDF for details
@@ -477,14 +440,6 @@ export function RoadmapTree({ books, title, onBookSelect, selectedBook, onDelete
                   >
                     <Download className="w-4 h-4" />
                     Download PDF
-                  </button>
-                  {/* 🟢 New Screenshot button */}
-                  <button
-                    onClick={handleScreenshot}
-                    className="flex items-center gap-2 px-3 py-2 text-blue-600 border border-blue-300 rounded-lg hover:bg-blue-50 transition text-sm h-9"
-                  >
-                    <Camera className="w-4 h-4" />
-                    Screenshot
                   </button>
                   <button
                     className="flex items-center gap-2 px-3 py-2 text-red-600 bg-white border border-red-300 hover:text-red-700 hover:bg-red-50 hover:border-red-400 rounded-lg transition-all duration-200 text-sm h-9"
@@ -506,7 +461,7 @@ export function RoadmapTree({ books, title, onBookSelect, selectedBook, onDelete
                       autoFocus
                     />
                   ) : (
-                    <div
+                    <div 
                       className="group cursor-pointer"
                       onClick={handleTitleEdit}
                       title="Click to edit title"
@@ -519,6 +474,9 @@ export function RoadmapTree({ books, title, onBookSelect, selectedBook, onDelete
                       </div>
                     </div>
                   )}
+                  <p className="text-xs text-gray-500 mt-1">
+                    📸 For roadmap image: Please take a screenshot • Download creates book details PDF
+                  </p>
                 </div>
                 <div className="w-32"></div>
               </div>
