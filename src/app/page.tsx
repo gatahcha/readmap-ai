@@ -1,20 +1,33 @@
-import { bookPipeline } from "@/book/bookPipeline";
-import { bookNode } from "@/book/bookNode";
-import Hero from "@/components/hero";
-import ReadingRoadmap from "@/components/reading-roadmap";
+// src/app/page.tsx
+"use client"
 
+import { useState } from "react"
+import { BookNode } from "@/book/bookNode"
+import Header from "@/components/layout/Header"
+import Footer from "@/components/layout/Footer"
+import HeroSection from "@/components/sections/HeroSection"
+import { RoadmapSection } from "@/components/sections/RoadmapSection"
 
-interface HomeProps {
-  searchParams: { query?: string };
-}
+export default function Home() {
+  const [books, setBooks] = useState<BookNode[]>([])
 
-export default async function Home({ searchParams }: HomeProps) {
-
-  const params = await searchParams;
+  const handleSearchResults = (results: { finalResponse: string; books: BookNode[] }) => {
+    setBooks(results.books)
+  }
 
   return (
-    <main className="w-full h-screen">
-      <Hero query={params.query} />
-    </main>
-  );
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50 flex flex-col">
+      <Header />
+
+      <div className="flex-1">
+        <main>
+          <HeroSection onSearchResults={handleSearchResults} />
+        </main>
+
+        <RoadmapSection books={books} />
+      </div>
+
+      <Footer />
+    </div>
+  )
 }
