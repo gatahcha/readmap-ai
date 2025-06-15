@@ -84,8 +84,30 @@ Provide a professional yet engaging reply, structured clearly as follows:
     (Continue as needed, limiting recommendations to the most relevant options.)"`
     });
 
+    // Helper function to safely convert to number
+    const toSafeNumber = (value: any): number => {
+        if (typeof value === 'number') return value;
+        if (typeof value === 'string') {
+            const cleaned = value.replace(/[^0-9]/g, '');
+            const parsed = parseInt(cleaned, 10);
+            return isNaN(parsed) ? 0 : parsed;
+        }
+        return 0;
+    };
+
+    // 🔧 Clean and normalize data before returning
+    const cleanedBooks = [...databaseBooks, ...vectorBooks].map(book => ({
+        ...book,
+        // 1. Set embedding to empty array
+        embedding: [],
+        // 2. Ensure isbn10 is a number
+        isbn10: toSafeNumber(book.isbn10),
+        // 3. Ensure isbn13 is a number
+        isbn13: toSafeNumber(book.isbn13)
+    }));
+
     return {
         finalResponse: responseMessage.text || "We have found some books based on your query.",
-        books: [...databaseBooks, ...vectorBooks]
+        books: cleanedBooks
     };
 }

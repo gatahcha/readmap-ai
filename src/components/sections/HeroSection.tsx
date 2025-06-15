@@ -59,17 +59,12 @@ export default function HeroSection({ onSearchResults }: HeroSectionProps) {
 
   // Updated function to load predefined examples
   const handleTrendingClick = (topic: string) => {
-    console.log('🎯 Trending topic clicked:', topic)
     setQuery(topic)
     
     // Check if it's a predefined topic
     const predefinedExample = getExampleByTopic(topic)
-    console.log('📚 Predefined example found:', predefinedExample ? 'YES' : 'NO')
     
     if (predefinedExample) {
-      console.log('📖 Books count:', predefinedExample.books.length)
-      console.log('🔄 Calling onSearchResults:', onSearchResults ? 'YES' : 'NO')
-      
       // Load predefined data instantly
       setFinalResponse(predefinedExample.finalResponse)
       
@@ -79,10 +74,7 @@ export default function HeroSection({ onSearchResults }: HeroSectionProps) {
           finalResponse: predefinedExample.finalResponse,
           books: predefinedExample.books
         })
-        console.log('✅ Results passed to parent!')
       }
-    } else {
-      console.log('❌ No predefined example found for:', topic)
     }
     // If no predefined example, user can still click Generate to search via API
   }
