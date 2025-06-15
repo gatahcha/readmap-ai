@@ -1,20 +1,16 @@
 // data/examples/index.ts
 
 // 1. Import all individual examples
-import { webDevelopmentExample } from './web-development'
 import { machineLearningExample } from './machine-learning'  
 import { dataScienceExample } from './data-science'
 import { frenchCulinaryExample } from './french-culinary'
-import { economyExample } from './economics-basic'
 import { businessExample } from './business-basic'
 
 // 2. Create a lookup object that maps topic names to examples
 export const predefinedExamples = {
-  "Web Development": webDevelopmentExample,
   "Machine Learning": machineLearningExample,
   "Data Science": dataScienceExample,
   "French Culinary Arts": frenchCulinaryExample,
-  "Economics": economyExample,
   "Business Fundamentals": businessExample
 }
 
@@ -25,11 +21,9 @@ export function getExampleByTopic(topic: string) {
 
 // 4. List of trending topics for the UI
 export const trendingTopics = [
-  "Machine Learning",
-  "Web Development", 
+  "Machine Learning", 
   "Data Science",
   "French Culinary Arts",
-  "Economics",
   "Business Fundamentals"
 ]
 
