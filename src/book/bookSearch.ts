@@ -226,8 +226,6 @@ async function buildRecommendationTree(initialBooks: BookNode[], depth: number =
 					allBooks.push(nb);
 				}
 
-
-
 				// attach only the new book ISBNs as prerequisites
 				const newPrerequisites = newBooks.map(nb => nb.isbn13);
 				book.prerequisites = [...(book.prerequisites || []), ...newPrerequisites];
