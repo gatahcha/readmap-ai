@@ -53,6 +53,8 @@ export default function HeroSection({ onSearchResults }: HeroSectionProps) {
       // Pass results to parent component only if input is valid
       if (onSearchResults) {
         onSearchResults(result)
+        // Clear the hero response after passing to parent
+        setFinalResponse("")
       }
     } catch (error) {
       console.error('Search error:', error)
@@ -85,6 +87,8 @@ export default function HeroSection({ onSearchResults }: HeroSectionProps) {
           finalResponse: predefinedExample.finalResponse,
           books: predefinedExample.books
         })
+        // Clear the hero response after passing to parent
+        setFinalResponse("")
       }
     }
     // If no predefined example, user can still click Generate to search via API
