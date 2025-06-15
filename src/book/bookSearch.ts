@@ -210,14 +210,14 @@ async function buildRecommendationTree(initialBooks: BookNode[], depth: number =
 				// this returns e.g. top 3—but might include ones you've already seen
 				const similarBooks = await performVectorSearch(
 					bookEmbedding,
-					1,
+					3,
 					excludeIds
 				);
 
 				// only keep brand-new ones
 				const newBooks = similarBooks.filter(
 					(sb) => !processedIds.has(sb.isbn13)
-				);
+				).slice(0, 1); // Limit to just 1 book
 
 				// mark them processed and queue for the next "wave"
 				for (const nb of newBooks) {
