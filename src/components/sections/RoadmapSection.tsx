@@ -81,10 +81,10 @@ export function RoadmapSection({ books: initialBooks, title }: RoadmapSectionPro
         <div className={`flex flex-col items-center justify-center text-center ${isMobile ? 'h-48 px-4' : 'h-56'}`}>
           <div className={`${isMobile ? 'text-4xl' : 'text-6xl'} mb-4 text-gray-300`}>📚</div>
           <h3 className={`${isMobile ? 'text-lg' : 'text-xl'} font-semibold text-gray-600 mb-2`}>
-            No Roadmap Yet
+            Sorry we cannot build a roadmap for you
           </h3>
-          <p className={`text-gray-500 ${isMobile ? 'text-sm px-2' : ''}`}>
-            Search for a topic to generate your learning roadmap
+          <p className={`text-gray-500 ${isMobile ? 'text-sm px-2' : ''} max-w-2xl`}>
+            {title}
           </p>
         </div>
       )}
