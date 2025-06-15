@@ -1,11 +1,11 @@
 // Vector search test script
 import { bookVectorSearch, bookDatabaseSearch, cleanup } from './bookSearch';
-import { bookNode } from "./bookNode";
+import { BookNode } from "./bookNode";
 
 /**
  * Pretty print a book node with all its details
  */
-function printBook(book: bookNode, index: number): void {
+function printBook(book: BookNode, index: number): void {
     console.log(`\n📚 Book #${index + 1}`);
     console.log(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
     console.log(`📖 Title: ${book.title}`);
@@ -35,7 +35,7 @@ function printBook(book: bookNode, index: number): void {
 /**
  * Print summary statistics
  */
-function printSummary(books: bookNode[]): void {
+function printSummary(books: BookNode[]): void {
     console.log(`\n📊 SEARCH SUMMARY`);
     console.log(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
     console.log(`📚 Total books found: ${books.length}`);
