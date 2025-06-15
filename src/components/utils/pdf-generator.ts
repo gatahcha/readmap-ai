@@ -24,6 +24,55 @@ function addWrappedText(doc: jsPDF, text: string, x: number, y: number, maxWidth
   return currentY + lineHeight
 }
 
+// Helper function to add centered wrapped text
+function addCenteredWrappedText(doc: jsPDF, text: string, y: number, maxWidth: number, lineHeight: number): number {
+  const pageWidth = doc.internal.pageSize.getWidth()
+  const words = text.split(" ")
+  let line = ""
+  let currentY = y
+  const lines: string[] = []
+
+  // First, calculate all lines
+  for (let i = 0; i < words.length; i++) {
+    const testLine = line + words[i] + " "
+    const testWidth = (doc.getStringUnitWidth(testLine) * doc.getFontSize()) / doc.internal.scaleFactor
+
+    if (testWidth > maxWidth && i > 0) {
+      lines.push(line.trim())
+      line = words[i] + " "
+    } else {
+      line = testLine
+    }
+  }
+  lines.push(line.trim())
+
+  // Then render each line centered
+  lines.forEach(line => {
+    doc.text(line, pageWidth / 2, currentY, { align: "center" })
+    currentY += lineHeight
+  })
+
+  return currentY
+}
+
+// Function to calculate optimal font size for title
+function calculateOptimalFontSize(doc: jsPDF, text: string, maxWidth: number, maxFontSize: number, minFontSize: number): number {
+  let fontSize = maxFontSize
+  
+  while (fontSize >= minFontSize) {
+    doc.setFontSize(fontSize)
+    const textWidth = (doc.getStringUnitWidth(text) * fontSize) / doc.internal.scaleFactor
+    
+    if (textWidth <= maxWidth) {
+      return fontSize
+    }
+    
+    fontSize -= 2
+  }
+  
+  return minFontSize
+}
+
 // Function to render rating as simple number
 function renderRating(doc: jsPDF, x: number, y: number, rating: number): void {
   doc.setTextColor(75, 85, 99)
@@ -39,17 +88,38 @@ function createCoverPage(doc: jsPDF, title: string, books: BookNode[]): void {
   doc.setFillColor(255, 247, 237) // Orange 50
   doc.rect(0, 0, pageWidth, pageHeight, 'F')
   
-  // Title section
-  doc.setFontSize(32)
-  doc.setFont("helvetica", "bold")
-  doc.setTextColor(31, 41, 55) // Gray 800
-  doc.text(title, pageWidth / 2, 60, { align: "center" })
+  // Title section with proper handling for long titles
+  const maxTitleWidth = pageWidth - 40 // 20mm margin on each side
+  const maxFontSize = 32
+  const minFontSize = 18
   
-  // Subtitle
-  doc.setFontSize(16)
-  doc.setFont("helvetica", "normal")
-  doc.setTextColor(107, 114, 128) // Gray 500
-  doc.text("Your Learning Journey", pageWidth / 2, 80, { align: "center" })
+  // Calculate optimal font size based on title length
+  doc.setFont("helvetica", "bold")
+  const optimalFontSize = calculateOptimalFontSize(doc, title, maxTitleWidth, maxFontSize, minFontSize)
+  
+  doc.setFontSize(optimalFontSize)
+  doc.setTextColor(31, 41, 55) // Gray 800
+  
+  // Use wrapped text if title is still too long even at minimum font size
+  if (optimalFontSize === minFontSize) {
+    const titleLineHeight = optimalFontSize * 1.2
+    const titleEndY = addCenteredWrappedText(doc, title, 60, maxTitleWidth, titleLineHeight)
+    
+    // Adjust subtitle position based on where title ended
+    doc.setFontSize(16)
+    doc.setFont("helvetica", "normal")
+    doc.setTextColor(107, 114, 128) // Gray 500
+    doc.text("Your Learning Journey", pageWidth / 2, titleEndY + 10, { align: "center" })
+  } else {
+    // Title fits on one line
+    doc.text(title, pageWidth / 2, 60, { align: "center" })
+    
+    // Subtitle
+    doc.setFontSize(16)
+    doc.setFont("helvetica", "normal")
+    doc.setTextColor(107, 114, 128) // Gray 500
+    doc.text("Your Learning Journey", pageWidth / 2, 80, { align: "center" })
+  }
   
   // Summary box
   const boxWidth = 160
@@ -214,7 +284,8 @@ function addSimpleFooter(doc: jsPDF, pageNumber: number): void {
   doc.setTextColor(107, 114, 128)
   doc.text(`Page ${pageNumber}`, pageWidth - margin, pageHeight - 10, { align: "right" })
 }
-  // Add book details pages - SIMPLIFIED
+
+// Add book details pages - SIMPLIFIED
 function addBookDetailsPages(doc: jsPDF, books: BookNode[]): void {
   books.forEach((book, index) => {
     doc.addPage("a4", "portrait")
@@ -230,21 +301,48 @@ function addBookDetailsPages(doc: jsPDF, books: BookNode[]): void {
     doc.setFillColor(254, 215, 170) // Orange 200
     doc.rect(margin, currentY, contentWidth, headerHeight, 'F')
     
-    // Book title
+    // Book title with proper wrapping
     doc.setFontSize(18)
     doc.setFont("helvetica", "bold")
     doc.setTextColor(31, 41, 55)
-    doc.text(book.title, margin + 5, currentY + 12)
-
-    // Subtitle
-    if (book.subtitle) {
-      doc.setFontSize(12)
-      doc.setFont("helvetica", "italic")
-      doc.setTextColor(75, 85, 99)
-      doc.text(book.subtitle, margin + 5, currentY + 24)
+    
+    // Check if title fits in one line
+    const titleWidth = (doc.getStringUnitWidth(book.title) * 18) / doc.internal.scaleFactor
+    
+    if (titleWidth > contentWidth - 10) {
+      // Title is too long, use wrapped text
+      const titleY = addWrappedText(doc, book.title, margin + 5, currentY + 12, contentWidth - 10, 12)
+      
+      // Adjust header height if needed
+      const actualHeaderHeight = titleY - currentY + 5
+      
+      // Redraw background if needed
+      if (actualHeaderHeight > headerHeight) {
+        doc.setFillColor(254, 215, 170)
+        doc.rect(margin, currentY, contentWidth, actualHeaderHeight, 'F')
+        
+        // Redraw title
+        doc.setFontSize(18)
+        doc.setFont("helvetica", "bold")
+        doc.setTextColor(31, 41, 55)
+        addWrappedText(doc, book.title, margin + 5, currentY + 12, contentWidth - 10, 12)
+      }
+      
+      currentY += actualHeaderHeight + 10
+    } else {
+      // Title fits on one line
+      doc.text(book.title, margin + 5, currentY + 12)
+      
+      // Subtitle
+      if (book.subtitle) {
+        doc.setFontSize(12)
+        doc.setFont("helvetica", "italic")
+        doc.setTextColor(75, 85, 99)
+        doc.text(book.subtitle, margin + 5, currentY + 24)
+      }
+      
+      currentY += headerHeight + 10
     }
-
-    currentY += headerHeight + 10
 
     // Two column layout for details
     const leftColumnX = margin
