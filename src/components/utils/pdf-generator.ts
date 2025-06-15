@@ -471,24 +471,17 @@ export async function generateRoadmapPDF(
     doc.setFont("helvetica")
 
     // 1. Create cover page
-    console.log("📖 Creating cover page...")
     createCoverPage(doc, title, books)
 
     // 2. Create table of contents
-    console.log("📑 Creating table of contents...")
     createTableOfContents(doc, books)
 
     // 3. Add book detail pages
-    console.log("📚 Adding book detail pages...")
     addBookDetailsPages(doc, books)
 
     // 4. Save the PDF
-    console.log("💾 Saving PDF...")
     const filename = `${title.replace(/\s+/g, "_")}_complete.pdf`
     doc.save(filename)
-
-    console.log(`🎉 PDF generated successfully: ${filename}`)
-    console.log("=== ✅ PDF GENERATION COMPLETED ===")
 
   } catch (error) {
     console.error("=== ❌ PDF GENERATION FAILED ===", error)

@@ -1,18 +1,28 @@
 "use client"
 
+import { useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { BookOpen, Menu } from "lucide-react"
+import { BookOpen, Menu, X } from "lucide-react"
 
 export default function Header() {
   const pathname = usePathname()
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   const navItems = [
     { label: "Home", href: "/" },
     { label: "About", href: "/about" },
     { label: "Help", href: "/help" },
   ]
+
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen)
+  }
+
+  const closeMobileMenu = () => {
+    setIsMobileMenuOpen(false)
+  }
 
   return (
     <header className="backdrop-blur-md bg-[#FFFAF1]/90 border-b border-orange-200/50">
@@ -26,6 +36,7 @@ export default function Header() {
           </span>
         </Link>
 
+        {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-8">
           {navItems.map(({ label, href }) => (
             <Link
@@ -40,10 +51,41 @@ export default function Header() {
           ))}
         </nav>
 
-        <Button variant="ghost" size="icon" className="md:hidden">
-          <Menu className="w-5 h-5" />
+        {/* Mobile Menu Button */}
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          className="md:hidden"
+          onClick={toggleMobileMenu}
+          aria-label="Toggle mobile menu"
+        >
+          {isMobileMenuOpen ? (
+            <X className="w-5 h-5" />
+          ) : (
+            <Menu className="w-5 h-5" />
+          )}
         </Button>
       </div>
+
+      {/* Mobile Navigation Menu */}
+      {isMobileMenuOpen && (
+        <div className="md:hidden bg-[#FFFAF1]/95 backdrop-blur-md border-b border-orange-200/50">
+          <nav className="container mx-auto px-6 py-4 flex flex-col gap-4">
+            {navItems.map(({ label, href }) => (
+              <Link
+                key={href}
+                href={href}
+                onClick={closeMobileMenu}
+                className={`text-gray-600 hover:text-gray-900 transition-colors py-2 ${
+                  pathname === href ? "font-semibold text-gray-900" : ""
+                }`}
+              >
+                {label}
+              </Link>
+            ))}
+          </nav>
+        </div>
+      )}
     </header>
   )
 }
