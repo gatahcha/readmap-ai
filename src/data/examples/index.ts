@@ -4,12 +4,18 @@
 import { webDevelopmentExample } from './web-development'
 import { machineLearningExample } from './machine-learning'  
 import { dataScienceExample } from './data-science'
+import { frenchCulinaryExample } from './french-culinary'
+import { economyExample } from './economics-basic'
+import { businessExample } from './business-basic'
 
 // 2. Create a lookup object that maps topic names to examples
 export const predefinedExamples = {
   "Web Development": webDevelopmentExample,
   "Machine Learning": machineLearningExample,
-  "Data Science": dataScienceExample
+  "Data Science": dataScienceExample,
+  "French Culinary Arts": frenchCulinaryExample,
+  "Economics": economyExample,
+  "Business Fundamentals": businessExample
 }
 
 // 3. Helper function to get example by topic name
@@ -21,7 +27,10 @@ export function getExampleByTopic(topic: string) {
 export const trendingTopics = [
   "Machine Learning",
   "Web Development", 
-  "Data Science"
+  "Data Science",
+  "French Culinary Arts",
+  "Economics",
+  "Business Fundamentals"
 ]
 
 // 5. Type for the example structure

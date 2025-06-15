@@ -1,0 +1,105 @@
+import type { BookNode } from "@/book/bookNode"
+
+export const frenchCulinaryExample = {
+    query: "French culinary arts and classic cooking techniques",
+    roadmapTitle: `French Culinary Arts: Mastering Classic Techniques`,
+
+    books: [
+        {
+            "id": "mastering-the-art-of-french-cooking-volume-1",
+            "isbn13": 9780375413407,
+            "isbn10": "0375413405",
+            "title": "Mastering the Art of French Cooking, Volume 1",
+            "subtitle": "50th Anniversary Edition: A Cookbook",
+            "author": "Julia Child; Louisette Bertholle; Simone Beck",
+            "categories": "Cookbooks, French Cuisine",
+            "thumbnail": "https://dynamic.indigoimages.ca/v1/books/books/0375413405/1.jpg",
+            "description": "The definitive guide to classic French cooking techniques and recipes, featuring 524 recipes and over 100 instructive illustrations for both beginners and seasoned cooks.",
+            "published_year": 2001,
+            "average_rating": 4.25,
+            "num_pages": 752,
+            "embedding": [],
+            "prerequisites": []
+        },
+        {
+            "id": "mastering-the-art-of-french-cooking-volume-2",
+            "isbn13": 9780394401522,
+            "isbn10": "0394401522",
+            "title": "Mastering the Art of French Cooking, Volume 2",
+            "subtitle": "",
+            "author": "Julia Child; Simone Beck",
+            "categories": "Cookbooks, French Cuisine",
+            "thumbnail": "https://dynamic.indigoimages.ca/v1/books/books/0394401522/1.jpg",
+            "description": "The sequel to the classic Volume 1, offering a brilliant selection of new French dishes and advanced techniques for home cooks.",
+            "published_year": 1970,
+            "average_rating": 4.20,
+            "num_pages": 648,
+            "embedding": [],
+            "prerequisites": [9780375413407]
+        },
+        {
+            "id": "jacques-pepin-new-complete-techniques",
+            "isbn13": 9781579129118,
+            "isbn10": 1579129110,
+            "title": "Jacques Pépin New Complete Techniques",
+            "subtitle": "",
+            "author": "Jacques Pépin",
+            "categories": "Cooking Techniques, Culinary Skills",
+            "thumbnail": "https://dynamic.indigoimages.ca/v1/books/books/1579129110/1.jpg",
+            "description": "A comprehensive masterclass covering 600+ cooking techniques and 160 recipes with step-by-step instructions and photographs.",
+            "published_year": 2012,
+            "average_rating": 4.70,
+            "num_pages": 728,
+            "embedding": [],
+            "prerequisites": [9780375413407]
+        },
+        {
+            "id": "paul-bocuses-french-cooking",
+            "isbn13": 9780394406701,
+            "isbn10": "0394406702",
+            "title": "Paul Bocuse’s French Cooking",
+            "subtitle": "",
+            "author": "Paul Bocuse",
+            "categories": "Cookbooks, French Cuisine",
+            "thumbnail": "https://dynamic.indigoimages.ca/v1/books/books/0394406702/1.jpg",
+            "description": "A classic compendium of nearly 1,200 authentic French recipes from the legendary chef Paul Bocuse.",
+            "published_year": 1977,
+            "average_rating": 4.30,
+            "num_pages": 517,
+            "embedding": [],
+            "prerequisites": [9780375413407]
+        },
+        {
+            "id": "larousse-gastronomique",
+            "isbn13": 9780307464910,
+            "isbn10": "0307464911",
+            "title": "Larousse Gastronomique",
+            "subtitle": "The World’s Greatest Culinary Encyclopedia",
+            "author": "Librairie Larousse (Ed.)",
+            "categories": "Culinary Reference, French Cuisine",
+            "thumbnail": "https://dynamic.indigoimages.ca/v1/books/books/0307464911/1.jpg",
+            "description": "An encyclopedic reference of French and global culinary knowledge – ingredients, techniques, recipes, and history.",
+            "published_year": 2009,
+            "average_rating": 4.40,
+            "num_pages": 1232,
+            "embedding": [],
+            "prerequisites": [9780394401522, 9781579129118]
+        },
+        {
+            "id": "the-escoffier-cookbook",
+            "isbn13": 9780517506622,
+            "isbn10": "0517506629",
+            "title": "The Escoffier Cookbook and Guide to the Fine Art of Cookery",
+            "subtitle": "",
+            "author": "Auguste Escoffier",
+            "categories": "Culinary Arts, French Cuisine",
+            "thumbnail": "https://dynamic.indigoimages.ca/v1/books/books/0517506629/1.jpg",
+            "description": "The American translation of Escoffier’s seminal Le Guide Culinaire, presenting 2,973 classic recipes and foundational techniques of haute cuisine.",
+            "published_year": 1941,
+            "average_rating": 4.40,
+            "num_pages": 944,
+            "embedding": [],
+            "prerequisites": [9780394401522]
+        }
+    ] as BookNode[]
+}

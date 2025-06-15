@@ -8,7 +8,7 @@ import { Sparkles, Search, Loader2, X } from "lucide-react"
 import { NetworkBackground } from "@/components/NetworkBackground"
 import { BookNode } from "@/book/bookNode"
 // Import the predefined examples
-import { getExampleByTopic } from "@/data/examples"
+import { getExampleByTopic, trendingTopics } from "@/data/examples"
 
 interface HeroSectionProps {
   onSearchResults?: (results: { roadmapTitle: string; books: BookNode[] }) => void
@@ -173,7 +173,7 @@ export default function HeroSection({ onSearchResults }: HeroSectionProps) {
 
         {/* Trending Topics */}
         <div className="flex flex-wrap justify-center gap-6 mt-3">
-          {["Machine Learning", "Web Development", "Data Science"].map((topic) => (
+          {trendingTopics.map((topic) => (
             <Button
               key={topic}
               variant="outline"
