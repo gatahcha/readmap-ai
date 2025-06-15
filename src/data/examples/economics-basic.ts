@@ -1,0 +1,105 @@
+import type { BookNode } from "@/book/bookNode"
+
+export const economyExample = {
+    query: "French culinary arts and classic cooking techniques",
+    roadmapTitle: `French Culinary Arts: Mastering Classic Techniques`,
+
+    books: [
+        {
+            "id": "principles-of-economics",
+            "isbn13": 9781305585126,
+            "isbn10": 1305585127,
+            "title": "Principles of Economics",
+            "subtitle": "",
+            "author": "N. Gregory Mankiw",
+            "categories": "Economics, Introductory Textbook",
+            "thumbnail": "https://dynamic.indigoimages.ca/v1/books/books/1305585127/1.jpg",
+            "description": "A widely-used introductory economics textbook covering fundamental principles of microeconomics and macroeconomics in an accessible style.",
+            "published_year": 2018,
+            "average_rating": 4.10,
+            "num_pages": 888,
+            "embedding": [],
+            "prerequisites": []
+        },
+        {
+            "id": "intermediate-microeconomics-a-modern-approach",
+            "isbn13": 9780393123975,
+            "isbn10": "0393123979",
+            "title": "Intermediate Microeconomics: A Modern Approach",
+            "subtitle": "",
+            "author": "Hal R. Varian",
+            "categories": "Economics, Microeconomics",
+            "thumbnail": "https://dynamic.indigoimages.ca/v1/books/books/0393123979/1.jpg",
+            "description": "A comprehensive intermediate microeconomics textbook that delves into consumer and producer theory, market structures, game theory and more with rigorous analysis.",
+            "published_year": 2014,
+            "average_rating": 3.90,
+            "num_pages": 832,
+            "embedding": [],
+            "prerequisites": [9781305585126]
+        },
+        {
+            "id": "macroeconomics",
+            "isbn13": 9780133780581,
+            "isbn10": "0133780589",
+            "title": "Macroeconomics",
+            "subtitle": "",
+            "author": "Olivier Blanchard",
+            "categories": "Economics, Macroeconomics",
+            "thumbnail": "https://dynamic.indigoimages.ca/v1/books/books/0133780589/1.jpg",
+            "description": "A leading intermediate macroeconomics textbook presenting a unified, global view of macroeconomic theory and policy, covering topics from the goods market to growth and crises.",
+            "published_year": 2017,
+            "average_rating": 3.90,
+            "num_pages": 624,
+            "embedding": [],
+            "prerequisites": [9781305585126]
+        },
+        {
+            "id": "microeconomic-theory",
+            "isbn13": 9780195073409,
+            "isbn10": "0195073401",
+            "title": "Microeconomic Theory",
+            "subtitle": "",
+            "author": "Andreu Mas-Colell; Michael D. Whinston; Jerry R. Green",
+            "categories": "Economics, Advanced Microeconomics",
+            "thumbnail": "https://dynamic.indigoimages.ca/v1/books/books/0195073401/1.jpg",
+            "description": "A rigorous graduate-level treatment of microeconomic theory, covering consumer and producer theory, general equilibrium, game theory, and market failures in mathematical depth.",
+            "published_year": 1995,
+            "average_rating": 4.10,
+            "num_pages": 981,
+            "embedding": [],
+            "prerequisites": [9780393123975]
+        },
+        {
+            "id": "advanced-macroeconomics",
+            "isbn13": 9781260185218,
+            "isbn10": "1260185214",
+            "title": "Advanced Macroeconomics",
+            "subtitle": "",
+            "author": "David Romer",
+            "categories": "Economics, Advanced Macroeconomics",
+            "thumbnail": "https://dynamic.indigoimages.ca/v1/books/books/1260185214/1.jpg",
+            "description": "A graduate-level macroeconomics text that explores advanced topics such as infinite-horizon models, real business cycles, and new Keynesian theory with analytical rigor.",
+            "published_year": 2019,
+            "average_rating": 4.00,
+            "num_pages": 736,
+            "embedding": [],
+            "prerequisites": [9780133780581]
+        },
+        {
+            "id": "introductory-econometrics-a-modern-approach",
+            "isbn13": 9781337558860,
+            "isbn10": "1337558869",
+            "title": "Introductory Econometrics: A Modern Approach",
+            "subtitle": "",
+            "author": "Jeffrey M. Wooldridge",
+            "categories": "Economics, Econometrics",
+            "thumbnail": "https://dynamic.indigoimages.ca/v1/books/books/1337558869/1.jpg",
+            "description": "A leading undergraduate econometrics textbook emphasizing practical application of regression analysis to economic data, with a systematic approach based on types of data and causal inference.",
+            "published_year": 2019,
+            "average_rating": 4.10,
+            "num_pages": 816,
+            "embedding": [],
+            "prerequisites": [9781305585126]
+        }
+    ] as BookNode[]
+}

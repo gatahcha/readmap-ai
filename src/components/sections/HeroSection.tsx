@@ -8,16 +8,16 @@ import { Sparkles, Search, Loader2, X } from "lucide-react"
 import { NetworkBackground } from "@/components/NetworkBackground"
 import { BookNode } from "@/book/bookNode"
 // Import the predefined examples
-import { getExampleByTopic } from "@/data/examples"
+import { getExampleByTopic, trendingTopics } from "@/data/examples"
 
 interface HeroSectionProps {
-  onSearchResults?: (results: { finalResponse: string; books: BookNode[] }) => void
+  onSearchResults?: (results: { roadmapTitle: string; books: BookNode[] }) => void
 }
 
 export default function HeroSection({ onSearchResults }: HeroSectionProps) {
   const [query, setQuery] = useState("")
   const [isLoading, setIsLoading] = useState(false)
-  const [finalResponse, setFinalResponse] = useState("")
+  const [roadmapTitle, setRoadmapTitle] = useState("")
   const [showInvalidInputPopup, setShowInvalidInputPopup] = useState(false)
   const [showServerBusyPopup, setShowServerBusyPopup] = useState(false)
 
@@ -42,19 +42,19 @@ export default function HeroSection({ onSearchResults }: HeroSectionProps) {
       const result = await response.json()
       
       // Check if the response indicates invalid input
-      if (result.finalResponse === "Invalid Input") {
+      if (result.roadmapTitle === "Invalid Input") {
         setShowInvalidInputPopup(true)
-        setFinalResponse("")
+        setRoadmapTitle("")
         return
       }
       
-      setFinalResponse(result.finalResponse)
+      setRoadmapTitle(result.roadmapTitle)
       
       // Pass results to parent component only if input is valid
       if (onSearchResults) {
         onSearchResults(result)
         // Clear the hero response after passing to parent
-        setFinalResponse("")
+        setRoadmapTitle("")
       }
     } catch (error) {
       console.error('Search error:', error)
@@ -79,16 +79,16 @@ export default function HeroSection({ onSearchResults }: HeroSectionProps) {
     
     if (predefinedExample) {
       // Load predefined data instantly
-      setFinalResponse(predefinedExample.finalResponse)
+      setRoadmapTitle(predefinedExample.roadmapTitle)
       
       // Pass results to parent component
       if (onSearchResults) {
         onSearchResults({
-          finalResponse: predefinedExample.finalResponse,
+          roadmapTitle: predefinedExample.roadmapTitle,
           books: predefinedExample.books
         })
         // Clear the hero response after passing to parent
-        setFinalResponse("")
+        setRoadmapTitle("")
       }
     }
     // If no predefined example, user can still click Generate to search via API
@@ -165,15 +165,15 @@ export default function HeroSection({ onSearchResults }: HeroSectionProps) {
         </div>
 
         {/* Search Results */}
-        {finalResponse && (
+        {roadmapTitle && (
           <div className="max-w-4xl mx-auto mb-12 p-6 bg-white/80 backdrop-blur-sm rounded-2xl border border-orange-200/50 shadow-lg">
-            <p className="text-gray-700 leading-relaxed whitespace-pre-line">{finalResponse}</p>
+            <p className="text-gray-700 leading-relaxed whitespace-pre-line">{roadmapTitle}</p>
           </div>
         )}
 
         {/* Trending Topics */}
         <div className="flex flex-wrap justify-center gap-6 mt-3">
-          {["Machine Learning", "Web Development", "Data Science"].map((topic) => (
+          {trendingTopics.map((topic) => (
             <Button
               key={topic}
               variant="outline"

@@ -1,46 +1,61 @@
 
 
-export function userInputPrompt(userQuery : String) {
+export function userInputPrompt(userQuery: String) {
 
-    const prompt = 
-    `Generate an AI-based book recommendation query prompt that takes ${userQuery} as input and returns the following structured output:
+    const prompt = `Generate an AI-based book recommendation query prompt that takes <userQuery> ${userQuery} </userQuery> as input and returns a structured output as follows:
 
-        1. **Vector Search Query**:
+Before generating the queries, evaluate if the userQuery contains sufficient and clear information for constructing accurate searches. If the provided user query is unclear, vague, or lacks necessary context to perform effective vector and MongoDB searches, do **not** generate the search queries.
 
-        * Generate a concise yet descriptive sentence suitable for vector-based search, focusing specifically on book descriptions. The vector search should retrieve books whose descriptions semantically match the essence of the user's query.
+Instead, clearly articulate a follow-up clarification question to the user, specifying precisely what additional information or details you require.
 
-        2. **MongoDB Search Query**:
+If the provided userQuery is deemed sufficient and clear, proceed to generate the following structured output:
 
-        * Construct a MongoDB search query (similar to an SQL-like query) tailored to search through relevant fields (title, subtitle, authors, categories, description) without performing delete or update operations.
-        * The search query must specifically retrieve relevant matches based on keywords derived from {user query}, ensuring accurate and precise matches.
+1. **Vector Search Query**:
 
-        **MongoDB Database Structure Reference:**
+   * Generate a concise and descriptive sentence suitable for vector-based search, specifically targeting semantic matching against book descriptions. This sentence should encapsulate the essence and intent of the user's query effectively.
 
-        {
-        "_id": {"$oid": "..."},
-        "isbn13": {"$numberLong": "..."},
+2. **MongoDB Search Query**:
+
+   * Construct a MongoDB search query tailored to search within the fields title, subtitle, authors, categories, and description.
+   * Ensure the query accurately retrieves relevant matches using keywords derived directly from the user's query.
+   * The query must only perform searches—no delete or update operations.
+
+**MongoDB Database Structure Reference:**
+
+    {
+        "_id": { "$oid": "..." },
+        "isbn13": { "$numberLong": "..." },
         "isbn10": "...",
-        "title": "...",
-        "subtitle": "...",
-        "authors": "...",
-        "categories": "...",
-        "thumbnail": "...",
-        "description": "...",
-        "published_year": {"$numberDouble": "..."},
-        "average_rating": {"$numberDouble": "..."},
-        "num_pages": {"$numberDouble": "..."},
-        "ratings_count": {"$numberDouble": "..."},
+            "title": "...",
+                "subtitle": "...",
+                    "authors": "...",
+                        "categories": "...",
+                            "thumbnail": "...",
+                                "description": "...",
+                                    "published_year": { "$numberDouble": "..." },
+        "average_rating": { "$numberDouble": "..." },
+        "num_pages": { "$numberDouble": "..." },
+        "ratings_count": { "$numberDouble": "..." },
         "embedding": []
-        }
-        
-        Ensure the MongoDB query strictly performs searches and respects the provided database schema.
-    `
+    }
+
+* If userQuery is sufficiently clear:
+
+  * **Further Clarification**: "" (empty string)
+
+* If userQuery is insufficient or unclear:
+
+  * **Vector Search Query**: ""
+  * **MongoDB Search Query**: ""
+  * **Further Clarification**: Generate a concise, polite, and specific question prompting the user to clarify or provide additional information needed.
+`
+
 
     return prompt;
 
 }
 
-export function combineAndFinalize(query : String) {
+export function combineAndFinalize(query: String) {
 
     //ask gemini to give final decision in term of BookNode
     return 0;

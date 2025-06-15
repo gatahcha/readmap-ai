@@ -12,9 +12,9 @@ export default function Home() {
   const [books, setBooks] = useState<BookNode[]>([])
   const [roadmapTitle, setRoadmapTitle] = useState<string>("")
 
-  const handleSearchResults = (results: { finalResponse: string; books: BookNode[] }) => {
+  const handleSearchResults = (results: { roadmapTitle: string; books: BookNode[] }) => {
     setBooks(results.books)
-    setRoadmapTitle(results.finalResponse)
+    setRoadmapTitle(results.roadmapTitle)
   }
 
   return (

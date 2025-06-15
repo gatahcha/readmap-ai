@@ -147,7 +147,7 @@ async function performVectorSearch(
 
 		// Transform results to match bookNode interface
 		return results.map(doc => ({
-			id : doc.isbn13?.toString() || `book-${Date.now()}`,
+			id: doc.isbn13?.toString() || `book-${Date.now()}`,
 			isbn13: doc.isbn13 || 0,
 			isbn10: doc.isbn10 || 0,
 			title: doc.title || "",
@@ -217,7 +217,7 @@ async function buildRecommendationTree(initialBooks: BookNode[], depth: number =
 				// only keep brand-new ones
 				const newBooks = similarBooks.filter(
 					(sb) => !processedIds.has(sb.isbn13)
-				);
+				).slice(0, 1); // Limit to just 1 book
 
 				// mark them processed and queue for the next "wave"
 				for (const nb of newBooks) {
@@ -274,7 +274,7 @@ export async function bookDatabaseSearch(query: string): Promise<BookNode[]> {
 			.toArray();
 
 		return results.map(doc => ({
-			id : "memek",
+			id: "",
 			isbn13: doc.isbn13 || 0,
 			isbn10: doc.isbn10 || 0,
 			title: doc.title || "",
@@ -310,9 +310,9 @@ export async function bookVectorSearch(query: string): Promise<BookNode[]> {
 		// console.log('Getting query embedding...');
 		const queryEmbedding = await getEmbedding(query);
 
-		// Step 2: Perform initial vector search (5 books)
+		// Step 2: Perform initial vector search (3 books)
 		// console.log('Performing initial vector search...');
-		const initialBooks = await performVectorSearch(queryEmbedding, 5);
+		const initialBooks = await performVectorSearch(queryEmbedding, 3);
 
 		if (initialBooks.length === 0) {
 			console.log('No books found for query');
@@ -321,7 +321,7 @@ export async function bookVectorSearch(query: string): Promise<BookNode[]> {
 
 		// Step 3-7: Build recommendation tree with prerequisites
 		// console.log('Building recommendation tree...');
-		const allRecommendedBooks = await buildRecommendationTree(initialBooks, 2);
+		const allRecommendedBooks = await buildRecommendationTree(initialBooks, 5);
 
 		// console.log(`Found ${allRecommendedBooks.length} books in recommendation tree`);
 		// console.log(`First book: "${allRecommendedBooks[0].title}" has ${allRecommendedBooks[0].prevNodes.length} prerequisite books`);

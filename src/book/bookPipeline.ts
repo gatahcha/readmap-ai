@@ -3,12 +3,11 @@ import { BookNode } from "./bookNode";
 import { bookDatabaseSearch, bookVectorSearch } from "./bookSearch";
 import { GoogleGenAI, Type } from "@google/genai";
 import { userInputPrompt } from "./prompts";
-import { writeFileSync } from 'fs';
 
 // Initialize Gemini client
 const geminiClient = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY || "YOUR_API_KEY" });
 
-export async function bookPipeline(userQuery: string): Promise<{ finalResponse: string, books: BookNode[] }> {
+export async function bookPipeline(userQuery: string): Promise<{ roadmapTitle: string, books: BookNode[] }> {
     // Define the user query 
 
     const responseQuery = await geminiClient.models.generateContent({
@@ -25,8 +24,11 @@ export async function bookPipeline(userQuery: string): Promise<{ finalResponse: 
                     mongoDBSearch: {
                         type: Type.STRING,
                     },
+                    furtherClarification: {
+                        type: Type.STRING,
+                    }
                 },
-                propertyOrdering: ["vectorSearch", "mongoDBSearch"],
+                propertyOrdering: ["vectorSearch", "mongoDBSearch", "furtherClarification"],
             },
         },
     });
@@ -34,6 +36,13 @@ export async function bookPipeline(userQuery: string): Promise<{ finalResponse: 
     const instructionJson = JSON.parse(responseQuery.text || '{}');
 
     // writeFileSync('src/book/trial_lookout.json', JSON.stringify(responseQuery, null, 2));
+    // Check if further clarification is needed
+    if (instructionJson.furtherClarification && instructionJson.furtherClarification.trim() !== "") {
+        return {
+            roadmapTitle: instructionJson.furtherClarification,
+            books: []
+        };
+    }
 
     // Perform database query
     const databaseBooks = await bookDatabaseSearch(instructionJson.mongoDBSearch);
@@ -44,7 +53,7 @@ export async function bookPipeline(userQuery: string): Promise<{ finalResponse: 
     // Generate a response message
     if (!databaseBooks.length && !vectorBooks.length) {
         return {
-            finalResponse: "No books found matching your query.",
+            roadmapTitle: "No books found matching your query.",
             books: []
         };
     }
@@ -69,20 +78,29 @@ export async function bookPipeline(userQuery: string): Promise<{ finalResponse: 
     const responseMessage = await geminiClient.models.generateContent({
         model: "gemini-2.0-flash",
         contents: `You are ReadMap AI, an intelligent book recommendation system.
-You have previously analyzed the database and retrieved relevant information on books:
+
+Based on the books previously retrieved and analyzed from our database:
 ${booksKnowledge}
 
-Your current task is to respond concisely and accurately to the user's query: ${userQuery}
+And the user's original query:
+${userQuery}
 
-Provide a professional yet engaging reply, structured clearly as follows:
-"We found some books in our database that could be interesting for you based on your query:
-    1. **Book Title** by *Author Name* (Year Published)
-        * Briefly explain why this book matches the query.
-    2. **Book Title** by *Author Name* (Year Published)
-        * Briefly explain why this book matches the query.
-    
-    (Continue as needed, limiting recommendations to the most relevant options.)"`
+Generate a concise, clear, and engaging title for a visual diagram showcasing these book recommendations. The title should succinctly reflect the essence of the user's query and the recommended books."`,
+        config: {
+            responseMimeType: "application/json",
+            responseSchema: {
+                type: Type.OBJECT,
+                properties: {
+                    title: {
+                        type: Type.STRING,
+                    },
+                },
+                propertyOrdering: ["title"],
+            }
+        }
     });
+
+    const titleJSON = JSON.parse(responseMessage.text || '{}');
 
     // Helper function to safely convert to number
     const toSafeNumber = (value: any): number => {
@@ -107,7 +125,7 @@ Provide a professional yet engaging reply, structured clearly as follows:
     }));
 
     return {
-        finalResponse: responseMessage.text || "We have found some books based on your query.",
+        roadmapTitle: titleJSON.title || "Your personal roadmap",
         books: cleanedBooks
     };
 }
