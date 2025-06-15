@@ -28,9 +28,6 @@ export default function TermsOfService() {
             </h1>
             
             <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-orange-200/50 shadow-lg p-8 md:p-12">
-              <p className="text-sm text-gray-500 mb-8">
-                <strong>Last Updated:</strong> December 14, 2024
-              </p>
 
               <div className="prose prose-lg max-w-none text-gray-700 space-y-8">
                 <section>
