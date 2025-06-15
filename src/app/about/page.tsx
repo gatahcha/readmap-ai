@@ -1,7 +1,7 @@
 // src/app/about/page.tsx
 "use client"
 
-import { BookOpen, ListChecks, RefreshCcw, Users, ExternalLink } from "lucide-react"
+import { BookOpen, ListChecks, RefreshCcw, Users} from "lucide-react"
 import Header from "@/components/layout/Header"
 import Footer from "@/components/layout/Footer"
 import { NetworkBackground } from "@/components/NetworkBackground"

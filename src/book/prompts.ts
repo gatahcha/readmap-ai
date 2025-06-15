@@ -54,9 +54,3 @@ If the provided userQuery is deemed sufficient and clear, proceed to generate th
     return prompt;
 
 }
-
-export function combineAndFinalize(query: String) {
-
-    //ask gemini to give final decision in term of BookNode
-    return 0;
-}

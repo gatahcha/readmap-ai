@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { BookOpen, Facebook, Linkedin, Youtube, Instagram, Mail } from "lucide-react"
+import { BookOpen, Youtube, Mail } from "lucide-react"
 
 export default function Footer() {
   return (
