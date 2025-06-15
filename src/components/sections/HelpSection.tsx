@@ -29,17 +29,17 @@ export default function HelpSection() {
     {
       question: "What types of books are included in your database?",
       answer:
-        "We have over 50,000 carefully curated books across 500+ topics including business, science, technology, history, philosophy, self-improvement, fiction, and more. Our team continuously adds new releases and classic works to ensure comprehensive coverage.",
+        "We have over 6,800 carefully curated books across 100+ topics including business, science, technology, history, philosophy, self-improvement, fiction, and more. Our team continuously adds new releases and classic works to ensure comprehensive coverage.",
     },
     {
       question: "Is readmap.ai free to use?",
       answer:
-        "We offer a free tier that includes basic roadmap creation and up to 3 personalized reading lists. Our premium plans provide unlimited roadmaps, advanced AI features, progress tracking, and priority support starting at $9.99/month.",
+        "readmap.ai is publicly available for everyone to use and explore.",
     },
     {
       question: "How do I track my reading progress?",
       answer:
-        "You can mark books as 'reading', 'completed', or 'want to read'. Our progress tracker shows your completion percentage, reading streaks, and suggests when to move to the next book. You can also add personal notes and ratings.",
+        "Currently we are still developing this webapp. You can take screenshots and record it on your own to track your progress.",
     },
     {
       question: "Can I share my reading roadmaps with others?",
