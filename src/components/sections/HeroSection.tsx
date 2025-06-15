@@ -20,6 +20,7 @@ export default function HeroSection({ onSearchResults }: HeroSectionProps) {
   const [roadmapTitle, setRoadmapTitle] = useState("")
   const [showInvalidInputPopup, setShowInvalidInputPopup] = useState(false)
   const [showServerBusyPopup, setShowServerBusyPopup] = useState(false)
+  const [validationErrorMessage, setValidationErrorMessage] = useState("")
 
   const handleSearch = async () => {
     if (!query.trim()) return
@@ -35,14 +36,32 @@ export default function HeroSection({ onSearchResults }: HeroSectionProps) {
       })
 
       if (!response.ok) {
+        const errorData = await response.json()
+        
+        // Handle validation errors (400 status)
+        if (response.status === 400) {
+          setValidationErrorMessage(errorData.error || "Invalid input. Please check your query.")
+          setShowInvalidInputPopup(true)
+          return
+        }
+        
+        // Handle rate limiting (429 status)
+        if (response.status === 429) {
+          setValidationErrorMessage("Too many requests. Please wait a moment before trying again.")
+          setShowInvalidInputPopup(true)
+          return
+        }
+        
+        // Handle server errors (500+ status)
         setShowServerBusyPopup(true)
         return
       }
 
       const result = await response.json()
       
-      // Check if the response indicates invalid input
+      // Check if the response indicates invalid input from the AI
       if (result.roadmapTitle === "Invalid Input") {
+        setValidationErrorMessage("Please enter a valid topic or question to generate your reading roadmap. Try being more specific about what you'd like to learn.")
         setShowInvalidInputPopup(true)
         setRoadmapTitle("")
         return
@@ -200,7 +219,7 @@ export default function HeroSection({ onSearchResults }: HeroSectionProps) {
         </div>
       </div>
 
-      {/* Invalid Input Popup */}
+      {/* Invalid Input/Validation Error Popup */}
       {showInvalidInputPopup && (
         <div className="fixed inset-0 bg-black/15 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 p-6 relative">
@@ -221,7 +240,7 @@ export default function HeroSection({ onSearchResults }: HeroSectionProps) {
               </h3>
               
               <p className="text-gray-600 mb-6">
-                Please enter a valid topic or question to generate your reading roadmap. Try being more specific about what you'd like to learn.
+                {validationErrorMessage}
               </p>
               
               <Button
