@@ -1,5 +1,5 @@
 // Vector search test script
-import { bookVectorSearch, bookDatabaseSearch, cleanup } from './bookSearch';
+import { bookVectorSearch, bookDatabaseSearch } from './bookSearch';
 import { BookNode } from "./bookNode";
 
 /**

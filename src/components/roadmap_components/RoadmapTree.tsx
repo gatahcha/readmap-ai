@@ -6,7 +6,6 @@ import { TreeNodePositioned } from "@/components/roadmap_components/TreeNodePosi
 import { BookConnection } from "@/components/roadmap_components/BookConnection"
 import { ArrowDefinitions } from "@/components/roadmap_components/ArrowDefinition"
 import { Download, Trash2, Menu, Edit3 } from "lucide-react"
-import { Button } from "@/components/ui/button"
 import { generateRoadmapPDF } from "@/components/utils/pdf-generator"
 
 interface RoadmapTreeProps {
