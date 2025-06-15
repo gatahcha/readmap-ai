@@ -1,0 +1,336 @@
+import type { BookNode } from "@/book/bookNode"
+
+export const dataScienceExample = {
+  query: "Data Science",
+  finalResponse: `We found some excellent books for learning Data Science organized by learning levels:
+
+**Level 1 - Foundations:** Python, statistics, and data analysis basics
+**Level 2 - Core Tools:** Pandas, NumPy, and data manipulation techniques
+**Level 3 - Visualization:** Data visualization and exploratory data analysis
+**Level 4 - Statistical Analysis:** Advanced statistics and hypothesis testing
+**Level 5 - Machine Learning:** Predictive modeling and algorithmic approaches
+**Level 6 - Specialized Areas:** Big data, deep learning, and domain-specific applications
+**Level 7 - Professional Practice:** Production systems, MLOps, and advanced techniques
+
+Follow this progressive learning path to master Data Science from beginner to expert level!`,
+
+  books: [
+    // Level 1 - Foundational Books
+    {
+      id: "python-data-analysis",
+      isbn13: 9781491957660,
+      isbn10: 1491957662,
+      title: "Python for Data Analysis",
+      subtitle: "Data Wrangling with pandas, NumPy, and IPython",
+      author: "Wes McKinney",
+      categories: "Python, Data Analysis, Pandas",
+      thumbnail: "https://dynamic.indigoimages.ca/v1/books/books/0140280197/1.jpg",
+      description: "Get complete instructions for manipulating, processing, cleaning, and crunching datasets in Python. Updated for Python 3.6, the second edition of this hands-on guide is packed with practical case studies.",
+      published_year: 2022,
+      average_rating: 4.4,
+      num_pages: 579,
+      embedding: [],
+      prerequisites: [],
+    },
+    {
+      id: "statistics-plain-english",
+      isbn13: 9781138838918,
+      isbn10: 1138838918,
+      title: "Statistics in Plain English",
+      subtitle: "",
+      author: "Timothy C. Urdan",
+      categories: "Statistics, Data Science",
+      thumbnail: "https://dynamic.indigoimages.ca/v1/books/books/0140280197/1.jpg",
+      description: "This book makes statistics more accessible by explaining concepts in plain English and using lots of examples and a conversational tone. Each chapter begins with a brief overview of a statistic that describes what the statistic does and when to use it.",
+      published_year: 2016,
+      average_rating: 4.3,
+      num_pages: 432,
+      embedding: [],
+      prerequisites: [],
+    },
+    {
+      id: "data-science-scratch",
+      isbn13: 9781492041139,
+      isbn10: 1492041130,
+      title: "Data Science from Scratch",
+      subtitle: "First Principles with Python",
+      author: "Joel Grus",
+      categories: "Data Science, Python",
+      thumbnail: "https://dynamic.indigoimages.ca/v1/books/books/0140280197/1.jpg",
+      description: "If you have an aptitude for mathematics and some programming skills, author Joel Grus will help you get comfortable with the math and statistics at the core of data science, and with hacking skills you need to get started as a data scientist.",
+      published_year: 2019,
+      average_rating: 4.2,
+      num_pages: 406,
+      embedding: [],
+      prerequisites: [],
+    },
+
+    // Level 2 - Core Tools
+    {
+      id: "effective-pandas",
+      isbn13: 9781484242735,
+      isbn10: 1484242734,
+      title: "Effective Pandas",
+      subtitle: "Patterns for Data Manipulation",
+      author: "Matt Harrison",
+      categories: "Pandas, Data Manipulation",
+      thumbnail: "https://dynamic.indigoimages.ca/v1/books/books/0140280197/1.jpg",
+      description: "This book will show you how to be more effective with pandas, a Python library for data analysis. You will learn the patterns for data manipulation that will make your code more readable and performant.",
+      published_year: 2021,
+      average_rating: 4.5,
+      num_pages: 248,
+      embedding: [],
+      prerequisites: [9781491957660], // Python for Data Analysis
+    },
+    {
+      id: "numpy-beginners-guide",
+      isbn13: 9781785281969,
+      isbn10: 1785281968,
+      title: "NumPy Beginner's Guide",
+      subtitle: "An action packed guide using real world examples of the easy to use, high performance, scientific library for Python",
+      author: "Ivan Idris",
+      categories: "NumPy, Scientific Computing",
+      thumbnail: "https://dynamic.indigoimages.ca/v1/books/books/0140280197/1.jpg",
+      description: "NumPy is the foundation of the Python scientific stack. NumPy provides an array object that is up to 50x faster than traditional Python lists. It is the core library for scientific computing, providing a high-performance multidimensional array object.",
+      published_year: 2015,
+      average_rating: 4.1,
+      num_pages: 348,
+      embedding: [],
+      prerequisites: [9781138838918], // Statistics in Plain English
+    },
+    {
+      id: "clean-data",
+      isbn13: 9781491901823,
+      isbn10: 1491901829,
+      title: "Bad Data Handbook",
+      subtitle: "Cleaning Up The Data So You Can Get Back To Work",
+      author: "Q. Ethan McCallum",
+      categories: "Data Cleaning, Data Quality",
+      thumbnail: "https://dynamic.indigoimages.ca/v1/books/books/0140280197/1.jpg",
+      description: "Before you can analyze data, you have to deal with the fact that data is messy. This practical guide demonstrates concrete ways to discover, clean up, and guard against dirty data.",
+      published_year: 2012,
+      average_rating: 4.0,
+      num_pages: 264,
+      embedding: [],
+      prerequisites: [9781492041139], // Data Science from Scratch
+    },
+
+    // Level 3 - Visualization
+    {
+      id: "storytelling-data",
+      isbn13: 9781119002253,
+      isbn10: 1119002257,
+      title: "Storytelling with Data",
+      subtitle: "A Data Visualization Guide for Business Professionals",
+      author: "Cole Nussbaumer Knaflic",
+      categories: "Data Visualization, Communication",
+      thumbnail: "https://dynamic.indigoimages.ca/v1/books/books/0140280197/1.jpg",
+      description: "Don't simply show your data—tell a story with it! Storytelling with Data teaches you the fundamentals of data visualization and how to communicate effectively with data.",
+      published_year: 2015,
+      average_rating: 4.5,
+      num_pages: 288,
+      embedding: [],
+      prerequisites: [9781484242735], // Effective Pandas
+    },
+    {
+      id: "python-data-viz",
+      isbn13: 9781484232804,
+      isbn10: 1484232801,
+      title: "Python Data Visualization Cookbook",
+      subtitle: "Over 70 recipes to get you started with popular Python libraries based on the principal concepts of data visualization",
+      author: "Igor Milovanović",
+      categories: "Data Visualization, Python",
+      thumbnail: "https://dynamic.indigoimages.ca/v1/books/books/0140280197/1.jpg",
+      description: "Python Data Visualization Cookbook will progress the reader from the point of installing and setting up a Python environment for data manipulation and visualization, to 3D plotting techniques.",
+      published_year: 2015,
+      average_rating: 4.2,
+      num_pages: 280,
+      embedding: [],
+      prerequisites: [9781785281969], // NumPy Beginner's Guide
+    },
+    {
+      id: "ggplot2-book",
+      isbn13: 9783319242750,
+      isbn10: 3319242741,
+      title: "ggplot2: Elegant Graphics for Data Analysis",
+      subtitle: "",
+      author: "Hadley Wickham",
+      categories: "Data Visualization, R, ggplot2",
+      thumbnail: "https://dynamic.indigoimages.ca/v1/books/books/0140280197/1.jpg",
+      description: "This book provides a hands-on introduction to ggplot2 with lots of example code and graphics. It also explains the grammar on which ggplot2 is based.",
+      published_year: 2016,
+      average_rating: 4.4,
+      num_pages: 260,
+      embedding: [],
+      prerequisites: [9781491901823], // Bad Data Handbook
+    },
+
+    // Level 4 - Statistical Analysis
+    {
+      id: "art-of-statistics",
+      isbn13: 9781541675704,
+      isbn10: 1541675703,
+      title: "The Art of Statistics",
+      subtitle: "How to Learn from Data",
+      author: "David Spiegelhalter",
+      categories: "Statistics, Data Analysis",
+      thumbnail: "https://dynamic.indigoimages.ca/v1/books/books/0140280197/1.jpg",
+      description: "Statistics has played a leading role in our scientific understanding of the world for centuries, yet we are all familiar with the way statistical claims can be sensationalized, particularly in the media.",
+      published_year: 2019,
+      average_rating: 4.2,
+      num_pages: 448,
+      embedding: [],
+      prerequisites: [9781119002253], // Storytelling with Data
+    },
+    {
+      id: "think-stats",
+      isbn13: 9781491907337,
+      isbn10: 1491907339,
+      title: "Think Stats",
+      subtitle: "Exploratory Data Analysis in Python",
+      author: "Allen B. Downey",
+      categories: "Statistics, Python, Data Analysis",
+      thumbnail: "https://dynamic.indigoimages.ca/v1/books/books/0140280197/1.jpg",
+      description: "If you know how to program, you have the skills to turn data into knowledge using the tools of probability and statistics. This book shows you how to perform statistical analysis computationally, rather than mathematically.",
+      published_year: 2014,
+      average_rating: 4.1,
+      num_pages: 226,
+      embedding: [],
+      prerequisites: [9781484232804], // Python Data Visualization Cookbook
+    },
+    {
+      id: "bayesian-methods",
+      isbn13: 9780133902839,
+      isbn10: 133902838,
+      title: "Bayesian Methods for Hackers",
+      subtitle: "Probabilistic Programming and Bayesian Inference",
+      author: "Cameron Davidson-Pilon",
+      categories: "Bayesian Statistics, Python",
+      thumbnail: "https://dynamic.indigoimages.ca/v1/books/books/0140280197/1.jpg",
+      description: "This book illuminates Bayesian inference through probabilistic programming with the powerful PyMC language and the closely related Python tools NumPy, SciPy, and Matplotlib.",
+      published_year: 2015,
+      average_rating: 4.3,
+      num_pages: 256,
+      embedding: [],
+      prerequisites: [9783319242750], // ggplot2 book
+    },
+
+    // Level 5 - Machine Learning
+    {
+      id: "hands-on-ml-data-science",
+      isbn13: 9781492032649,
+      isbn10: 1492032646,
+      title: "Hands-On Machine Learning",
+      subtitle: "with Scikit-Learn, Keras, and TensorFlow",
+      author: "Aurélien Géron",
+      categories: "Machine Learning, Python, Data Science",
+      thumbnail: "https://dynamic.indigoimages.ca/v1/books/books/0140280197/1.jpg",
+      description: "Through a series of recent breakthroughs, deep learning has boosted the entire field of machine learning. Now, even programmers who know close to nothing about this technology can use simple, efficient tools to implement programs capable of learning from data.",
+      published_year: 2022,
+      average_rating: 4.6,
+      num_pages: 851,
+      embedding: [],
+      prerequisites: [9781541675704], // The Art of Statistics
+    },
+    {
+      id: "python-machine-learning",
+      isbn13: 9781789955750,
+      isbn10: 1789955750,
+      title: "Python Machine Learning",
+      subtitle: "Machine Learning and Deep Learning with Python, scikit-learn, and TensorFlow 2",
+      author: "Sebastian Raschka, Vahid Mirjalili",
+      categories: "Machine Learning, Python",
+      thumbnail: "https://dynamic.indigoimages.ca/v1/books/books/0140280197/1.jpg",
+      description: "Python Machine Learning, Third Edition is a comprehensive guide to machine learning and deep learning with Python. It acts as both a step-by-step tutorial and a reference you'll keep coming back to as you build your machine learning systems.",
+      published_year: 2019,
+      average_rating: 4.4,
+      num_pages: 770,
+      embedding: [],
+      prerequisites: [9781491907337], // Think Stats
+    },
+    {
+      id: "feature-engineering-ds",
+      isbn13: 9781491953242,
+      isbn10: 1491953241,
+      title: "Feature Engineering for Machine Learning",
+      subtitle: "Principles and Techniques for Data Scientists",
+      author: "Alice Zheng, Amanda Casari",
+      categories: "Feature Engineering, Machine Learning",
+      thumbnail: "https://dynamic.indigoimages.ca/v1/books/books/0140280197/1.jpg",
+      description: "Feature engineering is a crucial step in the machine-learning pipeline, yet this topic is rarely examined on its own. With this practical book, you'll learn techniques for extracting and transforming features.",
+      published_year: 2018,
+      average_rating: 4.2,
+      num_pages: 218,
+      embedding: [],
+      prerequisites: [9780133902839], // Bayesian Methods for Hackers
+    },
+
+    // Level 6 - Specialized Areas
+    {
+      id: "spark-definitive-guide",
+      isbn13: 9781491912218,
+      isbn10: 1491912219,
+      title: "Spark: The Definitive Guide",
+      subtitle: "Big Data Processing Made Simple",
+      author: "Bill Chambers, Matei Zaharia",
+      categories: "Big Data, Apache Spark",
+      thumbnail: "https://dynamic.indigoimages.ca/v1/books/books/0140280197/1.jpg",
+      description: "Learn how to use, deploy, and maintain Apache Spark with this comprehensive guide, written by the creators of Spark. The book provides a gentle introduction to Spark and then dives into best practices for the entire pipeline.",
+      published_year: 2018,
+      average_rating: 4.5,
+      num_pages: 594,
+      embedding: [],
+      prerequisites: [9781492032649, 9781789955750], // Hands-On ML, Python Machine Learning
+    },
+    {
+      id: "nlp-python-ds",
+      isbn13: 9781491916216,
+      isbn10: 1491916214,
+      title: "Natural Language Processing with Python",
+      subtitle: "Analyzing Text with the Natural Language Toolkit",
+      author: "Steven Bird, Ewan Klein, Edward Loper",
+      categories: "NLP, Python, Text Analysis",
+      thumbnail: "https://dynamic.indigoimages.ca/v1/books/books/0140280197/1.jpg",
+      description: "This version of the book has been updated for Python 3 and NLTK 3. The first edition of this book was published in 2009, and many readers have been asking for a new edition that covers more recent advances.",
+      published_year: 2019,
+      average_rating: 4.2,
+      num_pages: 524,
+      embedding: [],
+      prerequisites: [9781491953242], // Feature Engineering for ML
+    },
+
+    // Level 7 - Professional Practice
+    {
+      id: "building-ml-systems",
+      isbn13: 9781492045106,
+      isbn10: 1492045101,
+      title: "Building Machine Learning Powered Applications",
+      subtitle: "Going from Idea to Product",
+      author: "Emmanuel Ameisen",
+      categories: "MLOps, Production ML",
+      thumbnail: "https://dynamic.indigoimages.ca/v1/books/books/0140280197/1.jpg",
+      description: "Learn the skills necessary to design, build, and deploy applications powered by machine learning. With this practical guide, you'll learn how much more goes into building ML applications than just training models.",
+      published_year: 2020,
+      average_rating: 4.3,
+      num_pages: 334,
+      embedding: [],
+      prerequisites: [9781491912218], // Spark: The Definitive Guide
+    },
+    {
+      id: "reliable-ml",
+      isbn13: 9781492097426,
+      isbn10: 1492097426,
+      title: "Reliable Machine Learning",
+      subtitle: "Applying SRE Principles to ML in Production",
+      author: "Cathy Chen, Niall Richard Murphy, Kranti Parisa, D. Sculley, Todd Underwood",
+      categories: "MLOps, Production Systems, SRE",
+      thumbnail: "https://dynamic.indigoimages.ca/v1/books/books/0140280197/1.jpg",
+      description: "Whether you're part of a small startup or a multinational corporation, this practical book shows data scientists, ML engineers, and DevOps engineers how to prevent ML systems from failing in production.",
+      published_year: 2022,
+      average_rating: 4.4,
+      num_pages: 506,
+      embedding: [],
+      prerequisites: [9781491916216, 9781492045106], // NLP with Python, Building ML Powered Applications
+    }
+  ] as BookNode[]
+}

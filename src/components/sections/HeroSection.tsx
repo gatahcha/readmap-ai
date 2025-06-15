@@ -1,20 +1,92 @@
 "use client"
 
+import { useState } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Sparkles, Save, Search } from "lucide-react"
+import { Sparkles, Save, Search, Loader2 } from "lucide-react"
 import { NetworkBackground } from "@/components/NetworkBackground"
+import { BookNode } from "@/book/bookNode"
+// Import the predefined examples
+import { getExampleByTopic } from "@/data/examples"
 
 interface HeroSectionProps {
-  initialQuery: string
-  finalResponse: string
+  onSearchResults?: (results: { finalResponse: string; books: BookNode[] }) => void
 }
 
-export default function HeroSection({
-  initialQuery,
-  finalResponse,
-}: HeroSectionProps) {
+export default function HeroSection({ onSearchResults }: HeroSectionProps) {
+  const [query, setQuery] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
+  const [finalResponse, setFinalResponse] = useState("")
+
+  const handleSearch = async () => {
+    if (!query.trim()) return
+    
+    setIsLoading(true)
+    try {
+      const response = await fetch('/api/search', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ query: query.trim() }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Search failed')
+      }
+
+      const result = await response.json()
+      setFinalResponse(result.finalResponse)
+      
+      // Pass results to parent component
+      if (onSearchResults) {
+        onSearchResults(result)
+      }
+    } catch (error) {
+      console.error('Search error:', error)
+      setFinalResponse("Sorry, search failed. Please try again.")
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleSearch()
+    }
+  }
+
+  // Updated function to load predefined examples
+  const handleTrendingClick = (topic: string) => {
+    console.log('🎯 Trending topic clicked:', topic)
+    setQuery(topic)
+    
+    // Check if it's a predefined topic
+    const predefinedExample = getExampleByTopic(topic)
+    console.log('📚 Predefined example found:', predefinedExample ? 'YES' : 'NO')
+    
+    if (predefinedExample) {
+      console.log('📖 Books count:', predefinedExample.books.length)
+      console.log('🔄 Calling onSearchResults:', onSearchResults ? 'YES' : 'NO')
+      
+      // Load predefined data instantly
+      setFinalResponse(predefinedExample.finalResponse)
+      
+      // Pass results to parent component
+      if (onSearchResults) {
+        onSearchResults({
+          finalResponse: predefinedExample.finalResponse,
+          books: predefinedExample.books
+        })
+        console.log('✅ Results passed to parent!')
+      }
+    } else {
+      console.log('❌ No predefined example found for:', topic)
+    }
+    // If no predefined example, user can still click Generate to search via API
+  }
+
   return (
     <section className="relative overflow-hidden py-20 md:py-32">
       {/* 1) Network canvas background */}
@@ -51,36 +123,54 @@ export default function HeroSection({
           Create personalized reading roadmaps tailored to your goals and interests
         </p>
 
-{/* Search Bar */}
-<div className="relative max-w-2xl mx-auto mb-12">
-  <Input
-    type="text"
-    defaultValue={initialQuery}
-    placeholder="What would you like to learn about?"
-    className="
-      w-full h-14 pl-6 pr-32 text-lg
-      bg-white                      /* fill = #FFFFFF */
-      text-[#B0B3BF]                /* input text = #B0B3BF */
-      placeholder-[#B0B3BF]         /* placeholder text = #B0B3BF */
-      border-2 border-orange-200/50
-      rounded-2xl focus:border-orange-500 focus:ring-0
-      shadow-xl
-    "
-  />
-  <Button
-    size="lg"
-    className="absolute right-2 top-2 bottom-2 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 rounded-xl px-8 shadow-lg text-orange-50"
-  >
-    Generate
-  </Button>
-</div>
+        {/* Search Bar */}
+        <div className="relative max-w-2xl mx-auto mb-12">
+          <Input
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onKeyPress={handleKeyPress}
+            placeholder="What would you like to learn about?"
+            disabled={isLoading}
+            className="
+              w-full h-14 pl-6 pr-32 text-lg
+              bg-white
+              text-[#B0B3BF]
+              placeholder-[#B0B3BF]
+              border-2 border-orange-200/50
+              rounded-2xl focus:border-orange-500 focus:ring-0
+              shadow-xl
+              disabled:opacity-50
+            "
+          />
+          <Button
+            size="lg"
+            onClick={handleSearch}
+            disabled={isLoading || !query.trim()}
+            className="absolute right-2 top-2 bottom-2 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 rounded-xl px-8 shadow-lg text-orange-50 disabled:opacity-50"
+          >
+            {isLoading ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              "Generate"
+            )}
+          </Button>
+        </div>
+
+        {/* Search Results */}
+        {finalResponse && (
+          <div className="max-w-4xl mx-auto mb-12 p-6 bg-white/80 backdrop-blur-sm rounded-2xl border border-orange-200/50 shadow-lg">
+            <p className="text-gray-700 leading-relaxed whitespace-pre-line">{finalResponse}</p>
+          </div>
+        )}
 
         {/* Trending Topics */}
         <div className="flex flex-wrap justify-center gap-6 mt-3">
-          {["#1", "#2", "#3"].map((item) => (
+          {["Machine Learning", "Web Development", "Data Science"].map((topic) => (
             <Button
-              key={item}
+              key={topic}
               variant="outline"
+              onClick={() => handleTrendingClick(topic)}
               className="
                 transform transition-all duration-300
                 border-[1.5px] border-[#F17503]
@@ -96,7 +186,7 @@ export default function HeroSection({
             >
               <div className="flex items-center justify-center">
                 <Search className="w-3 h-3 text-[#F17503] mr-2" />
-                <span>trending topic {item}</span>
+                <span>{topic}</span>
               </div>
             </Button>
           ))}

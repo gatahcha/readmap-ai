@@ -1,30 +1,23 @@
-// src/app/page.tsx (Server Component)
-import { bookPipeline } from "@/book/bookPipeline"
+// src/app/page.tsx
+"use client"
+
+import { useState } from "react"
 import { BookNode } from "@/book/bookNode"
 import Header from "@/components/layout/Header"
 import Footer from "@/components/layout/Footer"
 import HeroSection from "@/components/sections/HeroSection"
 import { RoadmapSection } from "@/components/sections/RoadmapSection"
-import { sampleBooks } from "@/components/SampleBooks"
 
-interface HomeProps {
-  searchParams: { query?: string }
-}
+export default function Home() {
+  const [books, setBooks] = useState<BookNode[]>([])
 
-export default async function Home({ searchParams }: HomeProps) {
-  const query = searchParams.query ?? ""
-  let finalResponse = ""
-  let books: BookNode[] = []
-
-  if (query) {
-    try {
-      const result = await bookPipeline(query)
-      finalResponse = result.finalResponse
-      books = result.books
-    } catch (err) {
-      console.error("Search failed:", err)
-    }
+  const handleSearchResults = (results: { finalResponse: string; books: BookNode[] }) => {
+    console.log('🏠 Page received results! Books count:', results.books.length)
+    setBooks(results.books)
+    console.log('🏠 Books state updated')
   }
+
+  console.log('🏠 Current books in state:', books.length)
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50 flex flex-col">
@@ -32,11 +25,15 @@ export default async function Home({ searchParams }: HomeProps) {
 
       <div className="flex-1">
         <main>
-          <HeroSection
-            initialQuery={query}
-            finalResponse={finalResponse}
-          />
+          <HeroSection onSearchResults={handleSearchResults} />
         </main>
+
+        {/* Debug info */}
+        {books.length > 0 && (
+          <div style={{ padding: '20px', background: 'yellow', margin: '20px' }}>
+            <strong>DEBUG: Books loaded! Count: {books.length}</strong>
+          </div>
+        )}
 
         <RoadmapSection books={books} />
       </div>

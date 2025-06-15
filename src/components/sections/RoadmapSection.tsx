@@ -15,6 +15,12 @@ export function RoadmapSection({ books: initialBooks }: RoadmapSectionProps) {
   const [showPanelOnLeft, setShowPanelOnLeft] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
 
+  // 🔧 FIX: Sync internal state when prop changes
+  useEffect(() => {
+    console.log('🗺️ RoadmapSection: Prop books changed, count:', initialBooks.length)
+    setBooks(initialBooks)
+  }, [initialBooks])
+
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768)
@@ -55,6 +61,8 @@ export function RoadmapSection({ books: initialBooks }: RoadmapSectionProps) {
       setSelectedBook(null)
     }
   }
+
+  console.log('🗺️ RoadmapSection render: books.length =', books.length)
 
   return (
     <div className="relative">

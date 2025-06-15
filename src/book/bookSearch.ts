@@ -147,7 +147,7 @@ async function performVectorSearch(
 
 		// Transform results to match bookNode interface
 		return results.map(doc => ({
-			id : "memek",
+			id : doc.isbn13?.toString() || `book-${Date.now()}`,
 			isbn13: doc.isbn13 || 0,
 			isbn10: doc.isbn10 || 0,
 			title: doc.title || "",
