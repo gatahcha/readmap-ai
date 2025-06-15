@@ -2,16 +2,7 @@ import type { BookNode } from "@/book/bookNode"
 
 export const machineLearningExample = {
   query: "Machine Learning",
-  finalResponse: `We found some excellent books for learning Machine Learning organized by learning levels:
-
-**Level 1 - Foundations:** Start with Python programming and basic mathematics
-**Level 2 - Core Concepts:** Learn fundamental ML algorithms and statistics  
-**Level 3 - Practical Applications:** Master scikit-learn and real-world projects
-**Level 4 - Deep Learning:** Neural networks and deep learning frameworks
-**Level 5 - Advanced Topics:** Specialized areas like NLP and computer vision
-**Level 6 - Research & Production:** Latest techniques and deployment strategies
-
-Follow this progressive learning path to master Machine Learning from beginner to expert level!`,
+  roadmapTitle: `Machine Learning Roadmap: From Basics to Advanced Topics`,
 
   books: [
     // Level 1 - Foundational Books

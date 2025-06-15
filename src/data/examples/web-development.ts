@@ -2,17 +2,7 @@ import type { BookNode } from "@/book/bookNode"
 
 export const webDevelopmentExample = {
   query: "Web Development",
-  finalResponse: `We found some excellent books for learning Web Development organized by learning levels:
-
-**Level 1 - Foundations:** HTML, CSS, and JavaScript fundamentals
-**Level 2 - Core Skills:** Modern JavaScript, responsive design, and version control
-**Level 3 - Frontend Frameworks:** React, Vue, and modern frontend development
-**Level 4 - Backend Development:** Node.js, databases, and server-side programming
-**Level 5 - Full-Stack Skills:** APIs, authentication, and complete web applications
-**Level 6 - Advanced Topics:** Performance optimization, security, and deployment
-**Level 7 - Professional Development:** Architecture, testing, and best practices
-
-Follow this progressive learning path to master Web Development from beginner to professional level!`,
+  roadmapTitle: `Web Development Roadmap`,
 
   books: [
     // Level 1 - Foundational Books

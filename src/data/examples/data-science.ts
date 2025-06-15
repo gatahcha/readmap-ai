@@ -2,17 +2,7 @@ import type { BookNode } from "@/book/bookNode"
 
 export const dataScienceExample = {
   query: "Data Science",
-  finalResponse: `We found some excellent books for learning Data Science organized by learning levels:
-
-**Level 1 - Foundations:** Python, statistics, and data analysis basics
-**Level 2 - Core Tools:** Pandas, NumPy, and data manipulation techniques
-**Level 3 - Visualization:** Data visualization and exploratory data analysis
-**Level 4 - Statistical Analysis:** Advanced statistics and hypothesis testing
-**Level 5 - Machine Learning:** Predictive modeling and algorithmic approaches
-**Level 6 - Specialized Areas:** Big data, deep learning, and domain-specific applications
-**Level 7 - Professional Practice:** Production systems, MLOps, and advanced techniques
-
-Follow this progressive learning path to master Data Science from beginner to expert level!`,
+  roadmapTitle: `Data Science Learning Roadmap`,
 
   books: [
     // Level 1 - Foundational Books
