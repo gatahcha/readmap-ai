@@ -147,7 +147,7 @@ async function performVectorSearch(
 
 		// Transform results to match bookNode interface
 		return results.map(doc => ({
-			id : doc.isbn13?.toString() || `book-${Date.now()}`,
+			id: doc.isbn13?.toString() || `book-${Date.now()}`,
 			isbn13: doc.isbn13 || 0,
 			isbn10: doc.isbn10 || 0,
 			title: doc.title || "",
@@ -210,7 +210,7 @@ async function buildRecommendationTree(initialBooks: BookNode[], depth: number =
 				// this returns e.g. top 3—but might include ones you've already seen
 				const similarBooks = await performVectorSearch(
 					bookEmbedding,
-					3,
+					1,
 					excludeIds
 				);
 
@@ -225,6 +225,8 @@ async function buildRecommendationTree(initialBooks: BookNode[], depth: number =
 					nextLevelBooks.push(nb);
 					allBooks.push(nb);
 				}
+
+
 
 				// attach only the new book ISBNs as prerequisites
 				const newPrerequisites = newBooks.map(nb => nb.isbn13);
@@ -274,7 +276,7 @@ export async function bookDatabaseSearch(query: string): Promise<BookNode[]> {
 			.toArray();
 
 		return results.map(doc => ({
-			id : "memek",
+			id: "memek",
 			isbn13: doc.isbn13 || 0,
 			isbn10: doc.isbn10 || 0,
 			title: doc.title || "",
@@ -310,9 +312,9 @@ export async function bookVectorSearch(query: string): Promise<BookNode[]> {
 		// console.log('Getting query embedding...');
 		const queryEmbedding = await getEmbedding(query);
 
-		// Step 2: Perform initial vector search (5 books)
+		// Step 2: Perform initial vector search (3 books)
 		// console.log('Performing initial vector search...');
-		const initialBooks = await performVectorSearch(queryEmbedding, 5);
+		const initialBooks = await performVectorSearch(queryEmbedding, 3);
 
 		if (initialBooks.length === 0) {
 			console.log('No books found for query');
@@ -321,7 +323,7 @@ export async function bookVectorSearch(query: string): Promise<BookNode[]> {
 
 		// Step 3-7: Build recommendation tree with prerequisites
 		// console.log('Building recommendation tree...');
-		const allRecommendedBooks = await buildRecommendationTree(initialBooks, 2);
+		const allRecommendedBooks = await buildRecommendationTree(initialBooks, 5);
 
 		// console.log(`Found ${allRecommendedBooks.length} books in recommendation tree`);
 		// console.log(`First book: "${allRecommendedBooks[0].title}" has ${allRecommendedBooks[0].prevNodes.length} prerequisite books`);
