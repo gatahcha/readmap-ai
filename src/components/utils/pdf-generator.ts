@@ -235,7 +235,7 @@ function createTableOfContents(doc: jsPDF, books: BookNode[]): void {
       currentY += lineHeight + 5
       
       // Books in this level
-      levelBooks.forEach((book, index) => {
+      levelBooks.forEach((book, _index) => {
         if (currentY > 260) {
           doc.addPage("a4", "portrait")
           currentY = 30
@@ -246,7 +246,6 @@ function createTableOfContents(doc: jsPDF, books: BookNode[]): void {
         doc.setTextColor(31, 41, 55)
         
         const title = book.title.length > 50 ? book.title.substring(0, 50) + "..." : book.title
-        const dots = ".".repeat(Math.max(3, 60 - title.length))
         
         doc.text(`${title}`, margin + 10, currentY)
         doc.text(`${pageNumber}`, pageWidth - margin - 10, currentY, { align: "right" })

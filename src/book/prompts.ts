@@ -1,6 +1,6 @@
 
 
-export function userInputPrompt(userQuery: String) {
+export function userInputPrompt(userQuery: string) {
 
     const prompt = `Generate an AI-based book recommendation query prompt that takes <userQuery> ${userQuery} </userQuery> as input and returns a structured output as follows:
 
