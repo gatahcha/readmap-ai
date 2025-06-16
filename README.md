@@ -1,7 +1,7 @@
 ## 📚 Readmap.ai 🤖 
 Tired of generic book lists? Readmap.ai is your AI-powered book mentor that builds a personalized learning roadmap *just for you* based on your interests, goals, and current knowledge level. Whether you're exploring a new field or deepening your expertise, Readmap.ai gives you a structured, smarter path forward.
 
-🌐 [readmap.ai website](https://readmap-ai-988084809850.us-west1.run.app/)
+🌐 [readmap.ai](https://readmap-ai-988084809850.us-west1.run.app/)
 
 ## ✨ Features
 - 🔍 AI-generated reading roadmap based on your query
