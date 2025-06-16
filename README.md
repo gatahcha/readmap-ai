@@ -27,8 +27,8 @@ cd readmap-ai
 ```
 
 ## 2. Run the backend
-```bash
 Create a .env file in the backend directory with:
+```bash
 MONGO_DB_USERNAME="your_username"
 MONGO_DB_PASSWORD="your_password"
 GOOGLE_API_KEY="your_google_api_key"
