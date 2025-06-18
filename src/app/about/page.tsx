@@ -14,7 +14,7 @@ export default function AboutPage() {
       github: "https://github.com/callixtafidelia"
     },
     {
-      name: "Syifa Nadira Nurul Izzah",
+      name: "Syifa Nadhira Nurul Izzah",
       linkedin: "https://www.linkedin.com/in/syifa-izzah/",
       github: "https://github.com/syifandh"
     },
